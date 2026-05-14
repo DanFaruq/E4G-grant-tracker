@@ -1,18 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-export function proxy(request: NextRequest) {
+function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup")
   const isApiRoute = pathname.startsWith("/api/")
   const isPublicRoute = pathname === "/" || isAuthRoute || isApiRoute
 
-  // Derive project ref from Supabase URL to find the auth cookie
   const projectRef = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")
     .replace("https://", "")
     .split(".")[0]
 
-  // Supabase stores session in sb-{projectRef}-auth-token (may be chunked as .0, .1)
   const hasSession =
     request.cookies.has(`sb-${projectRef}-auth-token`) ||
     request.cookies.has(`sb-${projectRef}-auth-token.0`)
@@ -31,6 +29,9 @@ export function proxy(request: NextRequest) {
 
   return NextResponse.next()
 }
+
+export { proxy }
+export default proxy
 
 export const config = {
   matcher: [
