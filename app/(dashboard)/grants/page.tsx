@@ -51,8 +51,8 @@ export default async function GrantsPage({
         <GrantViewSwitcher active="list" />
 
         {/* Toolbar */}
-        <div className="flex items-center gap-3">
-          <form method="GET" className="flex-1 flex gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <form method="GET" className="flex-1 flex flex-wrap gap-2 min-w-0">
             <Input
               name="q"
               defaultValue={q}
@@ -86,8 +86,8 @@ export default async function GrantsPage({
 
         {/* Table */}
         {grants && grants.length > 0 ? (
-          <div className="rounded-lg border bg-card">
-            <table className="w-full text-sm">
+          <div className="rounded-lg border bg-card overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b bg-muted/50">
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Grant name</th>

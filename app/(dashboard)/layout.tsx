@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { Sidebar } from "@/components/layout/sidebar"
+import { DashboardShell } from "@/components/layout/dashboard-shell"
 import { RealtimeToasts } from "@/components/notifications/realtime-toasts"
 import type { UserRole } from "@/types/database"
 
@@ -31,16 +31,17 @@ export default async function DashboardLayout({
   ])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar
+    <>
+      <DashboardShell
         userName={profile?.full_name}
         userRole={profile?.role}
         unreadCount={unreadCount ?? 0}
-      />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+      >
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </DashboardShell>
       <RealtimeToasts userId={user.id} />
-    </div>
+    </>
   )
 }

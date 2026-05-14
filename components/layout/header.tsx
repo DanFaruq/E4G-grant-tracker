@@ -2,6 +2,7 @@ import { Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
+import { MobileSidebarToggle } from "./mobile-sidebar-toggle"
 
 export async function Header({ title }: { title?: string }) {
   const supabase = await createClient()
@@ -16,9 +17,10 @@ export async function Header({ title }: { title?: string }) {
     .eq("read", false)
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/60 bg-background/95 backdrop-blur-sm px-6">
-      <h1 className="text-base font-semibold tracking-tight text-foreground">{title}</h1>
-      <div className="flex items-center gap-1">
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border/60 bg-background/95 backdrop-blur-sm px-4 md:px-6">
+      <MobileSidebarToggle />
+      <h1 className="flex-1 text-base font-semibold tracking-tight text-foreground truncate">{title}</h1>
+      <div className="flex items-center gap-1 shrink-0">
         <Button
           variant="ghost"
           size="icon"
