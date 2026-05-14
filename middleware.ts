@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup")
@@ -29,9 +29,6 @@ function proxy(request: NextRequest) {
 
   return NextResponse.next()
 }
-
-export { proxy }
-export default proxy
 
 export const config = {
   matcher: [
