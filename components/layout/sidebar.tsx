@@ -9,7 +9,6 @@ import {
   Bell,
   Settings,
   LogOut,
-  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -72,19 +71,21 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
     <aside
       className={cn(
         "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
-        "w-[240px] transition-transform duration-200 ease-in-out",
-        // Mobile: fixed overlay; desktop: static in normal flow
-        "fixed inset-y-0 left-0 z-30 md:static md:z-auto md:h-full md:shrink-0",
-        // Mobile: hide when closed, show when open; desktop: always visible
-        open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        "w-[240px] shrink-0",
+        // Mobile: fixed overlay with slide animation
+        "fixed inset-y-0 left-0 z-30 transition-transform duration-200 ease-in-out",
+        // Desktop: static in normal flex flow, no animation
+        "md:static md:z-auto md:h-full md:transition-none",
+        // Visibility
+        open ? "translate-x-0" : "-translate-x-full md:hidden"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center px-5 border-b border-sidebar-border gap-2">
+      <div className="flex h-16 items-center px-5 border-b border-sidebar-border">
         <Link
           href="/dashboard"
           onClick={close}
-          className="flex items-center gap-2.5 min-w-0 flex-1"
+          className="flex items-center gap-2.5 min-w-0"
         >
           <E4GLogoMark />
           <div className="flex flex-col min-w-0">
@@ -96,14 +97,6 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
             </span>
           </div>
         </Link>
-        {/* Close button — mobile only */}
-        <button
-          onClick={close}
-          className="md:hidden p-1 rounded-md text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors shrink-0"
-          aria-label="Close sidebar"
-        >
-          <X className="size-4" />
-        </button>
       </div>
 
       {/* Navigation */}

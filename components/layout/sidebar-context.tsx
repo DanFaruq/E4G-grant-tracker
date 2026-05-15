@@ -1,8 +1,9 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
 
 type SidebarCtx = {
+  // Works for mobile overlay AND desktop collapse — same state, same toggle
   open: boolean
   toggle: () => void
   close: () => void
@@ -15,11 +16,34 @@ const SidebarContext = createContext<SidebarCtx>({
 })
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false)
+  // Start true (desktop default). useEffect corrects for mobile and localStorage.
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768
+    if (isMobile) {
+      setOpen(false)
+    } else {
+      // Restore desktop preference
+      const saved = localStorage.getItem("sidebar-open")
+      if (saved === "false") setOpen(false)
+    }
+  }, [])
+
+  const toggle = useCallback(() => {
+    setOpen((prev) => {
+      const next = !prev
+      if (window.innerWidth >= 768) {
+        localStorage.setItem("sidebar-open", String(next))
+      }
+      return next
+    })
+  }, [])
+
+  const close = useCallback(() => setOpen(false), [])
+
   return (
-    <SidebarContext.Provider
-      value={{ open, toggle: () => setOpen((v) => !v), close: () => setOpen(false) }}
-    >
+    <SidebarContext.Provider value={{ open, toggle, close }}>
       {children}
     </SidebarContext.Provider>
   )

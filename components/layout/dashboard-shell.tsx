@@ -15,7 +15,7 @@ function ShellInner({ children, userName, userRole, unreadCount = 0 }: Props) {
   const { open, close } = useSidebar()
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      {/* Mobile backdrop */}
+      {/* Mobile-only backdrop — desktop collapse has no overlay */}
       {open && (
         <div
           className="fixed inset-0 z-20 bg-black/50 md:hidden"

@@ -11,7 +11,7 @@ import type { UserRole } from "@/types/database"
 
 interface TeamMember {
   id: string
-  full_name: string
+  full_name: string | null
   role: UserRole
   created_at: string
 }
@@ -83,10 +83,22 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
 
       {/* Team list */}
       <div className="rounded-lg border bg-card divide-y">
-        {team.map((member) => (
+        {team.map((member) => {
+          const name = member.full_name?.trim()
+          const looksLikeEmail = name?.includes("@")
+          return (
           <div key={member.id} className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="text-sm font-medium">{member.full_name || <span className="text-muted-foreground italic">Pending signup</span>}</p>
+              {name && !looksLikeEmail ? (
+                <p className="text-sm font-medium">{name}</p>
+              ) : name && looksLikeEmail ? (
+                <div>
+                  <p className="text-sm font-medium">{name}</p>
+                  <p className="text-xs text-muted-foreground italic">Pending signup</p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Pending signup</p>
+              )}
             </div>
             <select
               value={member.role}
@@ -97,7 +109,8 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
               {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
             </select>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

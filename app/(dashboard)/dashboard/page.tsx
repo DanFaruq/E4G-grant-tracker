@@ -58,7 +58,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="Dashboard" />
-      <div className="flex-1 p-6 space-y-7 animate-fade-up max-w-5xl">
+      <div className="flex-1 p-4 md:p-6 space-y-6 md:space-y-7 animate-fade-up max-w-5xl mx-auto w-full">
 
         {/* Welcome + quick actions */}
         <div className="flex items-start justify-between gap-4 flex-wrap">

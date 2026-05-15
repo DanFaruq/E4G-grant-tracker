@@ -45,7 +45,15 @@ export default function LoginPage() {
       options: { emailRedirectTo: `${window.location.origin}/dashboard` },
     })
     if (error) {
-      toast.error(error.message)
+      const isRateLimit =
+        error.message.toLowerCase().includes("rate limit") ||
+        error.message.toLowerCase().includes("too many") ||
+        error.status === 429
+      toast.error(
+        isRateLimit
+          ? "Too many emails sent. Please wait a few minutes, then try again — or sign in with your password instead."
+          : error.message
+      )
     } else {
       toast.success("Magic link sent — check your inbox")
     }

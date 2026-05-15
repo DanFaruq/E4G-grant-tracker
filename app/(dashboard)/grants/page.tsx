@@ -47,7 +47,7 @@ export default async function GrantsPage({
   return (
     <div className="flex flex-col h-full">
       <Header title="Grants" />
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-4 md:p-6 space-y-4 max-w-7xl mx-auto w-full">
         <GrantViewSwitcher active="list" />
 
         {/* Toolbar */}

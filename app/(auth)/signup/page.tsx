@@ -19,15 +19,27 @@ export default function SignupPage() {
     e.preventDefault()
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.updateUser({
+
+    // Update auth user (password + metadata)
+    const { error: authError } = await supabase.auth.updateUser({
       password,
       data: { full_name: fullName },
     })
-    if (error) {
-      toast.error(error.message)
+    if (authError) {
+      toast.error(authError.message)
       setLoading(false)
       return
     }
+
+    // Sync full_name into the profiles table
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({ full_name: fullName })
+        .eq("id", user.id)
+    }
+
     toast.success("Welcome to E4G Grants!")
     router.push("/dashboard")
     router.refresh()

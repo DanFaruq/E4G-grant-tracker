@@ -65,7 +65,7 @@ export default async function OpportunitiesPage({
   return (
     <div className="flex flex-col h-full">
       <Header title="Opportunities" />
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-4 md:p-6 space-y-4 max-w-5xl mx-auto w-full">
         {/* Tabs */}
         <div className="flex gap-1 border-b">
           {tabs.map((tab) => (
@@ -98,50 +98,34 @@ export default async function OpportunitiesPage({
         ) : (
           <div className="space-y-3">
             {opportunities.map((opp) => (
-              <div key={opp.id} className="rounded-lg border bg-card p-4 space-y-2">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <p className="font-medium text-sm">{opp.title}</p>
-                      <ScoreBadge score={opp.ai_score} />
-                      <Badge variant="secondary" className="text-xs">
-                        {SOURCE_LABELS[opp.source] ?? opp.source}
-                      </Badge>
-                    </div>
-                    {opp.funder && (
-                      <p className="text-sm text-muted-foreground">{opp.funder}</p>
-                    )}
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-                      {opp.amount_text && <span>Amount: {opp.amount_text}</span>}
-                      {opp.deadline && <span>Deadline: {formatDate(opp.deadline)}</span>}
-                      {opp.url && (
-                        <a
-                          href={opp.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-primary hover:underline"
-                        >
-                          <ExternalLink className="size-3" /> View source
-                        </a>
-                      )}
-                      <span className="text-muted-foreground/60">Found {formatDate(opp.created_at)}</span>
-                    </div>
+              <div key={opp.id} className="rounded-lg border bg-card p-4 space-y-3">
+                {/* Title + badges */}
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <p className="font-medium text-sm">{opp.title}</p>
+                    <ScoreBadge score={opp.ai_score} />
+                    <Badge variant="secondary" className="text-xs">
+                      {SOURCE_LABELS[opp.source] ?? opp.source}
+                    </Badge>
                   </div>
-
-                  {statusFilter === "pending_review" && (
-                    <div className="flex gap-2 shrink-0">
-                      <form action={promoteOpportunity.bind(null, opp.id)}>
-                        <Button size="sm" variant="outline" className="gap-1.5 text-green-700 border-green-300 hover:bg-green-50">
-                          <CheckCircle className="size-3.5" /> Promote
-                        </Button>
-                      </form>
-                      <form action={dismissOpportunity.bind(null, opp.id)}>
-                        <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground hover:text-destructive">
-                          <XCircle className="size-3.5" /> Dismiss
-                        </Button>
-                      </form>
-                    </div>
+                  {opp.funder && (
+                    <p className="text-sm text-muted-foreground">{opp.funder}</p>
                   )}
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
+                    {opp.amount_text && <span>Amount: {opp.amount_text}</span>}
+                    {opp.deadline && <span>Deadline: {formatDate(opp.deadline)}</span>}
+                    {opp.url && (
+                      <a
+                        href={opp.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-primary hover:underline"
+                      >
+                        <ExternalLink className="size-3" /> View source
+                      </a>
+                    )}
+                    <span className="text-muted-foreground/60">Found {formatDate(opp.created_at)}</span>
+                  </div>
                 </div>
 
                 {opp.description && (
@@ -156,6 +140,22 @@ export default async function OpportunitiesPage({
                       <span className="font-medium text-foreground">AI analysis: </span>
                       {opp.ai_rationale}
                     </p>
+                  </div>
+                )}
+
+                {/* Action buttons — always at the bottom of the card */}
+                {statusFilter === "pending_review" && (
+                  <div className="flex gap-2 pt-1 border-t border-border/50">
+                    <form action={promoteOpportunity.bind(null, opp.id)}>
+                      <Button size="sm" variant="outline" className="gap-1.5 text-green-700 border-green-300 hover:bg-green-50">
+                        <CheckCircle className="size-3.5" /> Promote
+                      </Button>
+                    </form>
+                    <form action={dismissOpportunity.bind(null, opp.id)}>
+                      <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground hover:text-destructive">
+                        <XCircle className="size-3.5" /> Dismiss
+                      </Button>
+                    </form>
                   </div>
                 )}
               </div>

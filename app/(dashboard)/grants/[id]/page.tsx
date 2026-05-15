@@ -68,13 +68,13 @@ export default async function GrantDetailPage({
   return (
     <div className="flex flex-col h-full">
       <Header title={grant.name} />
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-5xl mx-auto w-full">
 
-        {/* Title row */}
-        <div className="flex items-start justify-between gap-4">
+        {/* Title block */}
+        <div className="space-y-3">
           <div>
             <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-2xl font-bold">{grant.name}</h2>
+              <h2 className="text-xl md:text-2xl font-bold">{grant.name}</h2>
               <StageBadge stage={grant.stage} />
               {grant.category && (
                 <Badge variant="secondary">{grant.category}</Badge>
@@ -83,7 +83,7 @@ export default async function GrantDetailPage({
             <p className="text-muted-foreground mt-1">{grant.funder}</p>
           </div>
           {canEdit && (
-            <div className="flex gap-2 shrink-0">
+            <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
                 <Link href={`/grants/${id}/edit`}>
                   <Pencil className="size-4" />
@@ -121,8 +121,9 @@ export default async function GrantDetailPage({
             <p className="font-semibold">
               {grant.grant_assignees?.length
                 ? grant.grant_assignees
-                    .map((a: { profiles: { full_name: string } | null }) => a.profiles?.full_name)
-                    .filter(Boolean)
+                    .map((a: { profiles: { full_name: string } | null }) =>
+                      a.profiles?.full_name?.trim() || "Pending"
+                    )
                     .join(", ")
                 : "—"}
             </p>

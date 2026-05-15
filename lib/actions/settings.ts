@@ -65,11 +65,11 @@ export async function inviteUser(formData: FormData) {
 
   if (error) throw new Error(error.message)
 
-  // Pre-set the role on the profile row once it's created (handled by trigger + update)
+  // Pre-set role and use email as display name until the user signs up
   if (data.user?.id) {
     await (service.from("profiles") as AnyTable).upsert({
       id: data.user.id,
-      full_name: "",
+      full_name: email,   // shown as placeholder; overwritten when user sets their name
       role: role as "admin" | "team_member" | "viewer",
     })
   }
