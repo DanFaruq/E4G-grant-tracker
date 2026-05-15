@@ -5,16 +5,21 @@ import Link from "next/link"
 import { MobileSidebarToggle } from "./mobile-sidebar-toggle"
 
 export async function Header({ title }: { title?: string }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const { count } = await supabase
-    .from("notifications")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.id ?? "")
-    .eq("read", false)
+  let count: number | null = null
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const result = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("read", false)
+      count = result.count
+    }
+  } catch {
+    // Non-fatal — badge just won't show an unread count
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border/60 bg-background/95 backdrop-blur-sm px-4">
