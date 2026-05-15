@@ -40,16 +40,19 @@ export default async function SettingsPage() {
   }
 
   const service = await createServiceClient()
-  const [{ data: settings }, { data: profiles }, { data: sources }, authUsersResult] = await Promise.all([
+  const [settingsRes, profilesRes, sourcesRes, authRes] = await Promise.allSettled([
     supabase.from("organization_settings").select("*").single(),
     supabase.from("profiles").select("id, full_name, role, created_at").order("full_name"),
     supabase.from("opportunity_sources").select("id, name, type, url, enabled, last_fetched_at").order("name"),
     service.auth.admin.listUsers({ perPage: 200 }),
   ])
 
-  const emailMap = Object.fromEntries(
-    (authUsersResult.data?.users ?? []).map((u) => [u.id, u.email ?? null])
-  )
+  const settings = settingsRes.status === "fulfilled" ? settingsRes.value.data : null
+  const profiles = profilesRes.status === "fulfilled" ? profilesRes.value.data : []
+  const sources  = sourcesRes.status  === "fulfilled" ? sourcesRes.value.data  : []
+  const authUsers = authRes.status === "fulfilled" ? (authRes.value.data?.users ?? []) : []
+
+  const emailMap = Object.fromEntries(authUsers.map((u) => [u.id, u.email ?? null]))
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const team = ((profiles ?? []) as any[]).map((p) => ({ ...p, email: emailMap[p.id] ?? null }))
 
