@@ -85,16 +85,25 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="amount_exact">Fixed ($)</Label>
-            <Input id="amount_exact" name="amount_exact" type="number" min="0" defaultValue={defaultValues?.amount_exact ?? ""} placeholder="e.g. 50000" />
+            <Label htmlFor="amount_exact">Fixed amount</Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">$</span>
+              <Input id="amount_exact" name="amount_exact" type="number" min="0" defaultValue={defaultValues?.amount_exact ?? ""} placeholder="50000" className="pl-7" />
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="amount_min">Min range ($)</Label>
-            <Input id="amount_min" name="amount_min" type="number" min="0" defaultValue={defaultValues?.amount_min ?? ""} />
+            <Label htmlFor="amount_min">Min range</Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">$</span>
+              <Input id="amount_min" name="amount_min" type="number" min="0" defaultValue={defaultValues?.amount_min ?? ""} placeholder="0" className="pl-7" />
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="amount_max">Max range ($)</Label>
-            <Input id="amount_max" name="amount_max" type="number" min="0" defaultValue={defaultValues?.amount_max ?? ""} />
+            <Label htmlFor="amount_max">Max range</Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">$</span>
+              <Input id="amount_max" name="amount_max" type="number" min="0" defaultValue={defaultValues?.amount_max ?? ""} placeholder="100000" className="pl-7" />
+            </div>
           </div>
         </div>
 

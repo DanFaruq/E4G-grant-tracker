@@ -51,14 +51,29 @@ export default async function GrantsPage({
         <GrantViewSwitcher active="list" />
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-3">
-          <form method="GET" className="flex-1 flex flex-wrap gap-2 min-w-0">
-            <Input
-              name="q"
-              defaultValue={q}
-              placeholder="Search by name or funder…"
-              className="max-w-xs"
-            />
+        <div className="space-y-2">
+          {/* Row 1: search + New Grant always on same line */}
+          <div className="flex items-center gap-2">
+            <form method="GET" className="flex-1 min-w-0 flex gap-2">
+              <Input
+                name="q"
+                defaultValue={q}
+                placeholder="Search grants…"
+                className="flex-1 min-w-0"
+              />
+              {stage && <input type="hidden" name="stage" value={stage} />}
+            </form>
+            <Button asChild size="sm" className="shrink-0 gap-1.5">
+              <Link href="/grants/new">
+                <Plus className="size-4" />
+                <span className="hidden sm:inline">New grant</span>
+                <span className="sm:hidden">New</span>
+              </Link>
+            </Button>
+          </div>
+          {/* Row 2: stage filter (collapsible feel on mobile) */}
+          <form method="GET" className="flex flex-wrap items-center gap-2">
+            {q && <input type="hidden" name="q" value={q} />}
             <select
               name="stage"
               defaultValue={stage ?? ""}
@@ -76,12 +91,6 @@ export default async function GrantsPage({
               </Button>
             )}
           </form>
-          <Button asChild size="sm">
-            <Link href="/grants/new">
-              <Plus className="size-4" />
-              New grant
-            </Link>
-          </Button>
         </div>
 
         {/* Table */}
