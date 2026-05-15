@@ -23,10 +23,7 @@ function ShellInner({ children, userName, userRole, unreadCount = 0 }: Props) {
           onClick={close}
         />
       )}
-      {/* Sidebar hidden entirely on mobile — tab bar handles mobile nav */}
-      <div className="hidden md:flex">
-        <Sidebar userName={userName} userRole={userRole} unreadCount={unreadCount} />
-      </div>
+      <Sidebar userName={userName} userRole={userRole} unreadCount={unreadCount} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {children}
       </div>
