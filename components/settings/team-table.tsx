@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { inviteUser, updateUserRole } from "@/lib/actions/settings"
+import { Trash2 } from "lucide-react"
+import { inviteUser, updateUserRole, removeTeamMember } from "@/lib/actions/settings"
 import { toast } from "sonner"
 import type { UserRole } from "@/types/database"
 
@@ -70,6 +71,18 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
         toast.success("Role updated")
       } catch {
         toast.error("Failed to update role")
+      }
+    })
+  }
+
+  function handleRemove(userId: string, label: string) {
+    if (!confirm(`Remove "${label}" from the team? This cannot be undone.`)) return
+    startTransition(async () => {
+      try {
+        await removeTeamMember(userId)
+        toast.success("Member removed")
+      } catch (e: unknown) {
+        toast.error(e instanceof Error ? e.message : "Failed to remove member")
       }
     })
   }
@@ -144,6 +157,16 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
                 >
                   {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                 </select>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  disabled={isPending}
+                  onClick={() => handleRemove(member.id, displayName ?? displayEmail ?? "this member")}
+                  title={isPendingSignup ? "Cancel invite" : "Remove member"}
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
               </div>
             </div>
           )

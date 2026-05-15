@@ -37,7 +37,8 @@ export default async function DashboardLayout({
         userRole={profile?.role}
         unreadCount={unreadCount ?? 0}
       >
-        <main className="flex-1 overflow-y-auto">
+        {/* pb-24 on mobile creates space above the fixed tab bar */}
+        <main className="flex-1 overflow-y-auto pb-24 md:pb-0">
           {children}
         </main>
       </DashboardShell>

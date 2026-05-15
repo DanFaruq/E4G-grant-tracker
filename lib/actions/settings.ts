@@ -116,3 +116,20 @@ export async function updateUserRole(userId: string, role: string) {
   })
   revalidatePath("/settings")
 }
+
+export async function removeTeamMember(userId: string) {
+  const { user } = await requireAdmin()
+  if (userId === user.id) throw new Error("You cannot remove yourself")
+
+  const service = await createServiceClient()
+  // Deleting the auth user cascades to profiles (FK ON DELETE CASCADE)
+  const { error } = await service.auth.admin.deleteUser(userId)
+  if (error) throw new Error(error.message)
+
+  await (service.from("activity_history") as AnyTable).insert({
+    actor_id: user.id,
+    action: "user.removed",
+    metadata: { removed_user_id: userId },
+  })
+  revalidatePath("/settings")
+}

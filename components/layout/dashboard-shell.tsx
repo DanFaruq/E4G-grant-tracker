@@ -2,6 +2,7 @@
 
 import { SidebarProvider, useSidebar } from "./sidebar-context"
 import { Sidebar } from "./sidebar"
+import { MobileTabBar } from "./mobile-tab-bar"
 import type { UserRole } from "@/types/database"
 
 type Props = {
@@ -22,10 +23,14 @@ function ShellInner({ children, userName, userRole, unreadCount = 0 }: Props) {
           onClick={close}
         />
       )}
-      <Sidebar userName={userName} userRole={userRole} unreadCount={unreadCount} />
+      {/* Sidebar hidden entirely on mobile — tab bar handles mobile nav */}
+      <div className="hidden md:flex">
+        <Sidebar userName={userName} userRole={userRole} unreadCount={unreadCount} />
+      </div>
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {children}
       </div>
+      <MobileTabBar unreadCount={unreadCount} />
     </div>
   )
 }

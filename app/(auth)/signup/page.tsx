@@ -19,28 +19,71 @@ function SignupForm() {
   const [tokenError, setTokenError] = useState<string | null>(null)
 
   useEffect(() => {
-    const tokenHash = searchParams.get("token_hash")
-    const type = searchParams.get("type")
+    async function initSession() {
+      const supabase = createClient()
 
-    if (!tokenHash || type !== "invite") {
-      setTokenError("Invalid invite link. Please ask your admin to send a new invitation.")
-      setVerifying(false)
-      return
-    }
+      // ── Supabase sends invite tokens in three different formats depending on
+      //    the project's auth settings. Try each in priority order.
 
-    const supabase = createClient()
-    supabase.auth
-      .verifyOtp({ token_hash: tokenHash, type: "invite" })
-      .then(({ error }) => {
+      // 1. Hash fragment: #access_token=X&refresh_token=Y  (most common for invites)
+      const hash = typeof window !== "undefined" ? window.location.hash.slice(1) : ""
+      const hashParams = new URLSearchParams(hash)
+      const accessToken = hashParams.get("access_token")
+      const refreshToken = hashParams.get("refresh_token")
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+        if (error) {
+          setTokenError(`Invite link error: ${error.message}`)
+        }
+        setVerifying(false)
+        return
+      }
+
+      // 2. PKCE code: ?code=X  (newer Supabase default with flowType: 'pkce')
+      const code = searchParams.get("code")
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (error) {
+          setTokenError(`Invite link error: ${error.message}`)
+        }
+        setVerifying(false)
+        return
+      }
+
+      // 3. OTP token: ?token_hash=X&type=invite
+      const tokenHash = searchParams.get("token_hash")
+      const type = searchParams.get("type")
+      if (tokenHash && type === "invite") {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: "invite",
+        })
         if (error) {
           setTokenError(
-            error.message.includes("expired")
-              ? "This invite link has expired. Please ask your admin to send a new invitation."
-              : `Invalid invite: ${error.message}`
+            error.message.toLowerCase().includes("expired")
+              ? "This invite link has expired. Ask your admin to send a new invitation."
+              : `Invite error: ${error.message}`
           )
         }
-      })
-      .finally(() => setVerifying(false))
+        setVerifying(false)
+        return
+      }
+
+      // 4. Already have an active session (page refresh after completing step 1-3)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        setVerifying(false)
+        return
+      }
+
+      setTokenError("Invalid invite link. Please ask your admin to send a new invitation.")
+      setVerifying(false)
+    }
+
+    initSession()
   }, [searchParams])
 
   async function handleSetup(e: React.FormEvent) {
@@ -73,7 +116,7 @@ function SignupForm() {
     return (
       <div className="flex flex-col items-center gap-3 py-8">
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Verifying your invite link…</p>
+        <p className="text-sm text-muted-foreground">Verifying your invite…</p>
       </div>
     )
   }
@@ -107,7 +150,6 @@ function SignupForm() {
           className="h-10"
         />
       </div>
-
       <div className="space-y-1.5">
         <Label htmlFor="password">Password</Label>
         <Input
@@ -122,7 +164,6 @@ function SignupForm() {
           className="h-10"
         />
       </div>
-
       <Button type="submit" className="w-full h-10 gap-2 font-semibold" disabled={loading}>
         {loading ? (
           <Loader2 className="size-4 animate-spin" />
@@ -146,11 +187,13 @@ export default function SignupPage() {
           You've been invited. Enter your details to get started.
         </p>
       </div>
-      <Suspense fallback={
-        <div className="flex flex-col items-center gap-3 py-8">
-          <Loader2 className="size-6 animate-spin text-muted-foreground" />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center gap-3 py-8">
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          </div>
+        }
+      >
         <SignupForm />
       </Suspense>
     </div>
