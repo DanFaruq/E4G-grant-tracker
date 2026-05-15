@@ -34,10 +34,8 @@ export default function SignupPage() {
     // Sync full_name into the profiles table
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      await supabase
-        .from("profiles")
-        .update({ full_name: fullName })
-        .eq("id", user.id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from("profiles") as any).update({ full_name: fullName }).eq("id", user.id)
     }
 
     toast.success("Welcome to E4G Grants!")
