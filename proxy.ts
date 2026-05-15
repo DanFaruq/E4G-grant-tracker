@@ -1,33 +1,60 @@
+import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
+export async function proxy(request: NextRequest) {
+  // Must be initialised before any early returns so the response object
+  // can carry refreshed session cookies back to the browser.
+  let supabaseResponse = NextResponse.next({ request })
 
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup")
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          // Forward updated cookies to the request so downstream
+          // Server Components see the refreshed session.
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // getUser() silently refreshes the access token via the refresh token when
+  // it has expired. Without this, server-side auth fails after ~1 hour and
+  // getUser() in Server Components returns null even for active sessions.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { pathname } = request.nextUrl
+  const isAuthRoute =
+    pathname.startsWith("/login") || pathname.startsWith("/signup")
   const isApiRoute = pathname.startsWith("/api/")
   const isPublicRoute = pathname === "/" || isAuthRoute || isApiRoute
 
-  const projectRef = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")
-    .replace("https://", "")
-    .split(".")[0]
-
-  const hasSession =
-    request.cookies.has(`sb-${projectRef}-auth-token`) ||
-    request.cookies.has(`sb-${projectRef}-auth-token.0`)
-
-  if (!hasSession && !isPublicRoute) {
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
     return NextResponse.redirect(url)
   }
 
-  if (hasSession && isAuthRoute) {
+  if (user && isAuthRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     return NextResponse.redirect(url)
   }
 
-  return NextResponse.next()
+  return supabaseResponse
 }
 
 export { proxy as default }

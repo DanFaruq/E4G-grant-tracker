@@ -13,7 +13,7 @@ export default async function NewGrantPage() {
   return (
     <div className="flex flex-col h-full">
       <Header title="New grant" />
-      <div className="p-6 max-w-2xl">
+      <div className="p-4 md:p-6 max-w-2xl mx-auto w-full">
         <GrantForm profiles={profiles ?? []} action={createGrant} />
       </div>
     </div>

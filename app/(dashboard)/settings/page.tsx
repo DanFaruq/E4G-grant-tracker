@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
-import { redirect } from "next/navigation"
 import { OrgSettingsForm } from "@/components/settings/org-settings-form"
 import { TeamTable } from "@/components/settings/team-table"
 import { SourcesTable } from "@/components/settings/sources-table"
@@ -24,7 +23,21 @@ export default async function SettingsPage() {
     .eq("id", user?.id ?? "")
     .single() as { data: { role: UserRole } | null }
 
-  if (profile?.role !== "admin") redirect("/dashboard")
+  if (profile?.role !== "admin") {
+    return (
+      <div className="flex flex-col h-full">
+        <Header title="Settings" />
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center max-w-sm">
+            <p className="text-lg font-semibold mb-2">Access restricted</p>
+            <p className="text-sm text-muted-foreground">
+              Only admins can access settings. Contact your team admin to change your role.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const [{ data: settings }, { data: team }, { data: sources }] = await Promise.all([
     supabase.from("organization_settings").select("*").single(),

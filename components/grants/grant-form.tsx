@@ -83,9 +83,9 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="amount_exact">Fixed amount ($)</Label>
+            <Label htmlFor="amount_exact">Fixed ($)</Label>
             <Input id="amount_exact" name="amount_exact" type="number" min="0" defaultValue={defaultValues?.amount_exact ?? ""} placeholder="e.g. 50000" />
           </div>
           <div className="space-y-2">
@@ -123,18 +123,24 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
           <div className="space-y-2">
             <Label>Assign team members</Label>
             <div className="grid grid-cols-2 gap-2 rounded-md border p-3">
-              {profiles.map((p) => (
-                <label key={p.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="assignees"
-                    value={p.id}
-                    defaultChecked={defaultValues?.assignee_ids?.includes(p.id)}
-                    className="rounded border-gray-300"
-                  />
-                  {p.full_name || "Unnamed"}
-                </label>
-              ))}
+              {profiles.map((p) => {
+                const name = p.full_name?.trim()
+                const isPending = !name || name.includes("@")
+                return (
+                  <label key={p.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="assignees"
+                      value={p.id}
+                      defaultChecked={defaultValues?.assignee_ids?.includes(p.id)}
+                      className="rounded border-gray-300"
+                    />
+                    <span className={isPending ? "text-muted-foreground italic" : ""}>
+                      {isPending ? (name || "Pending") : name}
+                    </span>
+                  </label>
+                )
+              })}
             </div>
           </div>
         )}

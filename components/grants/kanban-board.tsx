@@ -6,6 +6,8 @@ import {
   DragOverlay,
   closestCorners,
   PointerSensor,
+  TouchSensor,
+  MouseSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -124,6 +126,9 @@ export function KanbanBoard({ initialGrants }: { initialGrants: KanbanGrant[] })
   const [, startTransition] = useTransition()
 
   const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    // Touch: 250ms hold distinguishes drag from tap; 5px tolerance handles finger wobble
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
