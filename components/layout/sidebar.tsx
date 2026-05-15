@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
-  LayoutDashboard, FileText, Columns3, Inbox,
+  LayoutDashboard, FileText, Inbox,
   Bell, Settings, LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -28,7 +28,6 @@ function E4GLogoMark() {
 const nav = [
   { href: "/dashboard",     label: "Dashboard",     icon: LayoutDashboard, badge: false },
   { href: "/grants",        label: "Grants",        icon: FileText,         badge: false },
-  { href: "/grants/kanban", label: "Kanban Board",  icon: Columns3,         badge: false },
   { href: "/opportunities", label: "Opportunities", icon: Inbox,            badge: false },
   { href: "/notifications", label: "Notifications", icon: Bell,             badge: true  },
   { href: "/settings",      label: "Settings",      icon: Settings,         badge: false },
