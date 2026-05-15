@@ -27,13 +27,21 @@ export function SourcesTable({ sources }: { sources: Source[] }) {
 
   function handleToggle(id: string, enabled: boolean) {
     startTransition(async () => {
-      await toggleOpportunitySource(id, !enabled)
+      try {
+        await toggleOpportunitySource(id, !enabled)
+      } catch {
+        // revalidation will restore correct state on next render
+      }
     })
   }
 
   function handleDelete(id: string) {
     startTransition(async () => {
-      await deleteOpportunitySource(id)
+      try {
+        await deleteOpportunitySource(id)
+      } catch {
+        // revalidation will restore correct state on next render
+      }
     })
   }
 

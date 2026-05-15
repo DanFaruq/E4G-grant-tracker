@@ -120,7 +120,7 @@ export default async function DashboardPage() {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Pipeline
             </h3>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {STAGE_ORDER.map((stage, i) => (
                 <Link
                   key={stage}

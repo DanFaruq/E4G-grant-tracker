@@ -5,7 +5,6 @@ import {
   DndContext,
   DragOverlay,
   closestCorners,
-  PointerSensor,
   TouchSensor,
   MouseSensor,
   useSensor,
@@ -53,7 +52,7 @@ function DraggableCard({ grant }: { grant: KanbanGrant }) {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={`rounded-lg border bg-card p-3 shadow-sm cursor-grab active:cursor-grabbing select-none transition-opacity ${
+      className={`rounded-lg border bg-card p-3 shadow-sm cursor-grab active:cursor-grabbing select-none touch-none transition-opacity ${
         isDragging ? "opacity-40" : ""
       }`}
     >
@@ -128,8 +127,7 @@ export function KanbanBoard({ initialGrants }: { initialGrants: KanbanGrant[] })
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
     // Touch: 250ms hold distinguishes drag from tap; 5px tolerance handles finger wobble
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
   )
 
   function handleDragStart(event: DragStartEvent) {

@@ -32,7 +32,7 @@ export function StageBadge({ stage }: { stage: GrantStage }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-medium truncate max-w-full",
         STAGE_CLASSES[stage]
       )}
     >
