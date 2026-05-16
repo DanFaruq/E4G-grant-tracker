@@ -132,7 +132,7 @@ export default async function GrantsPage({
                           ? formatCurrency(grant.amount_exact)
                           : grant.amount_min || grant.amount_max
                           ? `${formatCurrency(grant.amount_min)} - ${formatCurrency(grant.amount_max)}`
-                          : “-”}
+                          : "-"}
                       </td>
                       <td className="px-4 py-3">
                         {grant.deadline ? (
@@ -146,7 +146,7 @@ export default async function GrantsPage({
                             )}
                           </span>
                         ) : (
-                          <span className=”text-muted-foreground”>-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </td>
                     </tr>
