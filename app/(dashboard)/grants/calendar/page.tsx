@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { DeadlineCalendar, type CalendarGrant } from "@/components/grants/deadline-calendar"
 import { GrantViewSwitcher } from "@/components/grants/view-switcher"
@@ -16,7 +16,7 @@ export default async function CalendarPage() {
   const grants = (result.data ?? []) as CalendarGrant[]
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Grants" />
       <div className="flex-1 flex flex-col overflow-hidden p-6">
         <div className="flex items-center justify-between mb-4">

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { KanbanBoard, type KanbanGrant } from "@/components/grants/kanban-board"
 import { GrantViewSwitcher } from "@/components/grants/view-switcher"
@@ -15,7 +15,7 @@ export default async function KanbanPage() {
   const grants = (result.data ?? []) as KanbanGrant[]
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Grants" />
       <div className="flex-1 flex flex-col overflow-hidden p-6">
         <div className="flex items-center justify-between mb-4">

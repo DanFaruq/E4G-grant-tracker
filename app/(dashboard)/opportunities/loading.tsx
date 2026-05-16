@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/header"
+﻿import { Header } from "@/components/layout/header"
 
 function Skeleton({ className }: { className?: string }) {
   return <div className={`animate-pulse rounded-md bg-muted ${className ?? ""}`} />
@@ -6,7 +6,7 @@ function Skeleton({ className }: { className?: string }) {
 
 export default function OpportunitiesLoading() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Opportunities" />
       <div className="flex-1 p-6 space-y-4">
         <div className="flex items-center gap-3">

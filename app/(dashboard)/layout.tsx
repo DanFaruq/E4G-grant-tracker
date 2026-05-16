@@ -37,8 +37,8 @@ export default async function DashboardLayout({
         userRole={profile?.role}
         unreadCount={unreadCount ?? 0}
       >
-        {/* pb-tab-bar on mobile: clears tab bar (4rem) + device safe-area inset */}
-        <main className="flex-1 overflow-y-auto pb-tab-bar md:pb-0">
+        {/* pb-tab-bar: clears tab bar (4rem) + safe-area; resets to 0 at md+ */}
+        <main className="flex-1 overflow-y-auto pb-tab-bar">
           {children}
         </main>
       </DashboardShell>

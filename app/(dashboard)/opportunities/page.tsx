@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -63,7 +63,7 @@ export default async function OpportunitiesPage({
   ]
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Opportunities" />
       <div className="flex-1 p-4 md:p-6 space-y-4 max-w-5xl mx-auto w-full">
         {/* Tabs */}
@@ -143,7 +143,7 @@ export default async function OpportunitiesPage({
                   </div>
                 )}
 
-                {/* Action buttons — always at the bottom of the card */}
+                {/* Action buttons â€” always at the bottom of the card */}
                 {statusFilter === "pending_review" && (
                   <div className="flex gap-2 pt-1 border-t border-border/50">
                     <form action={promoteOpportunity.bind(null, opp.id)}>

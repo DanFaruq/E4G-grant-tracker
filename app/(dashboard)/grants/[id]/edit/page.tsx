@@ -51,7 +51,7 @@ export default async function EditGrantPage({
   const updateWithId = updateGrant.bind(null, id)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title={`Edit — ${grant.name}`} />
       <div className="p-4 md:p-6 max-w-2xl mx-auto w-full">
         <GrantForm

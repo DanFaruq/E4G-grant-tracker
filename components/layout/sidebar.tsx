@@ -92,7 +92,7 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
       className={cn(
         "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
         "w-[240px] shrink-0",
-        "fixed inset-y-0 left-0 z-30 transition-transform duration-200 ease-in-out",
+        "fixed inset-y-0 left-0 z-[55] transition-transform duration-200 ease-in-out",
         "md:static md:z-auto md:h-full md:transition-none",
         open ? "translate-x-0" : "-translate-x-full md:hidden"
       )}
@@ -149,8 +149,11 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
         })}
       </nav>
 
-      {/* Bottom section — theme + user */}
-      <div className="border-t border-sidebar-border p-3 space-y-3">
+      {/* Bottom section — theme + user; safe-area padding clears device gesture bar */}
+      <div
+        className="border-t border-sidebar-border p-3 space-y-3"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         {/* Pill theme toggle */}
         <ThemePills />
 

@@ -66,7 +66,7 @@ export default async function GrantDetailPage({
   const archiveWithId = archiveGrant.bind(null, id)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title={grant.name} />
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-5xl mx-auto w-full">
 

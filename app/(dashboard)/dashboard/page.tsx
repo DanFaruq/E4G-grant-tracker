@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { StageBadge } from "@/components/grants/stage-badge"
 import { Button } from "@/components/ui/button"
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
   const hasGrants = totalGrants > 0
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Dashboard" />
       <div className="flex-1 p-4 md:p-6 space-y-6 md:space-y-7 animate-fade-up max-w-5xl mx-auto w-full">
 
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                   })}
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {stageCounts.awarded} awarded · {stageCounts.rejected} rejected
+                  {stageCounts.awarded} awarded Â· {stageCounts.rejected} rejected
                 </span>
               </div>
             )}
@@ -171,7 +171,7 @@ export default async function DashboardPage() {
         {hasGrants && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              Upcoming deadlines — next 30 days
+              Upcoming deadlines â€” next 30 days
             </h3>
             {upcoming.length === 0 ? (
               <div className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3">

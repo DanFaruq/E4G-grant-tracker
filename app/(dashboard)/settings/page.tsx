@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from "@/lib/supabase/server"
+﻿import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { OrgSettingsForm } from "@/components/settings/org-settings-form"
 import { TeamTable } from "@/components/settings/team-table"
@@ -25,7 +25,7 @@ export default async function SettingsPage() {
 
   if (profile?.role !== "admin") {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-full">
         <Header title="Settings" />
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-sm">
@@ -57,7 +57,7 @@ export default async function SettingsPage() {
   const team = ((profiles ?? []) as any[]).map((p) => ({ ...p, email: emailMap[p.id] ?? null }))
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Settings" />
       <div className="flex-1 p-4 md:p-6 max-w-2xl mx-auto w-full space-y-8">
         <div>

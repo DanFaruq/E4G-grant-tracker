@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
 import { markNotificationsRead } from "@/lib/actions/grants"
@@ -29,7 +29,7 @@ export default async function NotificationsPage() {
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Notifications" />
       <div className="flex-1 p-6 space-y-4">
         {unreadCount > 0 && (
@@ -64,7 +64,7 @@ export default async function NotificationsPage() {
                     <span className="text-xs text-muted-foreground">{formatDate(n.created_at)}</span>
                     {n.link && (
                       <Link href={n.link} className="text-xs text-primary hover:underline">
-                        View →
+                        View â†’
                       </Link>
                     )}
                   </div>

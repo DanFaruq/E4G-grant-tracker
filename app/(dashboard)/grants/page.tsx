@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+﻿import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,7 +45,7 @@ export default async function GrantsPage({
   const grants = result.data as GrantListRow[] | null
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <Header title="Grants" />
       <div className="flex-1 p-4 md:p-6 space-y-4 max-w-7xl mx-auto w-full">
         <GrantViewSwitcher active="list" />
@@ -58,7 +58,7 @@ export default async function GrantsPage({
               <Input
                 name="q"
                 defaultValue={q}
-                placeholder="Search grants…"
+                placeholder="Search grantsâ€¦"
                 className="flex-1 min-w-0"
               />
               {stage && <input type="hidden" name="stage" value={stage} />}
@@ -131,8 +131,8 @@ export default async function GrantsPage({
                         {grant.amount_exact
                           ? formatCurrency(grant.amount_exact)
                           : grant.amount_min || grant.amount_max
-                          ? `${formatCurrency(grant.amount_min)} – ${formatCurrency(grant.amount_max)}`
-                          : "—"}
+                          ? `${formatCurrency(grant.amount_min)} â€“ ${formatCurrency(grant.amount_max)}`
+                          : "â€”"}
                       </td>
                       <td className="px-4 py-3">
                         {grant.deadline ? (
@@ -146,7 +146,7 @@ export default async function GrantsPage({
                             )}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">â€”</span>
                         )}
                       </td>
                     </tr>
