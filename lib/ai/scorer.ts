@@ -94,7 +94,7 @@ export async function scoreNewOpportunities(
     .eq("status", "pending_review")
     .is("ai_score", null)
     .order("created_at", { ascending: false })
-    .limit(5)
+    .limit(3)
 
   const unscored = (unscoredRaw ?? []) as UnscoredRow[]
   if (unscored.length === 0) return []

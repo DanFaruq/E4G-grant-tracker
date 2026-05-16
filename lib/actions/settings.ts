@@ -67,13 +67,21 @@ export async function inviteUser(formData: FormData) {
 
   if (error) throw new Error(error.message)
 
-  // Pre-set role and use email as display name until the user signs up
   if (data.user?.id) {
-    await (service.from("profiles") as AnyTable).upsert({
-      id: data.user.id,
-      full_name: email,   // shown as placeholder; overwritten when user sets their name
-      role: role as "admin" | "team_member" | "viewer",
-    })
+    const { data: existing } = await (service.from("profiles") as AnyTable)
+      .select("full_name")
+      .eq("id", data.user.id)
+      .single()
+    const hasRealName = existing?.full_name && !existing.full_name.includes("@")
+    if (hasRealName) {
+      await (service.from("profiles") as AnyTable).update({ role }).eq("id", data.user.id)
+    } else {
+      await (service.from("profiles") as AnyTable).upsert({
+        id: data.user.id,
+        full_name: email,
+        role: role as "admin" | "team_member" | "viewer",
+      })
+    }
   }
 
   revalidatePath("/settings")

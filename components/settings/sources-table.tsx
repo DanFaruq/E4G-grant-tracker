@@ -109,7 +109,7 @@ export function SourcesTable({ sources }: { sources: Source[] }) {
           <div className="flex flex-col gap-1">
             <Button size="sm" variant="secondary" onClick={handleScore} disabled={isPending} className="gap-1.5">
               <Sparkles className={`size-3.5 ${isPending ? "animate-pulse" : ""}`} />
-              {isPending ? "Working..." : "Score 5 with AI"}
+              {isPending ? "Working..." : "Score 3 with AI"}
             </Button>
             {scoreMsg && (
               <span className={`text-xs flex items-center gap-1 ${scoreMsg.startsWith("Error") || scoreMsg === "No Anthropic key" ? "text-destructive" : "text-muted-foreground"}`}>
@@ -120,7 +120,7 @@ export function SourcesTable({ sources }: { sources: Source[] }) {
           </div>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Fetch pulls from all enabled sources. Score AI-ranks the next 5 unscored opportunities &mdash; click multiple times to score all.
+          Fetch pulls from all enabled sources. Score AI-ranks the next 3 unscored opportunities &mdash; click multiple times to score all.
         </p>
       </div>
 
