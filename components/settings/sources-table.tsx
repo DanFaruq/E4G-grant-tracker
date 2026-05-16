@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, RefreshCw, Play, CheckCircle2, AlertCircle } from "lucide-react"
+import { Trash2, Plus, RefreshCw, Download, Sparkles, CheckCircle2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import {
   addOpportunitySource,
   toggleOpportunitySource,
   deleteOpportunitySource,
-  runDiscoveryNow,
+  fetchOpportunitiesNow,
+  scoreOpportunitiesBatch,
 } from "@/lib/actions/settings"
 
 type Source = {
@@ -23,28 +24,54 @@ type Source = {
   last_fetched_at: string | null
 }
 
-type RunResult = { inserted: number; scored: number; anthropicKeyLoaded: boolean; error?: string }
-
 export function SourcesTable({ sources }: { sources: Source[] }) {
   const [isPending, startTransition] = useTransition()
   const [showAdd, setShowAdd] = useState(false)
-  const [lastRun, setLastRun] = useState<RunResult | null>(null)
+  const [fetchMsg, setFetchMsg] = useState("")
+  const [scoreMsg, setScoreMsg] = useState("")
 
-  function handleRunNow() {
+  function handleFetch() {
+    setFetchMsg("")
     startTransition(async () => {
-      setLastRun(null)
       try {
-        const result = await runDiscoveryNow()
-        setLastRun(result)
-        if (result.error) {
-          toast.error(`Discovery failed: ${result.error}`)
+        const r = await fetchOpportunitiesNow()
+        if (r.error) {
+          setFetchMsg(`Error: ${r.error}`)
+          toast.error(r.error)
         } else {
-          toast.success(
-            `Done — ${result.inserted} new opportunities, ${result.scored} scored`
-          )
+          setFetchMsg(`${r.inserted} new found`)
+          toast.success(`Fetched — ${r.inserted} new opportunities added`)
         }
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Discovery failed")
+        const msg = e instanceof Error ? e.message : "Failed"
+        setFetchMsg(`Error: ${msg}`)
+        toast.error(msg)
+      }
+    })
+  }
+
+  function handleScore() {
+    setScoreMsg("")
+    startTransition(async () => {
+      try {
+        const r = await scoreOpportunitiesBatch()
+        if (!r.anthropicKeyLoaded) {
+          setScoreMsg("No Anthropic key")
+          toast.error("ANTHROPIC_API_KEY is not set in Netlify env vars")
+        } else if (r.error) {
+          setScoreMsg(`Error: ${r.error}`)
+          toast.error(r.error)
+        } else if (r.scored === 0 && r.remaining === 0) {
+          setScoreMsg("All scored!")
+          toast.success("All opportunities are already scored")
+        } else {
+          setScoreMsg(`${r.scored} scored, ${r.remaining} left`)
+          toast.success(`Scored ${r.scored} opportunities — ${r.remaining} still pending`)
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Failed"
+        setScoreMsg(`Error: ${msg}`)
+        toast.error(msg)
       }
     })
   }
@@ -63,33 +90,38 @@ export function SourcesTable({ sources }: { sources: Source[] }) {
 
   return (
     <div className="space-y-4">
-      {/* Manual trigger */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={handleRunNow}
-          disabled={isPending}
-          className="gap-1.5"
-        >
-          <Play className={`size-3.5 ${isPending ? "animate-pulse" : ""}`} />
-          {isPending ? "Running..." : "Run discovery now"}
-        </Button>
-        {lastRun && !lastRun.error && (
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <CheckCircle2 className="size-3.5 text-green-500" />
-            {lastRun.inserted} new &bull; {lastRun.scored} scored
-            {!lastRun.anthropicKeyLoaded && (
-              <span className="text-amber-500 ml-1">(no Anthropic key — scoring skipped)</span>
+      {/* Manual triggers */}
+      <div className="rounded-lg border bg-card p-3 space-y-3">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Run manually</p>
+        <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-1">
+            <Button size="sm" variant="secondary" onClick={handleFetch} disabled={isPending} className="gap-1.5">
+              <Download className={`size-3.5 ${isPending ? "animate-pulse" : ""}`} />
+              {isPending ? "Working..." : "Fetch opportunities"}
+            </Button>
+            {fetchMsg && (
+              <span className={`text-xs flex items-center gap-1 ${fetchMsg.startsWith("Error") ? "text-destructive" : "text-muted-foreground"}`}>
+                {fetchMsg.startsWith("Error") ? <AlertCircle className="size-3" /> : <CheckCircle2 className="size-3 text-green-500" />}
+                {fetchMsg}
+              </span>
             )}
-          </span>
-        )}
-        {lastRun?.error && (
-          <span className="flex items-center gap-1.5 text-xs text-destructive">
-            <AlertCircle className="size-3.5" />
-            {lastRun.error}
-          </span>
-        )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <Button size="sm" variant="secondary" onClick={handleScore} disabled={isPending} className="gap-1.5">
+              <Sparkles className={`size-3.5 ${isPending ? "animate-pulse" : ""}`} />
+              {isPending ? "Working..." : "Score 5 with AI"}
+            </Button>
+            {scoreMsg && (
+              <span className={`text-xs flex items-center gap-1 ${scoreMsg.startsWith("Error") || scoreMsg === "No Anthropic key" ? "text-destructive" : "text-muted-foreground"}`}>
+                {scoreMsg.startsWith("Error") || scoreMsg === "No Anthropic key" ? <AlertCircle className="size-3" /> : <CheckCircle2 className="size-3 text-green-500" />}
+                {scoreMsg}
+              </span>
+            )}
+          </div>
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          Fetch pulls from all enabled sources. Score AI-ranks the next 5 unscored opportunities &mdash; click multiple times to score all.
+        </p>
       </div>
 
       <div className="rounded-lg border bg-card divide-y">

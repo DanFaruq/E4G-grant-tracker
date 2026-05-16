@@ -94,7 +94,7 @@ export async function scoreNewOpportunities(
     .eq("status", "pending_review")
     .is("ai_score", null)
     .order("created_at", { ascending: false })
-    .limit(50)
+    .limit(5)
 
   const unscored = (unscoredRaw ?? []) as UnscoredRow[]
   if (unscored.length === 0) return []
@@ -114,8 +114,6 @@ export async function scoreNewOpportunities(
 
       scored.push({ id: opp.id, score: result.score })
     }
-    // Polite rate limit: 1 req/sec
-    await new Promise((r) => setTimeout(r, 1100))
   }
 
   return scored

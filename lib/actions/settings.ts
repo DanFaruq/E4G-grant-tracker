@@ -136,42 +136,65 @@ export async function removeTeamMember(userId: string) {
   revalidatePath("/settings")
 }
 
-export async function runDiscoveryNow(): Promise<{
-  inserted: number
+async function getOrgSettings(service: Awaited<ReturnType<typeof createServiceClient>>) {
+  const { data } = await service
+    .from("organization_settings")
+    .select("org_name, mission_statement, focus_areas, ai_threshold, grants_gov_query, slack_webhook_url")
+    .single() as { data: { org_name: string; mission_statement: string | null; focus_areas: string[]; ai_threshold: number; grants_gov_query: string | null; slack_webhook_url: string | null } | null }
+  return {
+    org_name: data?.org_name ?? "E4G",
+    mission_statement: data?.mission_statement ?? null,
+    focus_areas: data?.focus_areas ?? [],
+    ai_threshold: data?.ai_threshold ?? 70,
+    grants_gov_query: data?.grants_gov_query ?? null,
+    slack_webhook_url: data?.slack_webhook_url ?? null,
+  }
+}
+
+export async function fetchOpportunitiesNow(): Promise<{ inserted: number; error?: string }> {
+  await requireAdmin()
+  const service = await createServiceClient()
+  const org = await getOrgSettings(service)
+  try {
+    const inserted = await runDiscovery(service, org)
+    revalidatePath("/opportunities")
+    return { inserted }
+  } catch (e) {
+    return { inserted: 0, error: e instanceof Error ? e.message : "Unknown error" }
+  }
+}
+
+export async function scoreOpportunitiesBatch(): Promise<{
   scored: number
+  remaining: number
   anthropicKeyLoaded: boolean
   error?: string
 }> {
   await requireAdmin()
   const service = await createServiceClient()
+  const org = await getOrgSettings(service)
 
-  const { data: settings } = await service
-    .from("organization_settings")
-    .select("org_name, mission_statement, focus_areas, ai_threshold, grants_gov_query, slack_webhook_url")
-    .single() as { data: { org_name: string; mission_statement: string | null; focus_areas: string[]; ai_threshold: number; grants_gov_query: string | null; slack_webhook_url: string | null } | null }
+  const { count } = await service
+    .from("opportunities")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending_review")
+    .is("ai_score", null)
 
-  const org = {
-    org_name: settings?.org_name ?? "E4G",
-    mission_statement: settings?.mission_statement ?? null,
-    focus_areas: settings?.focus_areas ?? [],
-    ai_threshold: settings?.ai_threshold ?? 70,
-    grants_gov_query: settings?.grants_gov_query ?? null,
-    slack_webhook_url: settings?.slack_webhook_url ?? null,
-  }
+  const remaining = count ?? 0
+  if (remaining === 0) return { scored: 0, remaining: 0, anthropicKeyLoaded: !!process.env.ANTHROPIC_API_KEY }
 
   try {
-    const inserted = await runDiscovery(service, org)
     const scored = await scoreNewOpportunities(service, org)
     revalidatePath("/opportunities")
     return {
-      inserted,
       scored: scored.length,
+      remaining: Math.max(0, remaining - scored.length),
       anthropicKeyLoaded: !!process.env.ANTHROPIC_API_KEY,
     }
   } catch (e) {
     return {
-      inserted: 0,
       scored: 0,
+      remaining,
       anthropicKeyLoaded: !!process.env.ANTHROPIC_API_KEY,
       error: e instanceof Error ? e.message : "Unknown error",
     }
