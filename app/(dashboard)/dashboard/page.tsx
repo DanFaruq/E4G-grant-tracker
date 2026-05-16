@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                   })}
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {stageCounts.awarded} awarded Â· {stageCounts.rejected} rejected
+                  {stageCounts.awarded} awarded &middot; {stageCounts.rejected} rejected
                 </span>
               </div>
             )}
@@ -171,7 +171,7 @@ export default async function DashboardPage() {
         {hasGrants && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              Upcoming deadlines â€” next 30 days
+              Upcoming deadlines &mdash; next 30 days
             </h3>
             {upcoming.length === 0 ? (
               <div className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3">

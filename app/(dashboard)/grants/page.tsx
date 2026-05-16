@@ -58,7 +58,7 @@ export default async function GrantsPage({
               <Input
                 name="q"
                 defaultValue={q}
-                placeholder="Search grantsâ€¦"
+                placeholder="Search grants..."
                 className="flex-1 min-w-0"
               />
               {stage && <input type="hidden" name="stage" value={stage} />}
@@ -131,8 +131,8 @@ export default async function GrantsPage({
                         {grant.amount_exact
                           ? formatCurrency(grant.amount_exact)
                           : grant.amount_min || grant.amount_max
-                          ? `${formatCurrency(grant.amount_min)} â€“ ${formatCurrency(grant.amount_max)}`
-                          : "â€”"}
+                          ? `${formatCurrency(grant.amount_min)} - ${formatCurrency(grant.amount_max)}`
+                          : “-”}
                       </td>
                       <td className="px-4 py-3">
                         {grant.deadline ? (
@@ -146,7 +146,7 @@ export default async function GrantsPage({
                             )}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">â€”</span>
+                          <span className=”text-muted-foreground”>-</span>
                         )}
                       </td>
                     </tr>
