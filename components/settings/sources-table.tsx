@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, RefreshCw } from "lucide-react"
+import { Trash2, Plus, RefreshCw, Play, CheckCircle2, AlertCircle } from "lucide-react"
+import { toast } from "sonner"
 import {
   addOpportunitySource,
   toggleOpportunitySource,
   deleteOpportunitySource,
+  runDiscoveryNow,
 } from "@/lib/actions/settings"
 
 type Source = {
@@ -21,32 +23,75 @@ type Source = {
   last_fetched_at: string | null
 }
 
+type RunResult = { inserted: number; scored: number; anthropicKeyLoaded: boolean; error?: string }
+
 export function SourcesTable({ sources }: { sources: Source[] }) {
-  const [, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
   const [showAdd, setShowAdd] = useState(false)
+  const [lastRun, setLastRun] = useState<RunResult | null>(null)
+
+  function handleRunNow() {
+    startTransition(async () => {
+      setLastRun(null)
+      try {
+        const result = await runDiscoveryNow()
+        setLastRun(result)
+        if (result.error) {
+          toast.error(`Discovery failed: ${result.error}`)
+        } else {
+          toast.success(
+            `Done — ${result.inserted} new opportunities, ${result.scored} scored`
+          )
+        }
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Discovery failed")
+      }
+    })
+  }
 
   function handleToggle(id: string, enabled: boolean) {
     startTransition(async () => {
-      try {
-        await toggleOpportunitySource(id, !enabled)
-      } catch {
-        // revalidation will restore correct state on next render
-      }
+      try { await toggleOpportunitySource(id, !enabled) } catch { /* revalidation restores state */ }
     })
   }
 
   function handleDelete(id: string) {
     startTransition(async () => {
-      try {
-        await deleteOpportunitySource(id)
-      } catch {
-        // revalidation will restore correct state on next render
-      }
+      try { await deleteOpportunitySource(id) } catch { /* revalidation restores state */ }
     })
   }
 
   return (
     <div className="space-y-4">
+      {/* Manual trigger */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleRunNow}
+          disabled={isPending}
+          className="gap-1.5"
+        >
+          <Play className={`size-3.5 ${isPending ? "animate-pulse" : ""}`} />
+          {isPending ? "Running..." : "Run discovery now"}
+        </Button>
+        {lastRun && !lastRun.error && (
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CheckCircle2 className="size-3.5 text-green-500" />
+            {lastRun.inserted} new &bull; {lastRun.scored} scored
+            {!lastRun.anthropicKeyLoaded && (
+              <span className="text-amber-500 ml-1">(no Anthropic key — scoring skipped)</span>
+            )}
+          </span>
+        )}
+        {lastRun?.error && (
+          <span className="flex items-center gap-1.5 text-xs text-destructive">
+            <AlertCircle className="size-3.5" />
+            {lastRun.error}
+          </span>
+        )}
+      </div>
+
       <div className="rounded-lg border bg-card divide-y">
         {sources.length === 0 && (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">

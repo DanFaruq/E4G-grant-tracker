@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import type { UserRole } from "@/types/database"
+import { runDiscovery } from "@/lib/discovery/runner"
+import { scoreNewOpportunities } from "@/lib/ai/scorer"
 
 type ProfileRoleRow = { role: UserRole }
 
@@ -132,4 +134,46 @@ export async function removeTeamMember(userId: string) {
     metadata: { removed_user_id: userId },
   })
   revalidatePath("/settings")
+}
+
+export async function runDiscoveryNow(): Promise<{
+  inserted: number
+  scored: number
+  anthropicKeyLoaded: boolean
+  error?: string
+}> {
+  await requireAdmin()
+  const service = await createServiceClient()
+
+  const { data: settings } = await service
+    .from("organization_settings")
+    .select("org_name, mission_statement, focus_areas, ai_threshold, grants_gov_query, slack_webhook_url")
+    .single() as { data: { org_name: string; mission_statement: string | null; focus_areas: string[]; ai_threshold: number; grants_gov_query: string | null; slack_webhook_url: string | null } | null }
+
+  const org = {
+    org_name: settings?.org_name ?? "E4G",
+    mission_statement: settings?.mission_statement ?? null,
+    focus_areas: settings?.focus_areas ?? [],
+    ai_threshold: settings?.ai_threshold ?? 70,
+    grants_gov_query: settings?.grants_gov_query ?? null,
+    slack_webhook_url: settings?.slack_webhook_url ?? null,
+  }
+
+  try {
+    const inserted = await runDiscovery(service, org)
+    const scored = await scoreNewOpportunities(service, org)
+    revalidatePath("/opportunities")
+    return {
+      inserted,
+      scored: scored.length,
+      anthropicKeyLoaded: !!process.env.ANTHROPIC_API_KEY,
+    }
+  } catch (e) {
+    return {
+      inserted: 0,
+      scored: 0,
+      anthropicKeyLoaded: !!process.env.ANTHROPIC_API_KEY,
+      error: e instanceof Error ? e.message : "Unknown error",
+    }
+  }
 }
