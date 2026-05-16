@@ -30,9 +30,9 @@ function getClient() {
 export async function scoreOpportunity(
   opp: OppInput,
   org: OrgContext
-): Promise<ScorerResult | null> {
+): Promise<ScorerResult> {
   const client = getClient()
-  if (!client) return null
+  if (!client) throw new Error("ANTHROPIC_API_KEY is not set")
 
   const system = `You are a grant opportunity evaluator for ${org.org_name}.
 
@@ -53,30 +53,22 @@ Deadline: ${opp.deadline_text ?? "Not specified"}
 Return exactly this JSON shape:
 {"score":<integer 0-100>,"rationale":"<2-3 sentence explanation of the score>"}`
 
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const msg = await client.messages.create({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
-        system,
-        messages: [{ role: "user", content: user }],
-      })
+  const msg = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 256,
+    system,
+    messages: [{ role: "user", content: user }],
+  })
 
-      const text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : ""
-      const jsonMatch = text.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) continue
+  const text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : ""
+  const jsonMatch = text.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) throw new Error(`Claude returned unexpected response: ${text.slice(0, 120)}`)
 
-      const parsed = JSON.parse(jsonMatch[0]) as { score: number; rationale: string }
-      return {
-        score: Math.max(0, Math.min(100, Math.round(Number(parsed.score)))),
-        rationale: String(parsed.rationale),
-      }
-    } catch {
-      if (attempt === 0) await new Promise((r) => setTimeout(r, 5000))
-    }
+  const parsed = JSON.parse(jsonMatch[0]) as { score: number; rationale: string }
+  return {
+    score: Math.max(0, Math.min(100, Math.round(Number(parsed.score)))),
+    rationale: String(parsed.rationale),
   }
-
-  return null
 }
 
 export async function scoreNewOpportunities(
@@ -100,10 +92,11 @@ export async function scoreNewOpportunities(
   if (unscored.length === 0) return []
 
   const scored: { id: string; score: number }[] = []
+  let lastError: string | null = null
 
   for (const opp of unscored) {
-    const result = await scoreOpportunity(opp as OppInput, org)
-    if (result) {
+    try {
+      const result = await scoreOpportunity(opp as OppInput, org)
       await (service.from("opportunities") as AnyTable)
         .update({
           ai_score: result.score,
@@ -111,9 +104,14 @@ export async function scoreNewOpportunities(
           ai_scored_at: new Date().toISOString(),
         })
         .eq("id", opp.id)
-
       scored.push({ id: opp.id, score: result.score })
+    } catch (e) {
+      lastError = e instanceof Error ? e.message : "Unknown error"
     }
+  }
+
+  if (scored.length === 0 && unscored.length > 0 && lastError) {
+    throw new Error(lastError)
   }
 
   return scored
