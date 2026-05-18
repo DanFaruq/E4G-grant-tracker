@@ -25,8 +25,14 @@ self.addEventListener("fetch", (event) => {
   // Only handle same-origin requests
   if (url.origin !== self.location.origin) return
 
-  // Skip API routes and auth — always network
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) return
+  // Skip API routes, auth callbacks, and auth pages — always network
+  // /login and /signup must never be cached: they handle invite tokens in URLs
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/auth/") ||
+    url.pathname === "/login" ||
+    url.pathname === "/signup"
+  ) return
 
   if (request.mode === "navigate") {
     // Navigation: network first, fall back to cache

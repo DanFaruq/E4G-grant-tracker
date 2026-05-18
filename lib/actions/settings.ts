@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { headers } from "next/headers"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import type { UserRole } from "@/types/database"
@@ -60,9 +61,17 @@ export async function inviteUser(formData: FormData) {
   const email = formData.get("email") as string
   const role = formData.get("role") as string
 
+  // Derive app URL from the live request rather than an env var that may be unset
+  const headersList = await headers()
+  const host = headersList.get("host") ?? ""
+  const proto = headersList.get("x-forwarded-proto") ?? "https"
+  const appUrl = host
+    ? `${proto}://${host}`
+    : (process.env.NEXT_PUBLIC_APP_URL ?? "https://e4g-grant-tracker-app.netlify.app")
+
   const { data, error } = await service.auth.admin.inviteUserByEmail(email, {
     data: { role },
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/signup`,
+    redirectTo: `${appUrl}/signup`,
   })
 
   if (error) throw new Error(error.message)
