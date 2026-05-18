@@ -165,7 +165,7 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
                   className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   disabled={isPending}
                   onClick={() => handleRemove(member.id, displayName ?? displayEmail ?? "this member")}
-                  title={isPendingSignup ? "Cancel invite" : "Remove member"}
+                  title={hasRealName ? "Remove member" : "Cancel invite"}
                 >
                   <Trash2 className="size-3.5" />
                 </Button>
