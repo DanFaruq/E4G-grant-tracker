@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/header"
 import { OrgSettingsForm } from "@/components/settings/org-settings-form"
 import { TeamTable } from "@/components/settings/team-table"
 import { SourcesTable } from "@/components/settings/sources-table"
+import { ProfileForm } from "@/components/settings/profile-form"
 import type { UserRole } from "@/types/database"
 
 type SourceRow = {
@@ -19,9 +20,9 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, full_name")
     .eq("id", user?.id ?? "")
-    .single() as { data: { role: UserRole } | null }
+    .single() as { data: { role: UserRole; full_name: string | null } | null }
 
   if (profile?.role !== "admin") {
     return (
@@ -70,6 +71,13 @@ export default async function SettingsPage() {
             Add RSS feeds to discover grant opportunities automatically. Grants.gov is always active when a search query is set above.
           </p>
           <SourcesTable sources={(sources ?? []) as SourceRow[]} />
+        </div>
+        <div>
+          <h2 className="text-base font-semibold mb-4">Your profile</h2>
+          <ProfileForm
+            currentName={profile?.full_name ?? null}
+            email={user?.email ?? null}
+          />
         </div>
         <div>
           <h2 className="text-base font-semibold mb-4">Team</h2>

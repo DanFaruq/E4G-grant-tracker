@@ -26,6 +26,19 @@ async function requireAdmin() {
   return { user, supabase }
 }
 
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect("/login")
+
+  const fullName = (formData.get("full_name") as string)?.trim()
+  if (!fullName) throw new Error("Name is required")
+
+  const service = await createServiceClient()
+  await (service.from("profiles") as AnyTable).update({ full_name: fullName }).eq("id", user.id)
+  revalidatePath("/settings")
+}
+
 export async function updateOrgSettings(formData: FormData) {
   const { user } = await requireAdmin()
   const service = await createServiceClient()

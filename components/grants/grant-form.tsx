@@ -134,7 +134,10 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
             <div className="grid grid-cols-2 gap-2 rounded-md border p-3">
               {profiles.map((p) => {
                 const name = p.full_name?.trim()
-                const isPending = !name || name.includes("@")
+                const hasRealName = name && !name.includes("@")
+                const displayLabel = hasRealName
+                  ? name
+                  : (name ? name.split("@")[0] : "Unknown")
                 return (
                   <label key={p.id} className="flex items-center gap-2 text-sm cursor-pointer">
                     <input
@@ -144,8 +147,8 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
                       defaultChecked={defaultValues?.assignee_ids?.includes(p.id)}
                       className="rounded border-gray-300"
                     />
-                    <span className={isPending ? "text-muted-foreground italic" : ""}>
-                      {isPending ? (name || "Pending") : name}
+                    <span className={hasRealName ? "" : "text-muted-foreground"}>
+                      {displayLabel}
                     </span>
                   </label>
                 )

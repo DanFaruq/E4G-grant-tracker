@@ -123,9 +123,11 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
         )}
         {team.map((member) => {
           const name = member.full_name?.trim()
-          const isPendingSignup = !name || name.includes("@")
-          const displayName = isPendingSignup ? null : name
-          const displayEmail = member.email ?? (isPendingSignup ? (name ?? null) : null)
+          const hasRealName = name && !name.includes("@")
+          const displayName = hasRealName ? name : null
+          const displayEmail = member.email ?? null
+          // For users without a real name, derive a label from their email
+          const pendingLabel = displayEmail ?? (name ? name.split("@")[0] : "Unknown")
 
           return (
             <div key={member.id} className="flex items-center gap-3 px-4 py-3">
@@ -140,7 +142,7 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
                   </>
                 ) : (
                   <>
-                    <p className="text-sm truncate">{displayEmail ?? "Unknown"}</p>
+                    <p className="text-sm truncate">{pendingLabel}</p>
                     <p className="text-xs text-muted-foreground italic">Pending signup</p>
                   </>
                 )}
