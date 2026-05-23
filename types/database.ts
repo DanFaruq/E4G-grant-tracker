@@ -11,6 +11,8 @@ export type GrantStage = "discovered" | "researching" | "applying" | "submitted"
 export type OpportunityStatus = "pending_review" | "promoted" | "dismissed"
 export type NotificationType = "new_opportunity" | "deadline_reminder" | "grant_updated" | "comment_added" | "milestone_due"
 export type EmailMode = "off" | "digest" | "urgent"
+export type StakeholderArchetype = "government" | "foundation" | "corporate" | "individual" | "other"
+export type StakeholderActivityType = "meeting" | "email" | "call" | "follow_up" | "note"
 
 export interface Database {
   public: {
@@ -116,6 +118,8 @@ export interface Database {
           phone: string | null
           organization: string | null
           notes: string | null
+          archetype: StakeholderArchetype
+          linkedin_url: string | null
           created_by: string | null
           created_at: string
           updated_at: string
@@ -128,6 +132,8 @@ export interface Database {
           phone?: string | null
           organization?: string | null
           notes?: string | null
+          archetype?: StakeholderArchetype
+          linkedin_url?: string | null
           created_by?: string | null
         }
         Update: {
@@ -137,6 +143,8 @@ export interface Database {
           phone?: string | null
           organization?: string | null
           notes?: string | null
+          archetype?: StakeholderArchetype
+          linkedin_url?: string | null
         }
       }
       grant_stakeholders: {
@@ -149,6 +157,29 @@ export interface Database {
           stakeholder_id: string
         }
         Update: Record<string, never>
+      }
+      stakeholder_activities: {
+        Row: {
+          id: string
+          stakeholder_id: string
+          user_id: string
+          activity_type: StakeholderActivityType
+          notes: string | null
+          occurred_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          stakeholder_id: string
+          user_id: string
+          activity_type: StakeholderActivityType
+          notes?: string | null
+          occurred_at?: string
+        }
+        Update: {
+          notes?: string | null
+          occurred_at?: string
+        }
       }
       milestones: {
         Row: {
@@ -442,6 +473,8 @@ export interface Database {
       opportunity_status: OpportunityStatus
       notification_type: NotificationType
       email_mode: EmailMode
+      stakeholder_archetype: StakeholderArchetype
+      stakeholder_activity_type: StakeholderActivityType
     }
   }
 }
