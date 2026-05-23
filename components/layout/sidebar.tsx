@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   LayoutDashboard, FileText, Inbox,
-  Bell, Settings, LogOut,
+  Bell, Settings, LogOut, Users2, Activity,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -28,6 +28,8 @@ function E4GLogoMark() {
 const nav = [
   { href: "/dashboard",     label: "Dashboard",     icon: LayoutDashboard, badge: false },
   { href: "/grants",        label: "Grants",        icon: FileText,         badge: false },
+  { href: "/stakeholders",  label: "Stakeholders",  icon: Users2,           badge: false },
+  { href: "/activity",      label: "Team Activity", icon: Activity,         badge: false },
   { href: "/opportunities", label: "Opportunities", icon: Inbox,            badge: false },
   { href: "/notifications", label: "Notifications", icon: Bell,             badge: true  },
   { href: "/settings",      label: "Settings",      icon: Settings,         badge: false },

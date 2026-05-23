@@ -2,14 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Inbox, Bell, MoreHorizontal } from "lucide-react"
+import { LayoutDashboard, FileText, Users2, Bell, MoreHorizontal } from "lucide-react"
 
 const TABS = [
-  { href: "/dashboard",      icon: LayoutDashboard, label: "Home"    },
-  { href: "/grants",         icon: FileText,         label: "Grants"  },
-  { href: "/opportunities",  icon: Inbox,            label: "Discover"},
-  { href: "/notifications",  icon: Bell,             label: "Alerts"  },
-  { href: "/settings",       icon: MoreHorizontal,   label: "More"    },
+  { href: "/dashboard",     icon: LayoutDashboard, label: "Home"     },
+  { href: "/grants",        icon: FileText,         label: "Grants"   },
+  { href: "/stakeholders",  icon: Users2,           label: "Contacts" },
+  { href: "/notifications", icon: Bell,             label: "Alerts"   },
+  { href: "/settings",      icon: MoreHorizontal,   label: "More"     },
 ] as const
 
 interface MobileTabBarProps {
