@@ -29,7 +29,7 @@ const nav = [
   { href: "/dashboard",     label: "Dashboard",     icon: LayoutDashboard, badge: false },
   { href: "/grants",        label: "Grants",        icon: FileText,         badge: false },
   { href: "/stakeholders",  label: "Stakeholders",  icon: Users2,           badge: false },
-  { href: "/activity",      label: "Team Activity", icon: Activity,         badge: false },
+  { href: "/activity",      label: "Team Tasks",    icon: Activity,         badge: false },
   { href: "/opportunities", label: "Opportunities", icon: Inbox,            badge: false },
   { href: "/notifications", label: "Notifications", icon: Bell,             badge: true  },
   { href: "/settings",      label: "Settings",      icon: Settings,         badge: false },
@@ -105,7 +105,7 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
           <E4GLogoMark />
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-bold leading-none tracking-tight text-sidebar-foreground">
-              E4G Grants
+              E4G Team Management
             </span>
             <span className="text-[11px] text-sidebar-foreground/45 leading-tight mt-0.5 font-normal">
               Evidence for Good

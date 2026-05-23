@@ -1,7 +1,7 @@
 {
-  "name": "E4G Grant Tracker",
-  "short_name": "E4G Grants",
-  "description": "Collaborative grant management for the Evidence for Good team",
+  "name": "E4G Team Management",
+  "short_name": "E4G Team",
+  "description": "Grants, stakeholders, and team tasks — all in one place for Evidence for Good",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",

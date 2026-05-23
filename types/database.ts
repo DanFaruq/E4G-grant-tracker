@@ -13,6 +13,10 @@ export type NotificationType = "new_opportunity" | "deadline_reminder" | "grant_
 export type EmailMode = "off" | "digest" | "urgent"
 export type StakeholderArchetype = "government" | "foundation" | "corporate" | "individual" | "other"
 export type StakeholderActivityType = "meeting" | "email" | "call" | "follow_up" | "note"
+export type TaskStatus = "open" | "in_progress" | "done" | "cancelled"
+export type TaskPriority = "low" | "medium" | "high" | "urgent"
+export type EventType = "meeting" | "deadline" | "review" | "call" | "workshop" | "other"
+export type RecurrenceType = "none" | "daily" | "weekly" | "monthly"
 
 export interface Database {
   public: {
@@ -427,6 +431,126 @@ export interface Database {
           last_active_at?: string
         }
       }
+      team_tasks: {
+        Row: {
+          id: string
+          number: number
+          title: string
+          body: string | null
+          status: TaskStatus
+          priority: TaskPriority
+          due_date: string | null
+          created_by: string
+          grant_id: string | null
+          stakeholder_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          body?: string | null
+          status?: TaskStatus
+          priority?: TaskPriority
+          due_date?: string | null
+          created_by: string
+          grant_id?: string | null
+          stakeholder_id?: string | null
+        }
+        Update: {
+          title?: string
+          body?: string | null
+          status?: TaskStatus
+          priority?: TaskPriority
+          due_date?: string | null
+          grant_id?: string | null
+          stakeholder_id?: string | null
+          updated_at?: string
+        }
+      }
+      task_assignments: {
+        Row: {
+          task_id: string
+          profile_id: string
+        }
+        Insert: {
+          task_id: string
+          profile_id: string
+        }
+        Update: Record<string, never>
+      }
+      task_comments: {
+        Row: {
+          id: string
+          task_id: string
+          author_id: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          author_id: string
+          body: string
+        }
+        Update: {
+          body?: string
+        }
+      }
+      team_events: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          event_type: EventType
+          start_at: string
+          end_at: string | null
+          all_day: boolean
+          recurrence: RecurrenceType
+          recurrence_end: string | null
+          created_by: string
+          grant_id: string | null
+          stakeholder_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          event_type?: EventType
+          start_at: string
+          end_at?: string | null
+          all_day?: boolean
+          recurrence?: RecurrenceType
+          recurrence_end?: string | null
+          created_by: string
+          grant_id?: string | null
+          stakeholder_id?: string | null
+        }
+        Update: {
+          title?: string
+          description?: string | null
+          event_type?: EventType
+          start_at?: string
+          end_at?: string | null
+          all_day?: boolean
+          recurrence?: RecurrenceType
+          recurrence_end?: string | null
+          grant_id?: string | null
+          stakeholder_id?: string | null
+        }
+      }
+      event_attendees: {
+        Row: {
+          event_id: string
+          profile_id: string
+        }
+        Insert: {
+          event_id: string
+          profile_id: string
+        }
+        Update: Record<string, never>
+      }
       organization_settings: {
         Row: {
           id: number
@@ -475,6 +599,10 @@ export interface Database {
       email_mode: EmailMode
       stakeholder_archetype: StakeholderArchetype
       stakeholder_activity_type: StakeholderActivityType
+      task_status: TaskStatus
+      task_priority: TaskPriority
+      event_type: EventType
+      recurrence_type: RecurrenceType
     }
   }
 }

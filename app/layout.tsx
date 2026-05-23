@@ -13,13 +13,13 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "E4G Grant Tracker",
-  description: "Collaborative grant management for the Evidence for Good team",
+  title: "E4G Team Management",
+  description: "Grants, stakeholders, and team tasks — all in one place for Evidence for Good",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "E4G Grants",
+    title: "E4G Team",
     startupImage: "/icon-512.png",
   },
   icons: {

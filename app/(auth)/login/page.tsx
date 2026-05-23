@@ -62,7 +62,8 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-7">
-      <div>
+      {/* Header — staggered entrance */}
+      <div className="animate-fade-up stagger-1">
         <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
         <p className="text-sm text-muted-foreground mt-1.5">
           Sign in to your E4G account to continue
@@ -73,8 +74,11 @@ export default function LoginPage() {
         onSubmit={mode === "password" ? handlePasswordLogin : handleMagicLink}
         className="space-y-4"
       >
-        <div className="space-y-1.5">
-          <Label htmlFor="email">Email address</Label>
+        {/* Email field */}
+        <div className="space-y-1.5 animate-fade-up stagger-2">
+          <Label htmlFor="email" className="text-sm font-medium transition-colors">
+            Email address
+          </Label>
           <Input
             id="email"
             type="email"
@@ -83,13 +87,16 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="h-10"
+            className="h-10 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm"
           />
         </div>
 
+        {/* Password field — slides in when mode = password */}
         {mode === "password" && (
-          <div className="space-y-1.5 animate-fade-in">
-            <Label htmlFor="password">Password</Label>
+          <div className="space-y-1.5 animate-fade-up">
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
@@ -97,29 +104,37 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="h-10"
+              className="h-10 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm"
             />
           </div>
         )}
 
-        <Button type="submit" className="w-full h-10 gap-2 font-semibold" disabled={loading}>
-          {loading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : mode === "password" ? (
-            <>
-              Sign in
-              <ArrowRight className="size-4" />
-            </>
-          ) : (
-            <>
-              <Mail className="size-4" />
-              Send magic link
-            </>
-          )}
-        </Button>
+        {/* Submit button — arrow slides on hover */}
+        <div className="animate-fade-up stagger-3 pt-1">
+          <Button
+            type="submit"
+            className="w-full h-10 gap-2 font-semibold group transition-all duration-200 active:scale-[0.98]"
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : mode === "password" ? (
+              <>
+                Sign in
+                <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </>
+            ) : (
+              <>
+                <Mail className="size-4 transition-transform duration-200 group-hover:scale-110" />
+                Send magic link
+              </>
+            )}
+          </Button>
+        </div>
       </form>
 
-      <div className="relative">
+      {/* Divider */}
+      <div className="relative animate-fade-up stagger-4">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-border" />
         </div>
@@ -128,14 +143,17 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        className="w-full h-10 font-medium"
-        onClick={() => setMode(mode === "password" ? "magic" : "password")}
-        type="button"
-      >
-        {mode === "password" ? "Use magic link instead" : "Sign in with password"}
-      </Button>
+      {/* Mode toggle */}
+      <div className="animate-fade-up stagger-5">
+        <Button
+          variant="outline"
+          className="w-full h-10 font-medium transition-all duration-200 active:scale-[0.98]"
+          onClick={() => setMode(mode === "password" ? "magic" : "password")}
+          type="button"
+        >
+          {mode === "password" ? "Use magic link instead" : "Sign in with password"}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -107,7 +107,7 @@ function SignupForm() {
       await (supabase.from("profiles") as any).update({ full_name: fullName }).eq("id", user.id)
     }
 
-    toast.success("Welcome to E4G Grants!")
+    toast.success("Welcome to E4G Team Management!")
     router.push("/dashboard")
     router.refresh()
   }
@@ -137,8 +137,8 @@ function SignupForm() {
 
   return (
     <form onSubmit={handleSetup} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="fullName">Full name</Label>
+      <div className="space-y-1.5 animate-fade-up stagger-2">
+        <Label htmlFor="fullName" className="text-sm font-medium">Full name</Label>
         <Input
           id="fullName"
           type="text"
@@ -147,11 +147,11 @@ function SignupForm() {
           onChange={(e) => setFullName(e.target.value)}
           required
           autoComplete="name"
-          className="h-10"
+          className="h-10 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm"
         />
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5 animate-fade-up stagger-3">
+        <Label htmlFor="password" className="text-sm font-medium">Password</Label>
         <Input
           id="password"
           type="password"
@@ -161,19 +161,25 @@ function SignupForm() {
           required
           minLength={8}
           autoComplete="new-password"
-          className="h-10"
+          className="h-10 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm"
         />
       </div>
-      <Button type="submit" className="w-full h-10 gap-2 font-semibold" disabled={loading}>
-        {loading ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <>
-            Create account
-            <ArrowRight className="size-4" />
-          </>
-        )}
-      </Button>
+      <div className="animate-fade-up stagger-4 pt-1">
+        <Button
+          type="submit"
+          className="w-full h-10 gap-2 font-semibold group transition-all duration-200 active:scale-[0.98]"
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <>
+              Create account
+              <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </>
+          )}
+        </Button>
+      </div>
     </form>
   )
 }
@@ -181,7 +187,7 @@ function SignupForm() {
 export default function SignupPage() {
   return (
     <div className="space-y-7">
-      <div>
+      <div className="animate-fade-up stagger-1">
         <h1 className="text-2xl font-bold tracking-tight">Set up your account</h1>
         <p className="text-sm text-muted-foreground mt-1.5">
           You've been invited. Enter your details to get started.

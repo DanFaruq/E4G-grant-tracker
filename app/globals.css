@@ -146,6 +146,45 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Auth panel — floating orb animations */
+@keyframes orb-drift-1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(40px, -55px) scale(1.08); }
+  66%  { transform: translate(-30px, 35px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes orb-drift-2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(-50px, 40px) scale(1.05); }
+  66%  { transform: translate(35px, -30px) scale(0.97); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes orb-drift-3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(30px, 50px) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.45; }
+}
+@keyframes line-draw {
+  from { stroke-dashoffset: 200; opacity: 0; }
+  to   { stroke-dashoffset: 0;   opacity: 0.25; }
+}
+@keyframes feature-in {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes input-glow {
+  from { box-shadow: 0 0 0 0 var(--ring); }
+  to   { box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent); }
+}
+@keyframes shimmer-slide {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
 /* =========================================================
    UTILITY CLASSES
    ========================================================= */
@@ -154,12 +193,27 @@
   .animate-fade-in   { animation: fade-in 0.25s ease-out both; }
   .animate-slide-in-left { animation: slide-in-left 0.3s ease-out both; }
   .animate-scale-in  { animation: scale-in 0.2s ease-out both; }
+  .animate-feature-in { animation: feature-in 0.4s cubic-bezier(0.16,1,0.3,1) both; }
   .stagger-1 { animation-delay: 40ms; }
   .stagger-2 { animation-delay: 80ms; }
   .stagger-3 { animation-delay: 120ms; }
   .stagger-4 { animation-delay: 160ms; }
   .stagger-5 { animation-delay: 200ms; }
   .stagger-6 { animation-delay: 240ms; }
+  .stagger-7 { animation-delay: 300ms; }
+  .stagger-8 { animation-delay: 380ms; }
+  .stagger-9 { animation-delay: 460ms; }
+
+  /* Auth orbs */
+  .auth-orb-1 { animation: orb-drift-1 18s ease-in-out infinite; }
+  .auth-orb-2 { animation: orb-drift-2 22s ease-in-out infinite; }
+  .auth-orb-3 { animation: orb-drift-3 15s ease-in-out infinite; }
+
+  /* Input focus shimmer on the button */
+  .btn-shimmer {
+    background-size: 300% 100%;
+    animation: shimmer-slide 3s linear infinite;
+  }
 
   /* Clears the fixed bottom tab bar (h-16 = 4rem) + device safe area */
   .pb-tab-bar {
