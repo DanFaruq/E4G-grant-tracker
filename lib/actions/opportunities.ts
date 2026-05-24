@@ -68,6 +68,18 @@ export async function promoteOpportunity(oppId: string) {
   redirect(`/grants/${grant!.id}/edit`)
 }
 
+export async function snoozeOpportunity(oppId: string) {
+  await requireTeamMember()
+  const service = await createServiceClient()
+
+  // Set ai_score to null so it sorts to the bottom (NULLS LAST ordering)
+  await (service.from("opportunities") as AnyTable).update({
+    ai_score: null,
+  }).eq("id", oppId)
+
+  revalidatePath("/opportunities")
+}
+
 export async function dismissOpportunity(oppId: string) {
   const { user } = await requireTeamMember()
   const service = await createServiceClient()

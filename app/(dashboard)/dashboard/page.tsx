@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
-import { formatDate, daysUntil } from "@/lib/utils"
+import { daysUntil } from "@/lib/utils"
 import Link from "next/link"
 import {
   Plus, Inbox, FileText, Users2, CheckSquare,
@@ -30,9 +30,56 @@ type TaskFeedRow = {
   title: string
   status: TaskStatus
   updated_at: string
+  assignees: { profile: { id: string; full_name: string } | null }[]
+}
+type EventFeedRow = {
+  id: string
+  title: string
+  event_type: string
+  start_at: string
 }
 
 const ACTIVE_STAGES: GrantStage[] = ["discovered", "researching", "applying", "submitted"]
+
+const STAGE_COLOR: Record<string, string> = {
+  discovered:  "rgba(99,102,241,0.85)",   // indigo
+  researching: "rgba(59,130,246,0.85)",   // blue
+  applying:    "rgba(245,158,11,0.85)",   // amber
+  submitted:   "rgba(20,184,166,0.85)",   // teal
+  awarded:     "rgba(34,197,94,0.85)",    // green
+  rejected:    "rgba(239,68,68,0.85)",    // red
+}
+
+const ARCHETYPE_COLOR: Record<string, string> = {
+  foundation:  "rgba(168,85,247,0.85)",   // purple
+  government:  "rgba(59,130,246,0.85)",   // blue
+  corporate:   "rgba(249,115,22,0.85)",   // orange
+  individual:  "rgba(20,184,166,0.85)",   // teal
+  other:       "rgba(148,163,184,0.85)",  // slate
+}
+
+const PRIORITY_COLOR: Record<string, string> = {
+  urgent: "rgba(239,68,68,0.85)",
+  high:   "rgba(249,115,22,0.85)",
+  medium: "rgba(59,130,246,0.85)",
+  low:    "rgba(148,163,184,0.85)",
+}
+
+function SegmentBar({ segments }: { segments: { color: string; count: number }[] }) {
+  const total = segments.reduce((s, seg) => s + seg.count, 0)
+  if (total === 0) return <div className="h-1.5 rounded-full bg-white/20" />
+  return (
+    <div className="h-1.5 rounded-full bg-white/20 overflow-hidden flex gap-px">
+      {segments.filter((s) => s.count > 0).map((seg, i) => (
+        <div
+          key={i}
+          className="h-full rounded-sm transition-all"
+          style={{ width: `${(seg.count / total) * 100}%`, backgroundColor: seg.color }}
+        />
+      ))}
+    </div>
+  )
+}
 
 function avatarColor(str: string) {
   const colors = [
@@ -70,6 +117,7 @@ export default async function DashboardPage() {
     eventsResult,
     activityFeedResult,
     taskFeedResult,
+    eventFeedResult,
   ] = await Promise.all([
     supabase
       .from("grants")
@@ -100,9 +148,14 @@ export default async function DashboardPage() {
       .order("occurred_at", { ascending: false })
       .limit(3),
     (supabase.from("team_tasks") as AnyTable)
-      .select("id, number, title, status, updated_at")
+      .select("id, number, title, status, updated_at, assignees:task_assignments(profile:profiles(id, full_name))")
       .order("updated_at", { ascending: false })
       .limit(3),
+    (supabase.from("team_events") as AnyTable)
+      .select("id, title, event_type, start_at")
+      .gte("start_at", new Date().toISOString())
+      .order("start_at", { ascending: true })
+      .limit(2),
   ])
 
   const grants = (grantsResult.data ?? []) as GrantRow[]
@@ -112,6 +165,7 @@ export default async function DashboardPage() {
   const eventsCount = eventsResult.count ?? 0
   const activityFeed = (activityFeedResult.data ?? []) as ActivityRow[]
   const taskFeed = (taskFeedResult.data ?? []) as TaskFeedRow[]
+  const eventFeed = (eventFeedResult.data ?? []) as EventFeedRow[]
 
   const activeGrants = grants.filter((g) => ACTIVE_STAGES.includes(g.stage)).length
   const deadlinesThisMonth = grants.filter((g) => {
@@ -197,12 +251,12 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="px-5 pb-4">
-              <div className="h-1 rounded-full bg-white/20 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-white/70 transition-all"
-                  style={{ width: grants.length ? `${Math.min((activeGrants / grants.length) * 100, 100)}%` : "0%" }}
-                />
-              </div>
+              <SegmentBar
+                segments={Object.entries(STAGE_COLOR).map(([stage, color]) => ({
+                  color,
+                  count: grants.filter((g) => g.stage === stage).length,
+                }))}
+              />
             </div>
           </Link>
 
@@ -232,12 +286,12 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="px-5 pb-4">
-              <div className="h-1 rounded-full bg-white/20 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-white/70 transition-all"
-                  style={{ width: stakeholderTotal > 0 ? `${Math.min((stakeholderTotal / 20) * 100, 100)}%` : "0%" }}
-                />
-              </div>
+              <SegmentBar
+                segments={Object.entries(ARCHETYPE_COLOR).map(([arch, color]) => ({
+                  color,
+                  count: archetypeCounts[arch] ?? 0,
+                }))}
+              />
             </div>
           </Link>
 
@@ -263,12 +317,12 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="px-5 pb-4">
-              <div className="h-1 rounded-full bg-white/20 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-white/70 transition-all"
-                  style={{ width: openTasks > 0 ? `${Math.min((urgentTasks / Math.max(openTasks, 1)) * 100, 100)}%` : "0%" }}
-                />
-              </div>
+              <SegmentBar
+                segments={Object.entries(PRIORITY_COLOR).map(([priority, color]) => ({
+                  color,
+                  count: tasks.filter((t) => t.priority === priority).length,
+                }))}
+              />
             </div>
           </Link>
         </div>
@@ -343,9 +397,43 @@ export default async function DashboardPage() {
                 </div>
               ) : (
                 <div className="divide-y">
+                  {/* Upcoming events */}
+                  {eventFeed.map((ev) => {
+                    const eventInitials = ev.event_type.slice(0, 2).toUpperCase()
+                    return (
+                      <Link
+                        key={`ev-${ev.id}`}
+                        href="/activity?tab=events"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
+                      >
+                        <div
+                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
+                          style={{ backgroundColor: "oklch(0.55 0.18 200)" }}
+                        >
+                          {eventInitials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground truncate">
+                            <span className="text-muted-foreground">Upcoming</span>{" "}
+                            <span className="font-medium">{ev.title}</span>
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {new Date(ev.start_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  })}
+
                   {/* Recent tasks */}
                   {taskFeed.map((t) => {
-                    const color = avatarColor(t.id)
+                    const assigneeProfiles = t.assignees?.flatMap((a) => a.profile ? [a.profile] : []) ?? []
+                    const firstAssignee = assigneeProfiles[0]
+                    const assigneeName = firstAssignee?.full_name ?? ""
+                    const initials = assigneeName
+                      ? assigneeName.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+                      : t.title.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "T"
+                    const color = firstAssignee ? avatarColor(firstAssignee.id) : avatarColor(t.id)
                     const actionMap: Record<TaskStatus, string> = {
                       open: "Opened",
                       in_progress: "Started",
@@ -362,7 +450,7 @@ export default async function DashboardPage() {
                           className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
                           style={{ backgroundColor: color }}
                         >
-                          #
+                          {initials}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground truncate">
@@ -371,6 +459,24 @@ export default async function DashboardPage() {
                           </p>
                           <p className="text-xs text-muted-foreground mt-0.5">{relativeTime(t.updated_at)}</p>
                         </div>
+                        {/* Assignee avatar stack */}
+                        {assigneeProfiles.length > 0 && (
+                          <div className="flex items-center shrink-0">
+                            {assigneeProfiles.slice(0, 3).map((p, i) => {
+                              const ini = p.full_name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+                              return (
+                                <div
+                                  key={p.id}
+                                  title={p.full_name}
+                                  className={`flex size-6 items-center justify-center rounded-full border-2 border-card text-white text-[10px] font-bold ${i > 0 ? "-ml-1.5" : ""}`}
+                                  style={{ backgroundColor: avatarColor(p.id) }}
+                                >
+                                  {ini}
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
                       </Link>
                     )
                   })}

@@ -4,8 +4,8 @@ import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
-} from "@/components/ui/sheet"
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -57,15 +57,15 @@ export function EventSheetWrapper({ profiles, grants }: { profiles: Profile[]; g
         onClick={() => setOpen(true)}
       >
         <CalendarPlus className="size-3.5" />
-        New Event
+        <span className="hidden sm:inline">New Event</span>
       </Button>
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader className="mb-6">
-            <SheetTitle>Create event</SheetTitle>
-            <SheetDescription>Schedule a one-time or recurring event for your team.</SheetDescription>
-          </SheetHeader>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="mb-2">
+            <DialogTitle>Create event</DialogTitle>
+            <DialogDescription>Schedule a one-time or recurring event for your team.</DialogDescription>
+          </DialogHeader>
 
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
@@ -155,8 +155,8 @@ export function EventSheetWrapper({ profiles, grants }: { profiles: Profile[]; g
               </Button>
             </div>
           </form>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

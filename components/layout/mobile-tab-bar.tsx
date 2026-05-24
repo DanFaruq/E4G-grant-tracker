@@ -2,21 +2,17 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Users2, Bell, MoreHorizontal } from "lucide-react"
+import { LayoutDashboard, FileText, Users2, Activity, MoreHorizontal } from "lucide-react"
 
 const TABS = [
-  { href: "/dashboard",     icon: LayoutDashboard, label: "Home"     },
-  { href: "/grants",        icon: FileText,         label: "Grants"   },
-  { href: "/stakeholders",  icon: Users2,           label: "Contacts" },
-  { href: "/notifications", icon: Bell,             label: "Alerts"   },
-  { href: "/settings",      icon: MoreHorizontal,   label: "More"     },
+  { href: "/dashboard",    icon: LayoutDashboard, label: "Home"     },
+  { href: "/grants",       icon: FileText,         label: "Grants"   },
+  { href: "/activity",     icon: Activity,         label: "Tasks"    },
+  { href: "/stakeholders", icon: Users2,           label: "Contacts" },
+  { href: "/settings",     icon: MoreHorizontal,   label: "More"     },
 ] as const
 
-interface MobileTabBarProps {
-  unreadCount?: number
-}
-
-export function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
+export function MobileTabBar() {
   const pathname = usePathname()
 
   return (
@@ -30,7 +26,6 @@ export function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             href === "/dashboard"
               ? pathname === "/dashboard"
               : pathname.startsWith(href)
-          const showBadge = href === "/notifications" && unreadCount > 0
 
           return (
             <Link
@@ -40,17 +35,10 @@ export function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <span className="relative">
-                <Icon
-                  className="size-[22px]"
-                  strokeWidth={isActive ? 2.5 : 1.75}
-                />
-                {showBadge && (
-                  <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </span>
+              <Icon
+                className="size-[22px]"
+                strokeWidth={isActive ? 2.5 : 1.75}
+              />
               <span className="text-[10px] font-semibold tracking-tight">
                 {label}
               </span>

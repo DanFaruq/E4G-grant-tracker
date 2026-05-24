@@ -6,6 +6,7 @@ import { Plus, Circle, CheckCircle2, XCircle, Clock, Calendar, Users2, FileText 
 import { formatDate } from "@/lib/utils"
 import type { TaskStatus, TaskPriority, EventType, RecurrenceType } from "@/types/database"
 import { EventSheetWrapper } from "@/components/activity/event-sheet-wrapper"
+import { TaskFilterBar } from "@/components/activity/task-filter-bar"
 
 type TaskRow = {
   id: string
@@ -201,8 +202,9 @@ export default async function ActivityPage({
       <div className="flex-1 max-w-5xl mx-auto w-full animate-fade-up">
 
         {/* ── Tab bar + action buttons ── */}
-        <div className="flex items-center gap-0 border-b border-border px-4 md:px-6 overflow-x-auto">
-          <div className="flex items-center flex-1 min-w-0">
+        {/* ── Tab bar ── */}
+        <div className="flex items-center border-b border-border px-4 md:px-6 gap-0">
+          <div className="flex items-center flex-1 min-w-0 overflow-x-auto">
             {(["open", "closed", "events"] as const).map((tab) => {
               const count = tab === "open" ? openTasks.length : tab === "closed" ? closedTasks.length : events.length
               const isActive = activeTab === tab
@@ -229,12 +231,12 @@ export default async function ActivityPage({
               )
             })}
           </div>
-          <div className="flex items-center gap-2 py-2 pl-3 shrink-0">
+          <div className="flex items-center gap-2 py-2 pl-2 shrink-0">
             <EventSheetWrapper profiles={profiles} grants={grants} />
             <Button asChild size="sm" className="gap-1.5 h-8">
               <Link href="/activity/tasks/new">
                 <Plus className="size-3.5" />
-                New Task
+                <span className="hidden sm:inline">New Task</span>
               </Link>
             </Button>
           </div>
@@ -242,31 +244,14 @@ export default async function ActivityPage({
 
         {/* ── Filter bar ── */}
         {activeTab !== "events" && (
-          <div className="flex items-center gap-2 px-4 md:px-6 py-2.5 border-b border-border flex-wrap">
-            <span className="text-xs text-muted-foreground font-medium mr-1">Filter:</span>
-
-            <select
-              name="priority"
-              className="h-7 rounded-md border border-border bg-background text-xs px-2 text-muted-foreground"
-              defaultValue={filterPriority}
-              onChange={undefined}
-            >
-              <option value="">Priority</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-
-            {(filterPriority || filterGrant || filterAssignee) && (
-              <Link
-                href={buildUrl({ priority: "", grant: "", assignee: "", tab: activeTab === "open" ? "" : activeTab })}
-                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
-              >
-                Clear filters
-              </Link>
-            )}
-          </div>
+          <TaskFilterBar
+            profiles={profiles}
+            grants={grants}
+            filterPriority={filterPriority}
+            filterGrant={filterGrant}
+            filterAssignee={filterAssignee}
+            activeTab={activeTab}
+          />
         )}
 
         {/* ── Task list ── */}
