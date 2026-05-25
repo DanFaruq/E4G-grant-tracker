@@ -11,7 +11,8 @@ export type GrantStage = "discovered" | "researching" | "applying" | "submitted"
 export type OpportunityStatus = "pending_review" | "promoted" | "dismissed"
 export type NotificationType = "new_opportunity" | "deadline_reminder" | "grant_updated" | "comment_added" | "milestone_due"
 export type EmailMode = "off" | "digest" | "urgent"
-export type StakeholderArchetype = "government" | "foundation" | "corporate" | "individual" | "other"
+export type StakeholderArchetype = "partnership" | "funding" | "technical_partner" | "implementing_partner" | "government_partner"
+export type OrganizationType = "government" | "foundation" | "corporate" | "individual" | "other"
 export type StakeholderActivityType = "meeting" | "email" | "call" | "follow_up" | "note"
 export type TaskStatus = "open" | "in_progress" | "done" | "cancelled"
 export type TaskPriority = "low" | "medium" | "high" | "urgent"
@@ -123,6 +124,7 @@ export interface Database {
           organization: string | null
           notes: string | null
           archetype: StakeholderArchetype
+          organization_type: OrganizationType
           linkedin_url: string | null
           created_by: string | null
           created_at: string
@@ -137,6 +139,7 @@ export interface Database {
           organization?: string | null
           notes?: string | null
           archetype?: StakeholderArchetype
+          organization_type?: OrganizationType
           linkedin_url?: string | null
           created_by?: string | null
         }
@@ -148,6 +151,7 @@ export interface Database {
           organization?: string | null
           notes?: string | null
           archetype?: StakeholderArchetype
+          organization_type?: OrganizationType
           linkedin_url?: string | null
         }
       }
@@ -598,6 +602,7 @@ export interface Database {
       notification_type: NotificationType
       email_mode: EmailMode
       stakeholder_archetype: StakeholderArchetype
+      organization_type: OrganizationType
       stakeholder_activity_type: StakeholderActivityType
       task_status: TaskStatus
       task_priority: TaskPriority

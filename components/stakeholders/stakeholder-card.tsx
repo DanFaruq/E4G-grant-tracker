@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Mail, Phone, Building2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { ArchetypeBadge } from "./archetype-badge"
+import { ArchetypeBadge, OrgTypeBadge } from "./archetype-badge"
 import type { Database } from "@/types/database"
 
 type StakeholderRow = Database["public"]["Tables"]["stakeholders"]["Row"]
@@ -12,7 +12,7 @@ interface StakeholderCardProps {
 }
 
 export function StakeholderCard({ stakeholder, href }: StakeholderCardProps) {
-  const { name, title, organization, email, phone, archetype } = stakeholder
+  const { name, title, organization, email, phone, archetype, organization_type } = stakeholder
 
   const initials = name
     .trim()
@@ -36,6 +36,7 @@ export function StakeholderCard({ stakeholder, href }: StakeholderCardProps) {
                 {name}
               </h3>
               <ArchetypeBadge archetype={archetype} size="sm" />
+              {organization_type && <OrgTypeBadge organizationType={organization_type} size="sm" />}
             </div>
 
             {title && (

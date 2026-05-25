@@ -36,6 +36,7 @@ export async function createStakeholder(formData: FormData) {
     phone: (formData.get("phone") as string) || undefined,
     organization: (formData.get("organization") as string) || undefined,
     archetype: formData.get("archetype") as string,
+    organization_type: formData.get("organization_type") as string,
     linkedin_url: (formData.get("linkedin_url") as string) || undefined,
     notes: (formData.get("notes") as string) || undefined,
   }
@@ -65,6 +66,7 @@ export async function updateStakeholder(stakeholderId: string, formData: FormDat
     phone: (formData.get("phone") as string) || undefined,
     organization: (formData.get("organization") as string) || undefined,
     archetype: formData.get("archetype") as string,
+    organization_type: formData.get("organization_type") as string,
     linkedin_url: (formData.get("linkedin_url") as string) || undefined,
     notes: (formData.get("notes") as string) || undefined,
   }

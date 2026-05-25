@@ -12,7 +12,8 @@ const base: StakeholderRow = {
   phone: '+1 555 0123',
   organization: 'Smith Foundation',
   notes: null,
-  archetype: 'foundation',
+  archetype: 'funding',
+  organization_type: 'foundation',
   linkedin_url: null,
   created_by: null,
   created_at: '2026-05-01T00:00:00Z',
@@ -32,7 +33,7 @@ describe('StakeholderCard', () => {
 
   it('renders the archetype badge', () => {
     render(<StakeholderCard stakeholder={base} href="/stakeholders/abc-123" />)
-    expect(screen.getByText('Foundation')).toBeInTheDocument()
+    expect(screen.getByText('Funding')).toBeInTheDocument()
   })
 
   it('renders the email when present', () => {

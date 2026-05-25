@@ -1,6 +1,10 @@
 import { z } from 'zod'
 
 export const STAKEHOLDER_ARCHETYPES = [
+  'partnership', 'funding', 'technical_partner', 'implementing_partner', 'government_partner',
+] as const
+
+export const ORGANIZATION_TYPES = [
   'government', 'foundation', 'corporate', 'individual', 'other',
 ] as const
 
@@ -21,6 +25,7 @@ export const stakeholderSchema = z.object({
   phone: z.string().max(30).optional(),
   organization: z.string().max(150).optional(),
   archetype: z.enum(STAKEHOLDER_ARCHETYPES),
+  organization_type: z.enum(ORGANIZATION_TYPES),
   linkedin_url: z
     .string()
     .refine((v) => v === '' || z.string().url().safeParse(v).success, {

@@ -6,11 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { StakeholderCard } from "@/components/stakeholders/stakeholder-card"
 import { Header } from "@/components/layout/header"
-import type { Database, StakeholderArchetype } from "@/types/database"
+import type { Database, StakeholderArchetype, OrganizationType } from "@/types/database"
 
 type StakeholderRow = Database["public"]["Tables"]["stakeholders"]["Row"]
 
 const ARCHETYPES: { value: StakeholderArchetype | "all"; label: string }[] = [
+  { value: "all",                  label: "All"                  },
+  { value: "partnership",          label: "Partnership"          },
+  { value: "funding",              label: "Funding"              },
+  { value: "technical_partner",    label: "Technical Partner"    },
+  { value: "implementing_partner", label: "Implementing Partner" },
+  { value: "government_partner",   label: "Government Partner"   },
+]
+
+const ORG_TYPES: { value: OrganizationType | "all"; label: string }[] = [
   { value: "all",        label: "All Types"  },
   { value: "government", label: "Government" },
   { value: "foundation", label: "Foundation" },
@@ -22,6 +31,7 @@ const ARCHETYPES: { value: StakeholderArchetype | "all"; label: string }[] = [
 interface SearchParams {
   q?: string
   archetype?: string
+  org_type?: string
 }
 
 export default async function StakeholdersPage({
@@ -33,7 +43,7 @@ export default async function StakeholdersPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
-  const { q, archetype } = await searchParams
+  const { q, archetype, org_type } = await searchParams
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase.from("stakeholders") as any)
@@ -42,6 +52,9 @@ export default async function StakeholdersPage({
 
   if (archetype && archetype !== "all") {
     query = query.eq("archetype", archetype)
+  }
+  if (org_type && org_type !== "all") {
+    query = query.eq("organization_type", org_type)
   }
 
   const { data: stakeholders } = await query as { data: StakeholderRow[] | null }
@@ -74,8 +87,9 @@ export default async function StakeholdersPage({
         </Button>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <form className="relative flex-1 max-w-sm">
+      <div className="flex flex-col gap-3">
+        {/* Search bar */}
+        <form className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input
             name="q"
@@ -85,24 +99,50 @@ export default async function StakeholdersPage({
           />
         </form>
 
-        <div className="flex gap-1.5 flex-wrap">
-          {ARCHETYPES.map(({ value, label }) => {
-            const isActive = (!archetype && value === "all") || archetype === value
-            const href = value === "all"
-              ? `/stakeholders${q ? `?q=${q}` : ""}`
-              : `/stakeholders?archetype=${value}${q ? `&q=${q}` : ""}`
-            return (
-              <Link key={value} href={href}>
-                <Button
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs h-8"
-                >
-                  {label}
-                </Button>
-              </Link>
-            )
-          })}
+        {/* Archetype filter (relationship type) */}
+        <div>
+          <p className="text-xs text-muted-foreground mb-1.5 font-medium">Archetype</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {ARCHETYPES.map(({ value, label }) => {
+              const isActive = (!archetype && value === "all") || archetype === value
+              const params = new URLSearchParams({
+                ...(value !== "all" ? { archetype: value } : {}),
+                ...(org_type && org_type !== "all" ? { org_type } : {}),
+                ...(q ? { q } : {}),
+              })
+              const href = `/stakeholders${params.toString() ? `?${params}` : ""}`
+              return (
+                <Link key={value} href={href}>
+                  <Button variant={isActive ? "default" : "outline"} size="sm" className="text-xs h-8">
+                    {label}
+                  </Button>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Organization type filter (entity type) */}
+        <div>
+          <p className="text-xs text-muted-foreground mb-1.5 font-medium">Organization type</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {ORG_TYPES.map(({ value, label }) => {
+              const isActive = (!org_type && value === "all") || org_type === value
+              const params = new URLSearchParams({
+                ...(archetype && archetype !== "all" ? { archetype } : {}),
+                ...(value !== "all" ? { org_type: value } : {}),
+                ...(q ? { q } : {}),
+              })
+              const href = `/stakeholders${params.toString() ? `?${params}` : ""}`
+              return (
+                <Link key={value} href={href}>
+                  <Button variant={isActive ? "default" : "outline"} size="sm" className="text-xs h-8">
+                    {label}
+                  </Button>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
 

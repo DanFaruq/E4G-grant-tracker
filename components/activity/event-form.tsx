@@ -50,6 +50,7 @@ export function EventForm({ profiles, grants, defaultValues }: EventFormProps) {
         await createEvent(fd)
       }
     } catch (err) {
+      if ((err as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw err
       toast.error(err instanceof Error ? err.message : "Something went wrong")
       setLoading(false)
     }

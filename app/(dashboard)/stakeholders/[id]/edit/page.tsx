@@ -48,14 +48,15 @@ export default async function EditStakeholderPage({
         <StakeholderForm
           action={updateWithId}
           defaultValues={{
-            name:         stakeholder.name,
-            title:        stakeholder.title        ?? "",
-            email:        stakeholder.email        ?? "",
-            phone:        stakeholder.phone        ?? "",
-            organization: stakeholder.organization ?? "",
-            archetype:    stakeholder.archetype,
-            linkedin_url: stakeholder.linkedin_url ?? "",
-            notes:        stakeholder.notes        ?? "",
+            name:              stakeholder.name,
+            title:             stakeholder.title             ?? "",
+            email:             stakeholder.email             ?? "",
+            phone:             stakeholder.phone             ?? "",
+            organization:      stakeholder.organization      ?? "",
+            archetype:         stakeholder.archetype,
+            organization_type: stakeholder.organization_type ?? "other",
+            linkedin_url:      stakeholder.linkedin_url      ?? "",
+            notes:             stakeholder.notes             ?? "",
           }}
           submitLabel="Save Changes"
         />

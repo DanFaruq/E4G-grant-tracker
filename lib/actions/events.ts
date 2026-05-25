@@ -105,6 +105,7 @@ export async function updateEvent(id: string, formData: FormData) {
   }
 
   revalidatePath("/activity")
+  redirect("/activity?tab=events")
 }
 
 export async function deleteEvent(id: string) {

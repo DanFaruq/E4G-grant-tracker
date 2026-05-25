@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
+import { useState, useEffect } from "react"
 import {
   LayoutDashboard, FileText, Inbox,
   Bell, Settings, LogOut, Users2, Activity,
@@ -43,6 +44,9 @@ type SidebarProps = {
 
 function ThemePills() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const options = [
     { value: "light", label: "Light" },
     { value: "dark",  label: "Dark"  },
@@ -56,7 +60,7 @@ function ThemePills() {
           onClick={() => setTheme(o.value)}
           className={cn(
             "flex-1 rounded-lg py-1.5 text-[11px] font-semibold transition-all duration-150",
-            theme === o.value
+            mounted && theme === o.value
               ? "bg-card text-foreground shadow-sm"
               : "text-sidebar-foreground/45 hover:text-sidebar-foreground/70"
           )}

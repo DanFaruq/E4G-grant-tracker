@@ -358,16 +358,17 @@ export default async function ActivityPage({
                 {events.map((event) => {
                   const recurrenceLabel = RECURRENCE_LABELS[event.recurrence]
                   return (
-                    <div
+                    <Link
                       key={event.id}
-                      className="flex items-start gap-3 px-4 md:px-6 py-4 hover:bg-muted/40 transition-colors"
+                      href={`/activity/events/${event.id}`}
+                      className="flex items-start gap-3 px-4 md:px-6 py-4 hover:bg-muted/40 transition-colors group"
                     >
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 mt-0.5">
                         <Calendar className="size-4 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold">{event.title}</span>
+                          <span className="text-sm font-semibold group-hover:text-primary transition-colors">{event.title}</span>
                           <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
                             {EVENT_TYPE_LABELS[event.event_type]}
                           </span>
@@ -401,7 +402,7 @@ export default async function ActivityPage({
                       <div className="shrink-0 mt-0.5">
                         <AvatarStack assignees={event.attendees} />
                       </div>
-                    </div>
+                    </Link>
                   )
                 })}
               </div>

@@ -25,10 +25,19 @@ import {
 import {
   stakeholderSchema,
   STAKEHOLDER_ARCHETYPES,
+  ORGANIZATION_TYPES,
   type StakeholderFormValues,
 } from "@/lib/validators/stakeholders"
 
 const ARCHETYPE_LABELS: Record<string, string> = {
+  partnership:           "Partnership",
+  funding:               "Funding",
+  technical_partner:     "Technical Partner",
+  implementing_partner:  "Implementing Partner",
+  government_partner:    "Government Partner",
+}
+
+const ORG_TYPE_LABELS: Record<string, string> = {
   government: "Government",
   foundation: "Foundation",
   corporate:  "Corporate",
@@ -57,7 +66,8 @@ export function StakeholderForm({
       email: "",
       phone: "",
       organization: "",
-      archetype: "individual",
+      archetype: "partnership",
+      organization_type: "other",
       linkedin_url: "",
       notes: "",
       ...defaultValues,
@@ -95,11 +105,31 @@ export function StakeholderForm({
                 <FormLabel>Archetype <span className="text-destructive">*</span></FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Select archetype" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {STAKEHOLDER_ARCHETYPES.map((a) => (
                       <SelectItem key={a} value={a}>{ARCHETYPE_LABELS[a]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="organization_type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Organization type <span className="text-destructive">*</span></FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger><SelectValue placeholder="Select org type" /></SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {ORGANIZATION_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>{ORG_TYPE_LABELS[t]}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

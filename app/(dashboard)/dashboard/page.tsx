@@ -39,6 +39,24 @@ type EventFeedRow = {
   event_type: string
   start_at: string
 }
+type GrantFeedRow = {
+  id: string
+  name: string
+  stage: GrantStage
+  updated_at: string
+}
+type UpcomingEventRow = {
+  id: string
+  title: string
+  start_at: string
+}
+type UpcomingStakeholderActivity = {
+  id: string
+  stakeholder_id: string
+  activity_type: string
+  occurred_at: string
+  stakeholder: { name: string } | null
+}
 
 const ACTIVE_STAGES: GrantStage[] = ["discovered", "researching", "applying", "submitted"]
 
@@ -52,11 +70,11 @@ const STAGE_COLOR: Record<string, string> = {
 }
 
 const ARCHETYPE_COLOR: Record<string, string> = {
-  foundation:  "rgba(168,85,247,0.85)",   // purple
-  government:  "rgba(59,130,246,0.85)",   // blue
-  corporate:   "rgba(249,115,22,0.85)",   // orange
-  individual:  "rgba(20,184,166,0.85)",   // teal
-  other:       "rgba(148,163,184,0.85)",  // slate
+  partnership:          "rgba(168,85,247,0.85)",   // purple
+  funding:              "rgba(59,130,246,0.85)",   // blue
+  technical_partner:    "rgba(249,115,22,0.85)",   // orange
+  implementing_partner: "rgba(20,184,166,0.85)",   // teal
+  government_partner:   "rgba(239,68,68,0.85)",    // red
 }
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -109,6 +127,9 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  const now = new Date().toISOString()
+  const in30 = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+
   const [
     grantsResult,
     profileResult,
@@ -119,6 +140,9 @@ export default async function DashboardPage() {
     activityFeedResult,
     taskFeedResult,
     eventFeedResult,
+    grantFeedResult,
+    upcomingEventsResult,
+    upcomingStakeholderActivitiesResult,
   ] = await Promise.all([
     supabase
       .from("grants")
@@ -142,7 +166,7 @@ export default async function DashboardPage() {
       .in("status", ["open", "in_progress"]),
     (supabase.from("team_events") as AnyTable)
       .select("id", { count: "exact", head: true })
-      .gte("start_at", new Date().toISOString()),
+      .gte("start_at", now),
     supabase
       .from("stakeholder_activities")
       .select("id, stakeholder_id, activity_type, occurred_at, notes, stakeholder:stakeholders(name), profile:profiles(full_name)")
@@ -154,9 +178,28 @@ export default async function DashboardPage() {
       .limit(3),
     (supabase.from("team_events") as AnyTable)
       .select("id, title, event_type, start_at")
-      .gte("start_at", new Date().toISOString())
+      .gte("start_at", now)
       .order("start_at", { ascending: true })
       .limit(2),
+    supabase
+      .from("grants")
+      .select("id, name, stage, updated_at")
+      .eq("archived", false)
+      .order("updated_at", { ascending: false })
+      .limit(3),
+    (supabase.from("team_events") as AnyTable)
+      .select("id, title, start_at")
+      .gte("start_at", now)
+      .lte("start_at", in30)
+      .order("start_at", { ascending: true })
+      .limit(10),
+    supabase
+      .from("stakeholder_activities")
+      .select("id, stakeholder_id, activity_type, occurred_at, stakeholder:stakeholders(name)")
+      .gte("occurred_at", now)
+      .lte("occurred_at", in30)
+      .order("occurred_at", { ascending: true })
+      .limit(10),
   ])
 
   const grants = (grantsResult.data ?? []) as GrantRow[]
@@ -167,6 +210,9 @@ export default async function DashboardPage() {
   const activityFeed = (activityFeedResult.data ?? []) as ActivityRow[]
   const taskFeed = (taskFeedResult.data ?? []) as TaskFeedRow[]
   const eventFeed = (eventFeedResult.data ?? []) as EventFeedRow[]
+  const grantFeed = (grantFeedResult.data ?? []) as GrantFeedRow[]
+  const upcomingEvents = (upcomingEventsResult.data ?? []) as UpcomingEventRow[]
+  const upcomingStakeholderActivities = (upcomingStakeholderActivitiesResult.data ?? []) as UpcomingStakeholderActivity[]
 
   const activeGrants = grants.filter((g) => ACTIVE_STAGES.includes(g.stage)).length
   const deadlinesThisMonth = grants.filter((g) => {
@@ -281,9 +327,9 @@ export default async function DashboardPage() {
               <p className="text-sm font-medium opacity-90 mt-1">Stakeholders</p>
               <p className="text-xs opacity-65 mt-0.5">
                 {[
-                  archetypeCounts["government"] && `${archetypeCounts["government"]} gov`,
-                  archetypeCounts["foundation"] && `${archetypeCounts["foundation"]} found.`,
-                  archetypeCounts["corporate"] && `${archetypeCounts["corporate"]} corp`,
+                  archetypeCounts["funding"]              && `${archetypeCounts["funding"]} funding`,
+                  archetypeCounts["partnership"]          && `${archetypeCounts["partnership"]} partner`,
+                  archetypeCounts["government_partner"]   && `${archetypeCounts["government_partner"]} gov`,
                 ].filter(Boolean).join(" · ") || "None added yet"}
               </p>
             </div>
@@ -343,41 +389,71 @@ export default async function DashboardPage() {
               </Link>
             </div>
 
-            {upcoming30.length === 0 ? (
-              <div className="rounded-xl border bg-card px-4 py-8 text-center">
-                <Calendar className="size-8 mx-auto mb-2 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No deadlines in the next 30 days.</p>
-              </div>
-            ) : (
-              <div className="rounded-xl border bg-card overflow-hidden divide-y">
-                {upcoming30.map((g) => {
-                  const days = daysUntil(g.deadline)!
-                  const urgent = days <= 7
-                  return (
-                    <Link
-                      key={g.id}
-                      href={`/grants/${g.id}`}
-                      className="flex items-stretch hover:bg-muted/30 transition-colors group"
-                    >
-                      {/* Urgency bar */}
-                      <div className={`w-1 shrink-0 ${urgent ? "bg-destructive" : "bg-amber-400"}`} />
-                      <div className="flex items-center justify-between flex-1 px-4 py-3 min-w-0">
-                        <div className="min-w-0">
-                          <p className="font-medium text-sm group-hover:text-primary transition-colors truncate">
-                            {g.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{g.funder}</p>
+            {(() => {
+              // Merge grants, events, and future stakeholder activities into one sorted list
+              type DeadlineItem =
+                | { kind: "grant"; id: string; label: string; sub: string; days: number; href: string }
+                | { kind: "event"; id: string; label: string; days: number; href: string }
+                | { kind: "activity"; id: string; label: string; days: number; href: string }
+
+              const items: DeadlineItem[] = [
+                ...upcoming30.map((g) => ({
+                  kind: "grant" as const,
+                  id: g.id,
+                  label: g.name,
+                  sub: g.funder,
+                  days: daysUntil(g.deadline)!,
+                  href: `/grants/${g.id}`,
+                })),
+                ...upcomingEvents.map((ev) => {
+                  const d = Math.ceil((new Date(ev.start_at).getTime() - Date.now()) / 86400000)
+                  return { kind: "event" as const, id: ev.id, label: ev.title, days: Math.max(0, d), href: "/activity?tab=events" }
+                }),
+                ...upcomingStakeholderActivities.map((a) => {
+                  const d = Math.ceil((new Date(a.occurred_at).getTime() - Date.now()) / 86400000)
+                  const stakeName = (a.stakeholder as { name?: string } | null)?.name ?? "Stakeholder"
+                  const typeLabel: Record<string, string> = { meeting: "Meeting", email: "Email", call: "Call", follow_up: "Follow-up", note: "Note" }
+                  return { kind: "activity" as const, id: a.id, label: `${typeLabel[a.activity_type] ?? "Activity"} — ${stakeName}`, days: Math.max(0, d), href: `/stakeholders/${a.stakeholder_id}` }
+                }),
+              ].sort((a, b) => a.days - b.days)
+
+              if (items.length === 0) return (
+                <div className="rounded-xl border bg-card px-4 py-8 text-center">
+                  <Calendar className="size-8 mx-auto mb-2 text-muted-foreground/40" />
+                  <p className="text-sm text-muted-foreground">No upcoming deadlines in the next 30 days.</p>
+                </div>
+              )
+
+              const kindColor = { grant: "bg-amber-400", event: "bg-primary", activity: "bg-emerald-400" }
+
+              return (
+                <div className="rounded-xl border bg-card overflow-hidden divide-y">
+                  {items.map((item) => {
+                    const urgent = item.days <= 7
+                    return (
+                      <Link
+                        key={`${item.kind}-${item.id}`}
+                        href={item.href}
+                        className="flex items-stretch hover:bg-muted/30 transition-colors group"
+                      >
+                        <div className={`w-1 shrink-0 ${urgent ? "bg-destructive" : kindColor[item.kind]}`} />
+                        <div className="flex items-center justify-between flex-1 px-4 py-3 min-w-0">
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm group-hover:text-primary transition-colors truncate">{item.label}</p>
+                            {"sub" in item && <p className="text-xs text-muted-foreground mt-0.5">{item.sub}</p>}
+                            <p className="text-xs text-muted-foreground mt-0.5 capitalize">{item.kind === "grant" ? "Grant deadline" : item.kind === "event" ? "Event" : "Stakeholder activity"}</p>
+                          </div>
+                          <div className={`flex items-center gap-1.5 text-xs font-semibold shrink-0 ml-4 ${urgent ? "text-destructive" : "text-amber-600 dark:text-amber-400"}`}>
+                            <Clock className="size-3 shrink-0" />
+                            {item.days === 0 ? "Today" : `${item.days}d`}
+                          </div>
                         </div>
-                        <div className={`flex items-center gap-1.5 text-xs font-semibold shrink-0 ml-4 ${urgent ? "text-destructive" : "text-amber-600 dark:text-amber-400"}`}>
-                          <Clock className="size-3 shrink-0" />
-                          {days === 0 ? "Today" : `${days}d`}
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
+                      </Link>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </div>
 
           {/* Recent Team Activity feed */}
@@ -392,7 +468,7 @@ export default async function DashboardPage() {
             </div>
 
             <div className="rounded-xl border bg-card overflow-hidden">
-              {activityFeed.length === 0 && taskFeed.length === 0 ? (
+              {activityFeed.length === 0 && taskFeed.length === 0 && grantFeed.length === 0 ? (
                 <div className="px-4 py-8 text-center">
                   <CheckSquare className="size-8 mx-auto mb-2 text-muted-foreground/40" />
                   <p className="text-sm text-muted-foreground">No recent activity yet.</p>
@@ -422,6 +498,35 @@ export default async function DashboardPage() {
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {new Date(ev.start_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
                           </p>
+                        </div>
+                      </Link>
+                    )
+                  })}
+
+                  {/* Recent grants */}
+                  {grantFeed.map((g) => {
+                    const stageLabel: Record<GrantStage, string> = {
+                      discovered: "Discovered", researching: "Researching", applying: "Applying",
+                      submitted: "Submitted", awarded: "Awarded", rejected: "Rejected",
+                    }
+                    return (
+                      <Link
+                        key={`grant-${g.id}`}
+                        href={`/grants/${g.id}`}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
+                      >
+                        <div
+                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
+                          style={{ backgroundColor: STAGE_COLOR[g.stage] ?? "rgba(99,102,241,0.85)" }}
+                        >
+                          {g.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground truncate">
+                            <span className="text-muted-foreground">Grant updated</span>{" "}
+                            <span className="font-medium">{g.name}</span>
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{stageLabel[g.stage]} · {relativeTime(g.updated_at)}</p>
                         </div>
                       </Link>
                     )
