@@ -9,11 +9,13 @@ import { redirect } from "next/navigation"
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTable = any
 
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_SUBJECT ?? "admin@example.com"}`,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-)
+function initVapid() {
+  const pub  = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+  const priv = process.env.VAPID_PRIVATE_KEY
+  const subj = process.env.VAPID_SUBJECT ?? "admin@example.com"
+  if (!pub || !priv) throw new Error("VAPID keys not configured")
+  webpush.setVapidDetails(`mailto:${subj}`, pub, priv)
+}
 
 // ── Push subscription management ───────────────────────────────────────────
 
@@ -60,6 +62,13 @@ export async function sendPushToUser(
   userId: string,
   payload: { title: string; body: string; url: string; tag?: string }
 ) {
+  try {
+    initVapid()
+  } catch (err) {
+    console.error("[sendPushToUser] VAPID init failed:", err)
+    return
+  }
+
   const service = await createServiceClient()
   const { data: subs } = await (service.from("web_push_subscriptions") as AnyTable)
     .select("endpoint, p256dh, auth")
@@ -73,7 +82,6 @@ export async function sendPushToUser(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
         JSON.stringify(payload)
       ).catch(async (err: { statusCode?: number }) => {
-        // Remove stale/expired subscriptions
         if (err.statusCode === 410 || err.statusCode === 404) {
           await (service.from("web_push_subscriptions") as AnyTable)
             .delete()
@@ -97,7 +105,7 @@ export async function notifyUser(params: {
 }) {
   const service = await createServiceClient()
 
-  await (service.from("notifications") as AnyTable).insert({
+  const { error } = await (service.from("notifications") as AnyTable).insert({
     user_id:  params.userId,
     type:     params.type,
     title:    params.title,
@@ -106,6 +114,11 @@ export async function notifyUser(params: {
     task_id:  params.taskId  ?? null,
     event_id: params.eventId ?? null,
   })
+
+  if (error) {
+    console.error("[notifyUser] DB insert failed:", error.message)
+    return
+  }
 
   await sendPushToUser(params.userId, {
     title: params.title,

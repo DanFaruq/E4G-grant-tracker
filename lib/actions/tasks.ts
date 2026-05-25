@@ -51,9 +51,9 @@ export async function createTask(formData: FormData) {
 
     // Notify each assignee (skip the creator)
     const others = assignee_ids.filter((id: string) => id !== user.id)
-    await Promise.allSettled(
-      others.map((userId: string) =>
-        notifyUser({
+    for (const userId of others) {
+      try {
+        await notifyUser({
           userId,
           type:   "task_assigned",
           title:  "You've been assigned a task",
@@ -61,8 +61,10 @@ export async function createTask(formData: FormData) {
           link:   `/activity/tasks/${task.id}`,
           taskId: task.id,
         })
-      )
-    )
+      } catch (err) {
+        console.error("[createTask] notifyUser failed:", err)
+      }
+    }
   }
 
   revalidatePath("/activity")
@@ -109,9 +111,9 @@ export async function updateTask(id: string, formData: FormData) {
   const newAssignees = assignee_ids.filter(
     (uid: string) => !prevIds.includes(uid) && uid !== user.id
   )
-  await Promise.allSettled(
-    newAssignees.map((userId: string) =>
-      notifyUser({
+  for (const userId of newAssignees) {
+    try {
+      await notifyUser({
         userId,
         type:   "task_assigned",
         title:  "You've been assigned a task",
@@ -119,8 +121,10 @@ export async function updateTask(id: string, formData: FormData) {
         link:   `/activity/tasks/${id}`,
         taskId: id,
       })
-    )
-  )
+    } catch (err) {
+      console.error("[updateTask] notifyUser failed:", err)
+    }
+  }
 
   revalidatePath("/activity")
   revalidatePath(`/activity/tasks/${id}`)
