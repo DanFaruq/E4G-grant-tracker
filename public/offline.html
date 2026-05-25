@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E4G Team — Offline</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      background: #1c2030;
+      color: #e0e4ef;
+      font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+      text-align: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    img { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.5rem; }
+    p  { font-size: 0.875rem; color: #8893a8; margin: 0 0 2rem; }
+    button {
+      background: #3b5bdb;
+      color: #fff;
+      border: none;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <img src="/icon-192.png" alt="E4G Team" />
+  <h1>You're offline</h1>
+  <p>Check your connection and try again.</p>
+  <button onclick="location.reload()">Retry</button>
+</body>
+</html>

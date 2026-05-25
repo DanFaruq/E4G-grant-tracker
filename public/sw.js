@@ -1,11 +1,20 @@
-const CACHE = "e4g-v1"
+const CACHE = "e4g-v2"
+const OFFLINE_URL = "/offline.html"
 
-// Install: skip waiting so new SW takes over immediately
-self.addEventListener("install", () => {
+const PRECACHE = [
+  "/offline.html",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/manifest.json",
+]
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE))
+  )
   self.skipWaiting()
 })
 
-// Activate: delete old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
@@ -17,7 +26,6 @@ self.addEventListener("activate", (event) => {
   )
 })
 
-// Fetch: network-first for navigation, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const { request } = event
   const url = new URL(request.url)
@@ -25,8 +33,7 @@ self.addEventListener("fetch", (event) => {
   // Only handle same-origin requests
   if (url.origin !== self.location.origin) return
 
-  // Skip API routes, auth callbacks, and auth pages — always network
-  // /login and /signup must never be cached: they handle invite tokens in URLs
+  // Skip API, auth, and login pages — always network only
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/auth/") ||
@@ -35,7 +42,7 @@ self.addEventListener("fetch", (event) => {
   ) return
 
   if (request.mode === "navigate") {
-    // Navigation: network first, fall back to cache
+    // Navigation: network first, fall back to offline page
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -43,7 +50,23 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE).then((cache) => cache.put(request, clone))
           return response
         })
-        .catch(() => caches.match(request))
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL))
+        )
+    )
+  } else {
+    // Static assets: cache first, then network
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone()
+            caches.open(CACHE).then((cache) => cache.put(request, clone))
+          }
+          return response
+        })
+      })
     )
   }
 })
