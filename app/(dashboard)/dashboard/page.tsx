@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
+import { PWAInstallBanner } from "@/components/pwa-install-banner"
 import { daysUntil } from "@/lib/utils"
 import Link from "next/link"
 import {
@@ -193,6 +194,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col min-h-full">
       <Header title="Dashboard" />
+      <PWAInstallBanner />
 
       <div className="flex-1 p-4 md:p-6 space-y-6 max-w-6xl mx-auto w-full">
 
