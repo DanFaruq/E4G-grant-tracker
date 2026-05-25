@@ -2,10 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Plus, Circle, CheckCircle2, XCircle, Clock, Calendar, Users2, FileText } from "lucide-react"
+import { Plus, Circle, CheckCircle2, XCircle, Clock, Calendar, Users2, FileText, CalendarPlus } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import type { TaskStatus, TaskPriority, EventType, RecurrenceType } from "@/types/database"
-import { EventSheetWrapper } from "@/components/activity/event-sheet-wrapper"
 import { TaskFilterBar } from "@/components/activity/task-filter-bar"
 
 type TaskRow = {
@@ -130,7 +129,7 @@ export default async function ActivityPage({
     stakeholder:stakeholders(name)
   `
 
-  const [openResult, closedResult, eventsResult, profilesResult, grantsResult] = await Promise.all([
+  const [openResult, closedResult, eventsResult, profilesResult] = await Promise.all([
     db
       .from("team_tasks")
       .select(taskSelect)
@@ -153,14 +152,12 @@ export default async function ActivityPage({
       .gte("start_at", new Date().toISOString())
       .order("start_at", { ascending: true }),
     supabase.from("profiles").select("id, full_name").order("full_name"),
-    supabase.from("grants").select("id, name").eq("archived", false).order("name"),
   ])
 
   let openTasks = (openResult.data ?? []) as TaskRow[]
   let closedTasks = (closedResult.data ?? []) as TaskRow[]
   const events = (eventsResult.data ?? []) as EventRow[]
   const profiles = (profilesResult.data ?? []) as ProfileRow[]
-  const grants = (grantsResult.data ?? []) as { id: string; name: string }[]
 
   // Client-side-style filters applied server-side
   if (filterPriority) {
@@ -232,7 +229,12 @@ export default async function ActivityPage({
             })}
           </div>
           <div className="flex items-center gap-2 py-2 pl-2 shrink-0">
-            <EventSheetWrapper profiles={profiles} grants={grants} />
+            <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+              <Link href="/activity/events/new">
+                <CalendarPlus className="size-3.5" />
+                <span className="hidden sm:inline">New Event</span>
+              </Link>
+            </Button>
             <Button asChild size="sm" className="gap-1.5 h-8">
               <Link href="/activity/tasks/new">
                 <Plus className="size-3.5" />

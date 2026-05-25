@@ -54,6 +54,7 @@ export async function createEvent(formData: FormData) {
   }
 
   revalidatePath("/activity")
+  redirect("/activity?tab=events")
 }
 
 export async function updateEvent(id: string, formData: FormData) {
