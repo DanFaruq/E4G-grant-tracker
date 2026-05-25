@@ -64,6 +64,7 @@ export default async function OpportunitiesPage({
     .from("opportunities")
     .select("id, source, title, funder, amount_text, deadline_text, deadline, url, status, ai_score, created_at", { count: "exact" })
     .eq("status", statusFilter)
+    .order("reviewed_at", { ascending: true, nullsFirst: true })
     .order("ai_score", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .range(from, to)

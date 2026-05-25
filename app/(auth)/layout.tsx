@@ -26,45 +26,19 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           />
         </div>
 
-        {/* ── Animated SVG node network ── */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
+        {/* ── Animated moving mesh ── */}
+        <div
+          className="auth-mesh absolute pointer-events-none"
+          style={{
+            inset: "-60px",
+            backgroundImage: [
+              "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)",
+              "linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+            ].join(", "),
+            backgroundSize: "60px 60px",
+          }}
           aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="auth-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.06" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#auth-grid)" />
-          {/* Animated connection lines */}
-          <line x1="15%" y1="20%" x2="45%" y2="38%" stroke="white" strokeWidth="0.8"
-            strokeDasharray="200" style={{ animation: "line-draw 2.2s ease-out 0.6s both" }} />
-          <line x1="45%" y1="38%" x2="72%" y2="25%" stroke="white" strokeWidth="0.8"
-            strokeDasharray="200" style={{ animation: "line-draw 2.2s ease-out 1.1s both" }} />
-          <line x1="45%" y1="38%" x2="38%" y2="68%" stroke="white" strokeWidth="0.8"
-            strokeDasharray="200" style={{ animation: "line-draw 2.2s ease-out 1.5s both" }} />
-          <line x1="38%" y1="68%" x2="65%" y2="78%" stroke="white" strokeWidth="0.8"
-            strokeDasharray="200" style={{ animation: "line-draw 2.2s ease-out 1.9s both" }} />
-          <line x1="72%" y1="25%" x2="65%" y2="78%" stroke="white" strokeWidth="0.8"
-            strokeDasharray="200" style={{ animation: "line-draw 2.2s ease-out 2.2s both" }} />
-          {/* Nodes */}
-          {([
-            { cx: "45%", cy: "38%", r: 5,   color: "oklch(0.75 0.18 55)", delay: "0.4s" },
-            { cx: "15%", cy: "20%", r: 3.5, color: "white",               delay: "0.7s" },
-            { cx: "72%", cy: "25%", r: 3.5, color: "white",               delay: "1.0s" },
-            { cx: "38%", cy: "68%", r: 3.5, color: "white",               delay: "1.3s" },
-            { cx: "65%", cy: "78%", r: 3.5, color: "white",               delay: "1.6s" },
-          ] as const).map((n, i) => (
-            <circle
-              key={i}
-              cx={n.cx} cy={n.cy} r={n.r}
-              fill={n.color}
-              style={{ animation: `node-pulse 3s ease-in-out ${n.delay} infinite, fade-in 0.4s ease-out ${n.delay} both` }}
-            />
-          ))}
-        </svg>
+        />
 
         {/* ── Burnt-orange accent stripe ── */}
         <div className="h-1 w-full relative z-10" style={{ backgroundColor: "oklch(0.55 0.175 38)" }} />
@@ -82,7 +56,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             />
             <div>
               <p className="text-white font-bold text-base leading-none tracking-tight">
-                E4G Team Management
+                E4G Team
               </p>
               <p className="text-white/50 text-xs mt-1 tracking-wide">Evidence for Good</p>
             </div>
@@ -151,18 +125,25 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* ── Right: Form panel ── */}
-      <div className="flex items-center justify-center p-8 bg-background relative overflow-hidden">
-        {/* Subtle dot texture */}
+      <div
+        className="dark flex items-center justify-center p-8 relative overflow-hidden"
+        style={{ background: "linear-gradient(160deg, oklch(0.16 0.06 248) 0%, oklch(0.21 0.09 242) 100%)" }}
+      >
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.018]"
+          className="w-full max-w-[400px] relative z-10 animate-fade-up rounded-2xl p-7 sm:p-9"
           style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-            backgroundSize: "24px 24px",
+            background: "linear-gradient(145deg, oklch(0.26 0.07 244) 0%, oklch(0.21 0.06 250) 100%)",
+            border: "1px solid oklch(1 0 0 / 11%)",
+            color: "oklch(0.96 0.003 260)",
+            boxShadow: [
+              "inset 0 1px 0 oklch(1 0 0 / 10%)",
+              "inset 0 -1px 0 oklch(0 0 0 / 25%)",
+              "0 4px 16px oklch(0 0 0 / 35%)",
+              "0 16px 40px oklch(0 0 0 / 28%)",
+              "0 40px 80px oklch(0 0 0 / 20%)",
+            ].join(", "),
           }}
-          aria-hidden="true"
-        />
-
-        <div className="w-full max-w-[400px] relative z-10 animate-fade-up">
+        >
 
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
@@ -174,7 +155,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               className="object-contain rounded-lg"
             />
             <div>
-              <p className="text-sm font-bold leading-none">E4G Team Management</p>
+              <p className="text-sm font-bold leading-none">E4G Team</p>
               <p className="text-xs text-muted-foreground mt-0.5">Evidence for Good</p>
             </div>
           </div>

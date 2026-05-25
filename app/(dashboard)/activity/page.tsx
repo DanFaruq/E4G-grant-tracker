@@ -246,9 +246,7 @@ export default async function ActivityPage({
         {activeTab !== "events" && (
           <TaskFilterBar
             profiles={profiles}
-            grants={grants}
             filterPriority={filterPriority}
-            filterGrant={filterGrant}
             filterAssignee={filterAssignee}
             activeTab={activeTab}
           />

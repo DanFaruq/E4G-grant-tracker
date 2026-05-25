@@ -13,7 +13,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "E4G Team Management",
+  title: "E4G Team",
   description: "Grants, stakeholders, and team tasks — all in one place for Evidence for Good",
   manifest: "/manifest.json",
   appleWebApp: {

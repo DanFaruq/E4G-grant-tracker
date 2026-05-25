@@ -90,13 +90,21 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
     : "Viewer"
 
   return (
+    <>
+      {/* Backdrop — mobile only, closes drawer on tap */}
+      {open && (
+        <div
+          className="md:hidden fixed inset-0 z-[54] bg-black/50 backdrop-blur-sm"
+          onClick={close}
+          aria-hidden="true"
+        />
+      )}
     <aside
       className={cn(
         "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
         "w-[240px] shrink-0",
-        "fixed inset-y-0 left-0 z-[55] transition-transform duration-200 ease-in-out",
-        "md:static md:z-auto md:h-full md:transition-none",
-        open ? "translate-x-0" : "-translate-x-full md:hidden"
+        "md:hidden fixed inset-y-0 left-0 z-[55] transition-transform duration-200 ease-in-out",
+        open ? "translate-x-0" : "-translate-x-full"
       )}
     >
       {/* Logo */}
@@ -105,7 +113,7 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
           <E4GLogoMark />
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-bold leading-none tracking-tight text-sidebar-foreground">
-              E4G Team Management
+              E4G Team
             </span>
             <span className="text-[11px] text-sidebar-foreground/45 leading-tight mt-0.5 font-normal">
               Evidence for Good
@@ -182,5 +190,6 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
         </div>
       </div>
     </aside>
+    </>
   )
 }

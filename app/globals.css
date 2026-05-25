@@ -164,13 +164,9 @@
   50%  { transform: translate(30px, 50px) scale(1.1); }
   100% { transform: translate(0, 0) scale(1); }
 }
-@keyframes node-pulse {
-  0%, 100% { opacity: 0.15; }
-  50%       { opacity: 0.45; }
-}
-@keyframes line-draw {
-  from { stroke-dashoffset: 200; opacity: 0; }
-  to   { stroke-dashoffset: 0;   opacity: 0.25; }
+@keyframes mesh-drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(60px, 60px); }
 }
 @keyframes feature-in {
   from { opacity: 0; transform: translateX(-14px); }
@@ -208,6 +204,9 @@
   .auth-orb-1 { animation: orb-drift-1 18s ease-in-out infinite; }
   .auth-orb-2 { animation: orb-drift-2 22s ease-in-out infinite; }
   .auth-orb-3 { animation: orb-drift-3 15s ease-in-out infinite; }
+
+  /* Auth mesh — GPU-composited transform scroll */
+  .auth-mesh { animation: mesh-drift 12s linear infinite; }
 
   /* Input focus shimmer on the button */
   .btn-shimmer {

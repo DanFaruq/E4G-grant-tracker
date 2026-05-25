@@ -35,6 +35,7 @@ export default async function DashboardLayout({
     <>
       <DashboardShell
         userName={profile?.full_name}
+        userEmail={user.email}
         userRole={profile?.role}
         unreadCount={unreadCount ?? 0}
       >

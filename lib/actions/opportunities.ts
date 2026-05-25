@@ -72,9 +72,11 @@ export async function snoozeOpportunity(oppId: string) {
   await requireTeamMember()
   const service = await createServiceClient()
 
-  // Set ai_score to null so it sorts to the bottom (NULLS LAST ordering)
+  // reviewed_at is already on the table; setting it on a pending_review item
+  // acts as a snooze marker. The query orders reviewed_at ASC NULLS FIRST so
+  // un-snoozed (null) items always appear before snoozed (non-null) items.
   await (service.from("opportunities") as AnyTable).update({
-    ai_score: null,
+    reviewed_at: new Date().toISOString(),
   }).eq("id", oppId)
 
   revalidatePath("/opportunities")

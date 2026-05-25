@@ -107,7 +107,7 @@ function SignupForm() {
       await (supabase.from("profiles") as any).update({ full_name: fullName }).eq("id", user.id)
     }
 
-    toast.success("Welcome to E4G Team Management!")
+    toast.success("Welcome to E4G Team!")
     router.push("/dashboard")
     router.refresh()
   }
