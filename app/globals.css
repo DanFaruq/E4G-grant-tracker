@@ -81,46 +81,46 @@
 }
 
 /* =========================================================
-   DARK MODE
+   DARK MODE — softer, warmer, eye-protective
+   Two brightness steps up from the original + slight warm hue shift
    ========================================================= */
 .dark {
-  --e4g-orange: oklch(0.62 0.175 38);
+  --e4g-orange: oklch(0.64 0.165 40);
 
-  /* Deep dark — inspired by modern app dark themes (~#0d0f17 bg, #14172b cards) */
-  --background:         oklch(0.145 0.022 248);
-  --foreground:         oklch(0.93 0.004 260);
-  --card:               oklch(0.185 0.020 248);
-  --card-foreground:    oklch(0.96 0.003 260);
-  --popover:            oklch(0.185 0.020 248);
-  --popover-foreground: oklch(0.96 0.003 260);
+  --background:         oklch(0.195 0.016 244);
+  --foreground:         oklch(0.88 0.006 250);
+  --card:               oklch(0.230 0.014 244);
+  --card-foreground:    oklch(0.90 0.005 252);
+  --popover:            oklch(0.230 0.014 244);
+  --popover-foreground: oklch(0.90 0.005 252);
 
   --primary:            oklch(0.62 0.11 242);
   --primary-foreground: oklch(0.985 0 0);
 
-  --secondary:            oklch(0.225 0.018 248);
-  --secondary-foreground: oklch(0.93 0.004 260);
+  --secondary:            oklch(0.265 0.014 244);
+  --secondary-foreground: oklch(0.88 0.005 250);
 
-  --muted:              oklch(0.205 0.016 248);
-  --muted-foreground:   oklch(0.60 0.010 260);
-  --accent:             oklch(0.215 0.016 248);
-  --accent-foreground:  oklch(0.93 0.004 260);
+  --muted:              oklch(0.250 0.012 244);
+  --muted-foreground:   oklch(0.62 0.010 252);
+  --accent:             oklch(0.258 0.012 244);
+  --accent-foreground:  oklch(0.88 0.005 250);
 
   --destructive:            oklch(0.65 0.2 27);
   --destructive-foreground: oklch(0.985 0 0);
 
-  --border: oklch(1 0 0 / 10%);
-  --input:  oklch(1 0 0 / 12%);
+  --border: oklch(1 0 0 / 9%);
+  --input:  oklch(1 0 0 / 11%);
   --ring:   oklch(0.62 0.11 242);
 
-  /* Sidebar: slightly deeper than main bg */
-  --sidebar:                    oklch(0.165 0.060 248);
-  --sidebar-foreground:         oklch(0.93 0.006 240);
-  --sidebar-primary:            oklch(0.60 0.175 38);
+  /* Sidebar: slightly richer/deeper than main bg */
+  --sidebar:                    oklch(0.210 0.050 244);
+  --sidebar-foreground:         oklch(0.90 0.006 244);
+  --sidebar-primary:            oklch(0.62 0.165 40);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent:             oklch(0.225 0.060 248);
-  --sidebar-accent-foreground:  oklch(0.96 0.004 240);
-  --sidebar-border:             oklch(1 0 0 / 8%);
-  --sidebar-ring:               oklch(0.60 0.175 38);
+  --sidebar-accent:             oklch(0.268 0.052 244);
+  --sidebar-accent-foreground:  oklch(0.93 0.005 244);
+  --sidebar-border:             oklch(1 0 0 / 7%);
+  --sidebar-ring:               oklch(0.62 0.165 40);
 }
 
 /* =========================================================
@@ -263,7 +263,7 @@ select {
 .dark input[type="url"],
 .dark textarea,
 .dark select {
-  color: oklch(0.75 0.01 230);
+  color: oklch(0.80 0.008 248);
 }
 
 :focus-visible {
