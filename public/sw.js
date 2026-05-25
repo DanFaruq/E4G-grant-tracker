@@ -30,10 +30,8 @@ self.addEventListener("fetch", (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // Only handle same-origin requests
   if (url.origin !== self.location.origin) return
 
-  // Skip API, auth, and login pages — always network only
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/auth/") ||
@@ -42,7 +40,6 @@ self.addEventListener("fetch", (event) => {
   ) return
 
   if (request.mode === "navigate") {
-    // Navigation: network first, fall back to offline page
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -55,7 +52,6 @@ self.addEventListener("fetch", (event) => {
         )
     )
   } else {
-    // Static assets: cache first, then network
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached
@@ -69,4 +65,36 @@ self.addEventListener("fetch", (event) => {
       })
     )
   }
+})
+
+// ── Push notifications ──────────────────────────────────────────────────────
+
+self.addEventListener("push", (event) => {
+  const data = event.data?.json() ?? {}
+  const title = data.title ?? "E4G Team"
+  const options = {
+    body:    data.body  ?? "You have a new notification",
+    icon:    "/icon-192.png",
+    badge:   "/icon-96.png",
+    tag:     data.tag   ?? "e4g-notification",
+    data:    { url: data.url ?? "/notifications" },
+    vibrate: [200, 100, 200],
+  }
+  event.waitUntil(self.registration.showNotification(title, options))
+})
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url ?? "/notifications"
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      const existing = list.find((c) => c.url.includes(self.location.origin))
+      if (existing) {
+        existing.focus()
+        existing.navigate(url)
+      } else {
+        clients.openWindow(url)
+      }
+    })
+  )
 })

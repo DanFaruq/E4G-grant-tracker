@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { eventSchema } from "@/lib/validators/events"
+import { notifyUser } from "@/lib/actions/notifications"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTable = any
@@ -51,6 +52,20 @@ export async function createEvent(formData: FormData) {
   if (attendee_ids.length > 0) {
     await (service.from("event_attendees") as AnyTable)
       .insert(attendee_ids.map((profile_id: string) => ({ event_id: event.id, profile_id })))
+
+    const others = attendee_ids.filter((id: string) => id !== user.id)
+    await Promise.allSettled(
+      others.map((userId: string) =>
+        notifyUser({
+          userId,
+          type:    "event_invited",
+          title:   "You've been added to an event",
+          body:    parsed.data.title,
+          link:    `/activity?tab=events`,
+          eventId: event.id,
+        })
+      )
+    )
   }
 
   revalidatePath("/activity")

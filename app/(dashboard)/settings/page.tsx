@@ -4,6 +4,7 @@ import { OrgSettingsForm } from "@/components/settings/org-settings-form"
 import { TeamTable } from "@/components/settings/team-table"
 import { SourcesTable } from "@/components/settings/sources-table"
 import { ProfileForm } from "@/components/settings/profile-form"
+import { PushSubscribeButton } from "@/components/push-subscribe-button"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import type { UserRole } from "@/types/database"
@@ -113,6 +114,11 @@ export default async function SettingsPage({
                 currentName={profile?.full_name ?? null}
                 email={user?.email ?? null}
               />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold mb-1">Notifications</h3>
+              <p className="text-xs text-muted-foreground mb-3">Get notified on this device when you&apos;re assigned to a task or event.</p>
+              <PushSubscribeButton />
             </div>
           </div>
         )}

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { taskSchema, commentSchema } from "@/lib/validators/tasks"
+import { notifyUser } from "@/lib/actions/notifications"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTable = any
@@ -47,6 +48,21 @@ export async function createTask(formData: FormData) {
   if (assignee_ids.length > 0) {
     await (service.from("task_assignments") as AnyTable)
       .insert(assignee_ids.map((profile_id: string) => ({ task_id: task.id, profile_id })))
+
+    // Notify each assignee (skip the creator)
+    const others = assignee_ids.filter((id: string) => id !== user.id)
+    await Promise.allSettled(
+      others.map((userId: string) =>
+        notifyUser({
+          userId,
+          type:   "task_assigned",
+          title:  "You've been assigned a task",
+          body:   parsed.data.title,
+          link:   `/activity/tasks/${task.id}`,
+          taskId: task.id,
+        })
+      )
+    )
   }
 
   revalidatePath("/activity")
@@ -76,11 +92,35 @@ export async function updateTask(id: string, formData: FormData) {
     .eq("id", id)
   if (error) throw new Error(error.message)
 
+  // Get previous assignees to only notify newly added ones
+  const { data: prevAssignees } = await (service.from("task_assignments") as AnyTable)
+    .select("profile_id")
+    .eq("task_id", id)
+  const prevIds = (prevAssignees ?? []).map((a: { profile_id: string }) => a.profile_id)
+
   await (service.from("task_assignments") as AnyTable).delete().eq("task_id", id)
   if (assignee_ids.length > 0) {
     await (service.from("task_assignments") as AnyTable)
       .insert(assignee_ids.map((profile_id: string) => ({ task_id: id, profile_id })))
   }
+
+  // Notify only newly added assignees
+  const { user } = await requireAuth()
+  const newAssignees = assignee_ids.filter(
+    (uid: string) => !prevIds.includes(uid) && uid !== user.id
+  )
+  await Promise.allSettled(
+    newAssignees.map((userId: string) =>
+      notifyUser({
+        userId,
+        type:   "task_assigned",
+        title:  "You've been assigned a task",
+        body:   parsed.data.title,
+        link:   `/activity/tasks/${id}`,
+        taskId: id,
+      })
+    )
+  )
 
   revalidatePath("/activity")
   revalidatePath(`/activity/tasks/${id}`)
