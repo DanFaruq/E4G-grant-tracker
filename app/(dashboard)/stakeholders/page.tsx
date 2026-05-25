@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { StakeholderCard } from "@/components/stakeholders/stakeholder-card"
+import { Header } from "@/components/layout/header"
 import type { Database, StakeholderArchetype } from "@/types/database"
 
 type StakeholderRow = Database["public"]["Tables"]["stakeholders"]["Row"]
@@ -56,10 +57,12 @@ export default async function StakeholdersPage({
   })
 
   return (
-    <div className="p-6 pb-tab-bar space-y-6 animate-fade-up">
+    <div className="flex flex-col min-h-full">
+      <Header title="Stakeholders" />
+      <div className="flex-1 p-4 md:p-6 pb-tab-bar space-y-5 max-w-5xl mx-auto w-full animate-fade-up">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Stakeholders</h1>
+          <h2 className="text-lg font-semibold">Stakeholders</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
             {filtered.length} contact{filtered.length !== 1 ? "s" : ""}
           </p>
@@ -117,6 +120,7 @@ export default async function StakeholdersPage({
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }
