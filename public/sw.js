@@ -74,7 +74,7 @@ self.addEventListener("push", (event) => {
   const title = data.title ?? "E4G Team"
   const options = {
     body:    data.body  ?? "You have a new notification",
-    icon:    "/icon-192.png",
+    icon:    "/e4g-logo.jpeg",
     badge:   "/icon-96.png",
     tag:     data.tag   ?? "e4g-notification",
     data:    { url: data.url ?? "/notifications" },

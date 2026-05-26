@@ -115,7 +115,16 @@ function avatarColor(str: string) {
 
 function relativeTime(iso: string) {
   const diff = Date.now() - new Date(iso).getTime()
+  if (diff < 0) {
+    const abs = -diff
+    const mins = Math.floor(abs / 60000)
+    if (mins < 60) return `In ${mins}m`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `In ${hrs}h`
+    return `In ${Math.floor(hrs / 24)}d`
+  }
   const mins = Math.floor(diff / 60000)
+  if (mins < 1) return "Just now"
   if (mins < 60) return `${mins}m ago`
   const hrs = Math.floor(mins / 60)
   if (hrs < 24) return `${hrs}h ago`
@@ -384,7 +393,7 @@ export default async function DashboardPage() {
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Upcoming deadlines
               </h3>
-              <Link href="/grants" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/deadlines" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                 View all
               </Link>
             </div>
@@ -462,165 +471,127 @@ export default async function DashboardPage() {
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Recent activity
               </h3>
-              <Link href="/activity" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/activity/recent" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                 View all
               </Link>
             </div>
 
             <div className="rounded-xl border bg-card overflow-hidden">
-              {activityFeed.length === 0 && taskFeed.length === 0 && grantFeed.length === 0 ? (
-                <div className="px-4 py-8 text-center">
-                  <CheckSquare className="size-8 mx-auto mb-2 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">No recent activity yet.</p>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {/* Upcoming events */}
-                  {eventFeed.map((ev) => {
-                    const eventInitials = ev.event_type.slice(0, 2).toUpperCase()
-                    return (
-                      <Link
-                        key={`ev-${ev.id}`}
-                        href="/activity?tab=events"
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
-                      >
-                        <div
-                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
-                          style={{ backgroundColor: "oklch(0.55 0.18 200)" }}
-                        >
-                          {eventInitials}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground truncate">
-                            <span className="text-muted-foreground">Upcoming</span>{" "}
-                            <span className="font-medium">{ev.title}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {new Date(ev.start_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
-                          </p>
-                        </div>
-                      </Link>
-                    )
-                  })}
+              {(() => {
+                type FeedItem =
+                  | { kind: "grant"; id: string; name: string; stage: GrantStage; timestamp: string }
+                  | { kind: "task"; id: string; number: number; title: string; status: TaskStatus; assignees: TaskFeedRow["assignees"]; timestamp: string }
+                  | { kind: "activity"; id: string; activityType: string; stakeholderName: string; profileName: string; stakeholderId: string; timestamp: string }
 
-                  {/* Recent grants */}
-                  {grantFeed.map((g) => {
-                    const stageLabel: Record<GrantStage, string> = {
-                      discovered: "Discovered", researching: "Researching", applying: "Applying",
-                      submitted: "Submitted", awarded: "Awarded", rejected: "Rejected",
-                    }
-                    return (
-                      <Link
-                        key={`grant-${g.id}`}
-                        href={`/grants/${g.id}`}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
-                      >
-                        <div
-                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
-                          style={{ backgroundColor: STAGE_COLOR[g.stage] ?? "rgba(99,102,241,0.85)" }}
-                        >
-                          {g.name.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground truncate">
-                            <span className="text-muted-foreground">Grant updated</span>{" "}
-                            <span className="font-medium">{g.name}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{stageLabel[g.stage]} · {relativeTime(g.updated_at)}</p>
-                        </div>
-                      </Link>
-                    )
-                  })}
+                const merged: FeedItem[] = [
+                  ...grantFeed.map((g) => ({ kind: "grant" as const, id: g.id, name: g.name, stage: g.stage, timestamp: g.updated_at })),
+                  ...taskFeed.map((t) => ({ kind: "task" as const, id: t.id, number: t.number, title: t.title, status: t.status, assignees: t.assignees, timestamp: t.updated_at })),
+                  ...activityFeed.map((a) => ({
+                    kind: "activity" as const,
+                    id: a.id,
+                    activityType: a.activity_type,
+                    stakeholderName: (a.stakeholder as { name?: string } | null)?.name ?? "a stakeholder",
+                    profileName: (a.profile as { full_name?: string } | null)?.full_name ?? "Team member",
+                    stakeholderId: a.stakeholder_id,
+                    timestamp: a.occurred_at,
+                  })),
+                ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                 .slice(0, 7)
 
-                  {/* Recent tasks */}
-                  {taskFeed.map((t) => {
-                    const assigneeProfiles = t.assignees?.flatMap((a) => a.profile ? [a.profile] : []) ?? []
-                    const firstAssignee = assigneeProfiles[0]
-                    const assigneeName = firstAssignee?.full_name ?? ""
-                    const initials = assigneeName
-                      ? assigneeName.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
-                      : t.title.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "T"
-                    const color = firstAssignee ? avatarColor(firstAssignee.id) : avatarColor(t.id)
-                    const actionMap: Record<TaskStatus, string> = {
-                      open: "Opened",
-                      in_progress: "Started",
-                      done: "Closed",
-                      cancelled: "Cancelled",
-                    }
-                    return (
-                      <Link
-                        key={`task-${t.id}`}
-                        href={`/activity/tasks/${t.id}`}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
-                      >
-                        <div
-                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
-                          style={{ backgroundColor: color }}
-                        >
-                          {initials}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground truncate">
-                            <span className="text-muted-foreground">{actionMap[t.status]} task</span>{" "}
-                            <span className="font-medium">#{t.number} {t.title}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{relativeTime(t.updated_at)}</p>
-                        </div>
-                        {/* Assignee avatar stack */}
-                        {assigneeProfiles.length > 0 && (
-                          <div className="flex items-center shrink-0">
-                            {assigneeProfiles.slice(0, 3).map((p, i) => {
-                              const ini = p.full_name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
-                              return (
-                                <div
-                                  key={p.id}
-                                  title={p.full_name}
-                                  className={`flex size-6 items-center justify-center rounded-full border-2 border-card text-white text-[10px] font-bold ${i > 0 ? "-ml-1.5" : ""}`}
-                                  style={{ backgroundColor: avatarColor(p.id) }}
-                                >
-                                  {ini}
-                                </div>
-                              )
-                            })}
+                if (merged.length === 0) return (
+                  <div className="px-4 py-8 text-center">
+                    <CheckSquare className="size-8 mx-auto mb-2 text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">No recent activity yet.</p>
+                  </div>
+                )
+
+                const stageLabel: Record<GrantStage, string> = {
+                  discovered: "Discovered", researching: "Researching", applying: "Applying",
+                  submitted: "Submitted", awarded: "Awarded", rejected: "Rejected",
+                }
+                const actionMap: Record<TaskStatus, string> = {
+                  open: "Opened", in_progress: "Started", done: "Closed", cancelled: "Cancelled",
+                }
+                const typeLabel: Record<string, string> = {
+                  meeting: "Meeting with", email: "Emailed", call: "Call with",
+                  follow_up: "Follow-up with", note: "Note on",
+                }
+
+                return (
+                  <div className="divide-y">
+                    {merged.map((item) => {
+                      if (item.kind === "grant") {
+                        return (
+                          <Link key={`grant-${item.id}`} href={`/grants/${item.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                            <div className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold" style={{ backgroundColor: STAGE_COLOR[item.stage] ?? "rgba(99,102,241,0.85)" }}>
+                              {item.name.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-foreground truncate">
+                                <span className="text-muted-foreground">Grant updated</span>{" "}
+                                <span className="font-medium">{item.name}</span>
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{stageLabel[item.stage]} · {relativeTime(item.timestamp)}</p>
+                            </div>
+                          </Link>
+                        )
+                      }
+                      if (item.kind === "task") {
+                        const assigneeProfiles = item.assignees?.flatMap((a) => a.profile ? [a.profile] : []) ?? []
+                        const firstAssignee = assigneeProfiles[0]
+                        const assigneeName = firstAssignee?.full_name ?? ""
+                        const initials = assigneeName
+                          ? assigneeName.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+                          : item.title.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "T"
+                        const color = firstAssignee ? avatarColor(firstAssignee.id) : avatarColor(item.id)
+                        return (
+                          <Link key={`task-${item.id}`} href={`/activity/tasks/${item.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                            <div className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold" style={{ backgroundColor: color }}>
+                              {initials}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-foreground truncate">
+                                <span className="text-muted-foreground">{actionMap[item.status]} task</span>{" "}
+                                <span className="font-medium">#{item.number} {item.title}</span>
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{relativeTime(item.timestamp)}</p>
+                            </div>
+                            {assigneeProfiles.length > 0 && (
+                              <div className="flex items-center shrink-0">
+                                {assigneeProfiles.slice(0, 3).map((p, i) => {
+                                  const ini = p.full_name.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+                                  return (
+                                    <div key={p.id} title={p.full_name} className={`flex size-6 items-center justify-center rounded-full border-2 border-card text-white text-[10px] font-bold ${i > 0 ? "-ml-1.5" : ""}`} style={{ backgroundColor: avatarColor(p.id) }}>
+                                      {ini}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </Link>
+                        )
+                      }
+                      // activity
+                      const initials = item.profileName.trim().split(/\s+/).map((n) => n[0]).slice(0, 2).join("").toUpperCase()
+                      const color = avatarColor(item.stakeholderId)
+                      return (
+                        <Link key={`sa-${item.id}`} href={`/stakeholders/${item.stakeholderId}`} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                          <div className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold" style={{ backgroundColor: color }}>
+                            {initials}
                           </div>
-                        )}
-                      </Link>
-                    )
-                  })}
-
-                  {/* Recent stakeholder activities */}
-                  {activityFeed.map((a) => {
-                    const name = (a.profile as { full_name?: string } | null)?.full_name ?? "Team member"
-                    const color = avatarColor(a.stakeholder_id)
-                    const initials = name.trim().split(/\s+/).map((n) => n[0]).slice(0, 2).join("").toUpperCase()
-                    const typeLabel: Record<string, string> = {
-                      meeting: "Meeting with",
-                      email: "Emailed",
-                      call: "Call with",
-                      follow_up: "Follow-up with",
-                      note: "Note on",
-                    }
-                    const stakeholderName = (a.stakeholder as { name?: string } | null)?.name ?? "a stakeholder"
-                    return (
-                      <div key={`sa-${a.id}`} className="flex items-center gap-3 px-4 py-3">
-                        <div
-                          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white text-[11px] font-bold"
-                          style={{ backgroundColor: color }}
-                        >
-                          {initials}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-foreground truncate">
-                            <span className="text-muted-foreground">{typeLabel[a.activity_type] ?? "Activity with"}</span>{" "}
-                            <span className="font-medium">{stakeholderName}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{relativeTime(a.occurred_at)}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-foreground truncate">
+                              <span className="text-muted-foreground">{typeLabel[item.activityType] ?? "Activity with"}</span>{" "}
+                              <span className="font-medium">{item.stakeholderName}</span>
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{relativeTime(item.timestamp)}</p>
+                          </div>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </div>
           </div>
         </div>
