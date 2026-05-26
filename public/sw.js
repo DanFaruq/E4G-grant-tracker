@@ -1,4 +1,4 @@
-const CACHE = "e4g-v5"
+const CACHE = "e4g-v6"
 const OFFLINE_URL = "/offline.html"
 
 const PRECACHE = [
@@ -75,8 +75,8 @@ self.addEventListener("push", (event) => {
   const title = data.title ?? "E4G Team"
   const options = {
     body:    data.body  ?? "You have a new notification",
-    icon:    "/icon.svg",
-    badge:   "/icon.svg",
+    icon:    "/e4g-logo.jpeg",
+    badge:   "/badge.svg",
     tag:     data.tag   ?? "e4g-notification",
     data:    { url: data.url ?? "/notifications" },
     vibrate: [200, 100, 200],
