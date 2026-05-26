@@ -200,6 +200,23 @@ export async function updateGrantStage(grantId: string, stage: GrantStage) {
   revalidatePath(`/grants/${grantId}`)
 }
 
+export async function markOneRead(id: string, link: string) {
+  "use server"
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect("/login")
+
+  const service = await createServiceClient()
+  await (service.from("notifications") as AnyTable)
+    .update({ read: true, read_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  revalidatePath("/notifications")
+  revalidatePath("/dashboard")
+  redirect(link)
+}
+
 export async function markNotificationsRead() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

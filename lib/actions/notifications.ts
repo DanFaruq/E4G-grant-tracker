@@ -96,7 +96,7 @@ export async function sendPushToUser(
 
 export async function notifyUser(params: {
   userId:   string
-  type:     "task_assigned" | "event_invited"
+  type:     "task_assigned" | "event_invited" | "comment_added"
   title:    string
   body:     string
   link:     string

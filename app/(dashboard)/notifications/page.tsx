@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
-import { markNotificationsRead } from "@/lib/actions/grants"
+import { markNotificationsRead, markOneRead } from "@/lib/actions/grants"
 import Link from "next/link"
 import { Bell } from "lucide-react"
 import type { NotificationType } from "@/types/database"
@@ -68,40 +68,52 @@ export default async function NotificationsPage() {
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border/60">
-            {notifications.map((n) => (
-              <div
-                key={n.id}
-                className={`flex items-start gap-4 px-4 py-3.5 transition-colors ${
-                  !n.read ? "bg-primary/[0.03]" : ""
-                } ${n.link ? "hover:bg-muted/40 cursor-pointer" : ""}`}
-              >
-                {/* Unread dot */}
-                <div className="mt-1.5 shrink-0 w-2 flex justify-center">
-                  {!n.read && (
-                    <span className="size-2 rounded-full bg-primary block" />
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  {n.link ? (
-                    <Link href={n.link} className="block hover:underline">
-                      <p className="text-sm font-semibold leading-snug">{n.title}</p>
-                    </Link>
-                  ) : (
+            {notifications.map((n) => {
+              const dest = n.link ?? "/notifications"
+              const inner = (
+                <>
+                  {/* Unread dot */}
+                  <div className="mt-1.5 shrink-0 w-2 flex justify-center">
+                    {!n.read && <span className="size-2 rounded-full bg-primary block" />}
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-semibold leading-snug">{n.title}</p>
-                  )}
-                  {n.body && (
-                    <p className="text-sm text-muted-foreground mt-0.5 leading-snug">{n.body}</p>
-                  )}
-                </div>
+                    {n.body && (
+                      <p className="text-sm text-muted-foreground mt-0.5 leading-snug">{n.body}</p>
+                    )}
+                  </div>
+                  {/* Time */}
+                  <span className="text-xs text-muted-foreground shrink-0 mt-0.5">
+                    {relativeTime(n.created_at)}
+                  </span>
+                </>
+              )
 
-                {/* Time */}
-                <span className="text-xs text-muted-foreground shrink-0 mt-0.5">
-                  {relativeTime(n.created_at)}
-                </span>
-              </div>
-            ))}
+              if (n.link) {
+                return (
+                  <form key={n.id} action={markOneRead.bind(null, n.id, dest)}>
+                    <button
+                      type="submit"
+                      className={`w-full flex items-start gap-4 px-4 py-3.5 transition-colors hover:bg-muted/40 ${
+                        !n.read ? "bg-primary/[0.03]" : ""
+                      }`}
+                    >
+                      {inner}
+                    </button>
+                  </form>
+                )
+              }
+
+              return (
+                <div
+                  key={n.id}
+                  className={`flex items-start gap-4 px-4 py-3.5 ${!n.read ? "bg-primary/[0.03]" : ""}`}
+                >
+                  {inner}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>

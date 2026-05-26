@@ -14,6 +14,12 @@
   "prefer_related_applications": false,
   "icons": [
     {
+      "src": "/e4g-logo.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
       "src": "/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",

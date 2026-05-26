@@ -189,6 +189,33 @@ export async function addComment(taskId: string, formData: FormData) {
     .insert({ task_id: taskId, author_id: user.id, body: parsed.data.body })
   if (error) throw new Error(error.message)
 
+  // Notify task creator + all assignees except the commenter
+  try {
+    const [taskResult, assigneesResult, commenterResult] = await Promise.all([
+      (service.from("team_tasks") as AnyTable).select("title, created_by").eq("id", taskId).single(),
+      (service.from("task_assignments") as AnyTable).select("profile_id").eq("task_id", taskId),
+      service.from("profiles").select("full_name").eq("id", user.id).single(),
+    ])
+    const task = taskResult.data as { title: string; created_by: string } | null
+    const assigneeIds = ((assigneesResult.data ?? []) as { profile_id: string }[]).map((a) => a.profile_id)
+    const commenterName = (commenterResult.data as { full_name?: string } | null)?.full_name ?? "Someone"
+    const snippet = parsed.data.body.length > 80 ? `${parsed.data.body.slice(0, 80)}…` : parsed.data.body
+
+    const recipients = [...new Set([task?.created_by, ...assigneeIds].filter(Boolean))] as string[]
+    for (const userId of recipients.filter((id) => id !== user.id)) {
+      await notifyUser({
+        userId,
+        type:   "comment_added",
+        title:  `New comment on "${task?.title ?? "a task"}"`,
+        body:   `${commenterName}: ${snippet}`,
+        link:   `/activity/tasks/${taskId}`,
+        taskId,
+      }).catch((err) => console.error("[addComment] notify failed:", err))
+    }
+  } catch (err) {
+    console.error("[addComment] notify lookup failed:", err)
+  }
+
   revalidatePath(`/activity/tasks/${taskId}`)
 }
 

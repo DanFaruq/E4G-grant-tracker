@@ -1,4 +1,4 @@
-const CACHE = "e4g-v2"
+const CACHE = "e4g-v3"
 const OFFLINE_URL = "/offline.html"
 
 const PRECACHE = [
@@ -70,7 +70,8 @@ self.addEventListener("fetch", (event) => {
 // ── Push notifications ──────────────────────────────────────────────────────
 
 self.addEventListener("push", (event) => {
-  const data = event.data?.json() ?? {}
+  let data = {}
+  try { data = event.data?.json() ?? {} } catch (_) {}
   const title = data.title ?? "E4G Team"
   const options = {
     body:    data.body  ?? "You have a new notification",
@@ -79,6 +80,7 @@ self.addEventListener("push", (event) => {
     tag:     data.tag   ?? "e4g-notification",
     data:    { url: data.url ?? "/notifications" },
     vibrate: [200, 100, 200],
+    requireInteraction: false,
   }
   event.waitUntil(self.registration.showNotification(title, options))
 })
