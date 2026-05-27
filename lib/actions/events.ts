@@ -69,11 +69,30 @@ export async function createEvent(formData: FormData) {
   }
 
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath("/deadlines")
+  revalidatePath("/dashboard")
   redirect("/activity?tab=events")
 }
 
 export async function updateEvent(id: string, formData: FormData) {
-  await requireAuth()
+  const { user, supabase } = await requireAuth()
+
+  const { data: event } = await (supabase.from("team_events") as AnyTable)
+    .select("created_by")
+    .eq("id", id)
+    .single()
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if ((event as { created_by?: string } | null)?.created_by !== user.id && (profile as { role?: string } | null)?.role !== "admin") {
+    throw new Error("Insufficient permissions")
+  }
+
   const service = await createServiceClient()
 
   const parsed = eventSchema.safeParse({
@@ -105,6 +124,9 @@ export async function updateEvent(id: string, formData: FormData) {
   }
 
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath("/deadlines")
+  revalidatePath("/dashboard")
   redirect("/activity?tab=events")
 }
 
@@ -129,4 +151,7 @@ export async function deleteEvent(id: string) {
   const service = await createServiceClient()
   await (service.from("team_events") as AnyTable).delete().eq("id", id)
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath("/deadlines")
+  revalidatePath("/dashboard")
 }

@@ -15,16 +15,23 @@ const ALLOWED_TYPES = new Set([
 ])
 
 // Magic byte signatures for MIME validation
-const MAGIC: Array<{ mime: string; bytes: number[]; offset?: number }> = [
-  { mime: "application/pdf",  bytes: [0x25, 0x50, 0x44, 0x46] }, // %PDF
-  { mime: "image/png",        bytes: [0x89, 0x50, 0x4e, 0x47] }, // PNG
-  { mime: "image/jpeg",       bytes: [0xff, 0xd8, 0xff] },        // JPEG
+const MAGIC: Array<{ mime: string; bytes: number[] }> = [
+  { mime: "application/pdf",   bytes: [0x25, 0x50, 0x44, 0x46] },                   // %PDF
+  { mime: "image/png",         bytes: [0x89, 0x50, 0x4e, 0x47] },                   // PNG
+  { mime: "image/jpeg",        bytes: [0xff, 0xd8, 0xff] },                          // JPEG
+  { mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                               bytes: [0x50, 0x4b, 0x03, 0x04] },                   // DOCX (ZIP)
+  { mime: "application/msword", bytes: [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1] }, // DOC (OLE2)
 ]
 
 function checkMagicBytes(buffer: Uint8Array, mime: string): boolean {
-  // Only validate types we have signatures for; let others pass
+  if (mime === "text/plain") {
+    // No universal magic bytes for plain text; verify content is printable
+    const sample = buffer.slice(0, 1024)
+    return sample.every((b) => b === 0x09 || b === 0x0a || b === 0x0d || (b >= 0x20 && b <= 0x7e) || b >= 0x80)
+  }
   const sig = MAGIC.find((m) => m.mime === mime)
-  if (!sig) return true
+  if (!sig) return false
   return sig.bytes.every((b, i) => buffer[i] === b)
 }
 

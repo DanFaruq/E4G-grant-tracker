@@ -19,6 +19,14 @@ async function requireTeamMember() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single() as { data: { role: string } | null }
+  if (!profile || !["admin", "team_member"].includes(profile.role)) {
+    throw new Error("Insufficient permissions")
+  }
   return { user, supabase }
 }
 
@@ -65,6 +73,8 @@ export async function promoteOpportunity(oppId: string) {
   })
 
   revalidatePath("/opportunities")
+  revalidatePath("/grants")
+  revalidatePath("/dashboard")
   redirect(`/grants/${grant!.id}/edit`)
 }
 
@@ -80,6 +90,7 @@ export async function snoozeOpportunity(oppId: string) {
   }).eq("id", oppId)
 
   revalidatePath("/opportunities")
+  revalidatePath("/dashboard")
 }
 
 export async function dismissOpportunity(oppId: string) {
@@ -93,4 +104,5 @@ export async function dismissOpportunity(oppId: string) {
   }).eq("id", oppId)
 
   revalidatePath("/opportunities")
+  revalidatePath("/dashboard")
 }

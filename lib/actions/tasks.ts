@@ -16,6 +16,19 @@ async function requireAuth() {
   return { user, supabase }
 }
 
+async function requireTeamRole() {
+  const { user, supabase } = await requireAuth()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single() as { data: { role: string } | null }
+  if (!profile || !["admin", "team_member"].includes(profile.role)) {
+    throw new Error("Insufficient permissions")
+  }
+  return { user, supabase, role: profile.role }
+}
+
 function parseAssignees(formData: FormData): string[] {
   const raw = formData.get("assignee_ids")
   if (!raw || typeof raw !== "string") return []
@@ -23,7 +36,7 @@ function parseAssignees(formData: FormData): string[] {
 }
 
 export async function createTask(formData: FormData) {
-  const { user } = await requireAuth()
+  const { user } = await requireTeamRole()
   const service = await createServiceClient()
 
   const parsed = taskSchema.safeParse({
@@ -68,11 +81,13 @@ export async function createTask(formData: FormData) {
   }
 
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath("/dashboard")
   redirect(`/activity/tasks/${task.id}`)
 }
 
 export async function updateTask(id: string, formData: FormData) {
-  await requireAuth()
+  const { user } = await requireTeamRole()
   const service = await createServiceClient()
 
   const parsed = taskSchema.safeParse({
@@ -107,7 +122,6 @@ export async function updateTask(id: string, formData: FormData) {
   }
 
   // Notify only newly added assignees
-  const { user } = await requireAuth()
   const newAssignees = assignee_ids.filter(
     (uid: string) => !prevIds.includes(uid) && uid !== user.id
   )
@@ -127,30 +141,36 @@ export async function updateTask(id: string, formData: FormData) {
   }
 
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)
+  revalidatePath("/dashboard")
   redirect(`/activity/tasks/${id}`)
 }
 
 export async function closeTask(id: string) {
-  await requireAuth()
+  await requireTeamRole()
   const service = await createServiceClient()
   const { error } = await (service.from("team_tasks") as AnyTable)
     .update({ status: "done", updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)
+  revalidatePath("/dashboard")
 }
 
 export async function reopenTask(id: string) {
-  await requireAuth()
+  await requireTeamRole()
   const service = await createServiceClient()
   const { error } = await (service.from("team_tasks") as AnyTable)
     .update({ status: "open", updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)
+  revalidatePath("/dashboard")
 }
 
 export async function deleteTask(id: string) {
@@ -175,6 +195,8 @@ export async function deleteTask(id: string) {
   const { error } = await (service.from("team_tasks") as AnyTable).delete().eq("id", id)
   if (error) throw new Error(error.message)
   revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath("/dashboard")
   redirect("/activity")
 }
 

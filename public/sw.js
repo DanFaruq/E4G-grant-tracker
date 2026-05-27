@@ -1,4 +1,4 @@
-const CACHE = "e4g-v6"
+const CACHE = "e4g-v7"
 const OFFLINE_URL = "/offline.html"
 
 const PRECACHE = [
@@ -32,39 +32,46 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin !== self.location.origin) return
 
+  // Never intercept: auth, API, login, or any Next.js RSC/dynamic route payload
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/auth/") ||
+    url.pathname.startsWith("/_next/data/") ||
     url.pathname === "/login" ||
-    url.pathname === "/signup"
+    url.pathname === "/signup" ||
+    url.searchParams.has("_rsc") ||
+    request.headers.get("RSC") === "1" ||
+    request.headers.get("Next-Router-State-Tree") !== null
   ) return
 
+  // Versioned static assets (content-hashed) → cache-first, safe to keep forever
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.match(request).then((cached) => cached || fetch(request).then((res) => {
+        if (res.ok) caches.open(CACHE).then((c) => c.put(request, res.clone()))
+        return res
+      }))
+    )
+    return
+  }
+
+  // Page navigations → network only; fall back to offline page (never cache HTML)
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone()
-          caches.open(CACHE).then((cache) => cache.put(request, clone))
-          return response
-        })
-        .catch(() =>
-          caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL))
-        )
+      fetch(request).catch(() =>
+        caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL))
+      )
     )
-  } else {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached
-        return fetch(request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone()
-            caches.open(CACHE).then((cache) => cache.put(request, clone))
-          }
-          return response
-        })
-      })
-    )
+    return
   }
+
+  // Other static files (icons, fonts, manifest) → cache-first
+  event.respondWith(
+    caches.match(request).then((cached) => cached || fetch(request).then((res) => {
+      if (res.ok) caches.open(CACHE).then((c) => c.put(request, res.clone()))
+      return res
+    }))
+  )
 })
 
 // ── Push notifications ──────────────────────────────────────────────────────

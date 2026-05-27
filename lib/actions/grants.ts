@@ -77,6 +77,8 @@ export async function createGrant(formData: FormData) {
 
   await logActivity(service, "grant.created", (grant as GrantIdRow).id, user.id, { name: payload.name })
   revalidatePath("/grants")
+  revalidatePath("/dashboard")
+  revalidatePath("/deadlines")
   redirect(`/grants/${(grant as GrantIdRow).id}`)
 }
 
@@ -114,6 +116,8 @@ export async function updateGrant(grantId: string, formData: FormData) {
   await logActivity(service, action, grantId, user.id, metadata)
   revalidatePath(`/grants/${grantId}`)
   revalidatePath("/grants")
+  revalidatePath("/dashboard")
+  revalidatePath("/deadlines")
   redirect(`/grants/${grantId}`)
 }
 
@@ -124,6 +128,8 @@ export async function archiveGrant(grantId: string) {
   await (service.from("grants") as AnyTable).update({ archived: true }).eq("id", grantId)
   await logActivity(service, "grant.archived", grantId, user.id)
   revalidatePath("/grants")
+  revalidatePath("/dashboard")
+  revalidatePath("/deadlines")
   redirect("/grants")
 }
 
@@ -198,6 +204,9 @@ export async function updateGrantStage(grantId: string, stage: GrantStage) {
   })
   revalidatePath("/grants/kanban")
   revalidatePath(`/grants/${grantId}`)
+  revalidatePath("/grants")
+  revalidatePath("/dashboard")
+  revalidatePath("/deadlines")
 }
 
 export async function markOneRead(id: string, link: string) {

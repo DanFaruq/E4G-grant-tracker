@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { sendDigestEmail, sendUrgentEmail } from "@/lib/notifications/email"
@@ -24,10 +25,19 @@ type NotificationRow = {
   link: string | null
 }
 
+function validateCronSecret(header: string | null): boolean {
+  const expected = process.env.CRON_SECRET
+  if (!header || !expected) return false
+  try {
+    return timingSafeEqual(Buffer.from(header), Buffer.from(expected))
+  } catch {
+    return false
+  }
+}
+
 // Deadline reminder cron job — runs daily at 07:00 UTC via vercel.json
 export async function GET(request: NextRequest) {
-  const secret = request.headers.get("x-cron-secret")
-  if (secret !== process.env.CRON_SECRET) {
+  if (!validateCronSecret(request.headers.get("x-cron-secret"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -40,6 +50,13 @@ export async function GET(request: NextRequest) {
 
   const REMINDER_DAYS = [30, 14, 7, 3, 1]
   let notificationsCreated = 0
+
+  // Fetch admins once — used for every grant across all reminder windows
+  const { data: allAdmins } = await service
+    .from("profiles")
+    .select("id")
+    .eq("role", "admin") as { data: { id: string }[] | null }
+  const adminIds = allAdmins?.map((p) => p.id) ?? []
 
   for (const days of REMINDER_DAYS) {
     const target = new Date(today)
@@ -57,14 +74,10 @@ export async function GET(request: NextRequest) {
 
     for (const grant of grants) {
       const assignees = grant.grant_assignees ?? []
-      const { data: allAdmins } = await service
-        .from("profiles")
-        .select("id")
-        .eq("role", "admin") as { data: { id: string }[] | null }
 
       const recipientIds = new Set([
         ...assignees.map((a) => a.user_id),
-        ...(allAdmins?.map((p) => p.id) ?? []),
+        ...adminIds,
       ])
 
       for (const userId of recipientIds) {

@@ -52,6 +52,7 @@ export async function createStakeholder(formData: FormData) {
   if (error) throw new Error(error.message)
 
   revalidatePath("/stakeholders")
+  revalidatePath("/dashboard")
   redirect(`/stakeholders/${(stakeholder as { id: string }).id}`)
 }
 
@@ -82,6 +83,7 @@ export async function updateStakeholder(stakeholderId: string, formData: FormDat
 
   revalidatePath("/stakeholders")
   revalidatePath(`/stakeholders/${stakeholderId}`)
+  revalidatePath("/dashboard")
   redirect(`/stakeholders/${stakeholderId}`)
 }
 
@@ -96,6 +98,7 @@ export async function deleteStakeholder(stakeholderId: string) {
   if (error) throw new Error(error.message)
 
   revalidatePath("/stakeholders")
+  revalidatePath("/dashboard")
   redirect("/stakeholders")
 }
 

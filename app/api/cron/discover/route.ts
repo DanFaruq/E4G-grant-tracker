@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { runDiscovery } from "@/lib/discovery/runner"
@@ -26,10 +27,19 @@ type OppRow = {
 
 type ProfileRow = { id: string }
 
+function validateCronSecret(header: string | null): boolean {
+  const expected = process.env.CRON_SECRET
+  if (!header || !expected) return false
+  try {
+    return timingSafeEqual(Buffer.from(header), Buffer.from(expected))
+  } catch {
+    return false
+  }
+}
+
 // Discovery cron job — runs daily at 06:00 UTC via vercel.json
 export async function GET(request: NextRequest) {
-  const secret = request.headers.get("x-cron-secret")
-  if (secret !== process.env.CRON_SECRET) {
+  if (!validateCronSecret(request.headers.get("x-cron-secret"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
