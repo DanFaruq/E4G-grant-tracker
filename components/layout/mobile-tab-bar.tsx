@@ -2,12 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Users2, Activity, MoreHorizontal } from "lucide-react"
+import { LayoutDashboard, FileText, ListTodo, Users2, MoreHorizontal } from "lucide-react"
 
 const TABS = [
   { href: "/dashboard",    icon: LayoutDashboard, label: "Home"     },
   { href: "/grants",       icon: FileText,         label: "Grants"   },
-  { href: "/activity",     icon: Activity,         label: "Tasks"    },
+  { href: "/my-work",      icon: ListTodo,         label: "My Work"  },
   { href: "/stakeholders", icon: Users2,           label: "Contacts" },
   { href: "/settings",     icon: MoreHorizontal,   label: "More"     },
 ] as const

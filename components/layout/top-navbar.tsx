@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { useState, useRef, useEffect } from "react"
-import { Bell, Settings, ChevronDown, LogOut, User, LayoutDashboard, FileText, Users2, Activity, Inbox } from "lucide-react"
+import { Bell, Settings, ChevronDown, LogOut, User, LayoutDashboard, FileText, Users2, Activity, Inbox, ListTodo } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import type { UserRole } from "@/types/database"
@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { href: "/grants",        label: "Grants",       icon: FileText        },
   { href: "/stakeholders",  label: "Stakeholders", icon: Users2          },
   { href: "/activity",      label: "Team Tasks",   icon: Activity        },
+  { href: "/my-work",       label: "My Work",      icon: ListTodo        },
   { href: "/opportunities", label: "Opportunities",icon: Inbox           },
 ]
 
@@ -59,6 +60,7 @@ export function TopNavbar({ userName, userEmail, userRole, unreadCount = 0 }: Pr
 
   return (
     <header className="hidden md:flex h-14 shrink-0 items-center border-b border-sidebar-border bg-sidebar text-sidebar-foreground px-4 gap-2 z-40">
+      <div className="flex items-center gap-2 w-full max-w-screen-xl mx-auto">
       {/* Logo */}
       <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 mr-3">
         <img src="/e4g-logo.jpeg" alt="E4G" width={32} height={32} className="size-8 rounded-lg object-contain" />
@@ -77,13 +79,19 @@ export function TopNavbar({ userName, userEmail, userRole, unreadCount = 0 }: Pr
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap",
+                "group flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap",
+                "transition-all duration-200 ease-out",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:translate-x-0.5 hover:-translate-y-0.5"
               )}
             >
-              <Icon className={cn("size-3.5 shrink-0", isActive ? "opacity-100" : "opacity-60")} />
+              <Icon
+                className={cn(
+                  "size-3.5 shrink-0 transition-transform duration-200",
+                  isActive ? "opacity-100" : "opacity-60 group-hover:scale-110 group-hover:opacity-100"
+                )}
+              />
               {label}
             </Link>
           )
@@ -220,6 +228,7 @@ export function TopNavbar({ userName, userEmail, userRole, unreadCount = 0 }: Pr
             </div>
           )}
         </div>
+      </div>
       </div>
     </header>
   )

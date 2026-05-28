@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { taskSchema, commentSchema } from "@/lib/validators/tasks"
 import { notifyUser } from "@/lib/actions/notifications"
+import type { TaskStatus } from "@/types/database"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTable = any
@@ -167,6 +168,20 @@ export async function reopenTask(id: string) {
     .update({ status: "open", updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
+  revalidatePath("/activity")
+  revalidatePath("/activity/recent")
+  revalidatePath(`/activity/tasks/${id}`)
+  revalidatePath("/dashboard")
+}
+
+export async function updateTaskStatus(id: string, status: TaskStatus) {
+  await requireTeamRole()
+  const service = await createServiceClient()
+  const { error } = await (service.from("team_tasks") as AnyTable)
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", id)
+  if (error) throw new Error(error.message)
+  revalidatePath("/my-work")
   revalidatePath("/activity")
   revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)

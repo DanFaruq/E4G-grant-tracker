@@ -6,7 +6,7 @@ import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import {
   LayoutDashboard, FileText, Inbox,
-  Bell, Settings, LogOut, Users2, Activity,
+  Bell, Settings, LogOut, Users2, Activity, ListTodo,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -31,6 +31,7 @@ const nav = [
   { href: "/grants",        label: "Grants",        icon: FileText,         badge: false },
   { href: "/stakeholders",  label: "Stakeholders",  icon: Users2,           badge: false },
   { href: "/activity",      label: "Team Tasks",    icon: Activity,         badge: false },
+  { href: "/my-work",       label: "My Work",       icon: ListTodo,         badge: false },
   { href: "/opportunities", label: "Opportunities", icon: Inbox,            badge: false },
   { href: "/notifications", label: "Notifications", icon: Bell,             badge: true  },
   { href: "/settings",      label: "Settings",      icon: Settings,         badge: false },
@@ -95,19 +96,22 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
 
   return (
     <>
-      {/* Backdrop — mobile only, closes drawer on tap */}
-      {open && (
-        <div
-          className="md:hidden fixed inset-0 z-[54] bg-black/50 backdrop-blur-sm"
-          onClick={close}
-          aria-hidden="true"
-        />
-      )}
+      {/* Backdrop — always in DOM so it can fade out smoothly */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-0 z-[54] bg-black/60 backdrop-blur-sm",
+          "transition-opacity duration-300 ease-out",
+          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        onClick={close}
+        aria-hidden="true"
+      />
     <aside
       className={cn(
         "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
         "w-[240px] shrink-0",
-        "md:hidden fixed inset-y-0 left-0 z-[55] transition-transform duration-200 ease-in-out",
+        "md:hidden fixed inset-y-0 left-0 z-[55] shadow-2xl will-change-transform",
+        "transition-transform duration-[350ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
         open ? "translate-x-0" : "-translate-x-full"
       )}
     >
@@ -140,17 +144,21 @@ export function Sidebar({ userName, userRole, unreadCount = 0 }: SidebarProps) {
               href={href}
               onClick={close}
               className={cn(
-                "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                "transition-all duration-200 ease-out",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground hover:translate-x-1"
               )}
             >
               {isActive && (
                 <span className="absolute left-0 inset-y-2.5 w-0.5 rounded-r-full bg-sidebar-primary" />
               )}
               <Icon
-                className={cn("size-4 shrink-0", isActive ? "text-sidebar-primary" : "")}
+                className={cn(
+                  "size-4 shrink-0 transition-transform duration-200",
+                  isActive ? "text-sidebar-primary" : "group-hover:scale-110"
+                )}
               />
               <span className="flex-1 truncate">{label}</span>
               {count > 0 && (
