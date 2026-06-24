@@ -23,11 +23,13 @@ export const metadata: Metadata = {
     startupImage: "/icon-512.png",
   },
   icons: {
+    // iOS does NOT support SVG for home-screen icons — it requires a PNG.
     apple: [
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
   },
 }

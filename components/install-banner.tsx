@@ -12,7 +12,17 @@ interface BeforeInstallPromptEvent extends Event {
 type Mode = "hidden" | "native" | "manual" | "instructions" | "installed"
 
 function isIos() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent)
+  const ua = navigator.userAgent
+  // iPadOS 13+ reports as desktop Safari; detect via touch + Mac platform.
+  return /iphone|ipad|ipod/i.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+}
+
+// "Add to Home Screen" only exists in iOS Safari — not Chrome/Firefox/in-app browsers on iOS.
+function isIosSafari() {
+  if (!isIos()) return false
+  const ua = navigator.userAgent
+  return !/crios|fxios|edgios|opt\//i.test(ua)
 }
 
 export function InstallBanner() {
@@ -20,10 +30,19 @@ export function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
 
   useEffect(() => {
-    // Already running as installed PWA
+    // Already running as installed PWA (matchMedia covers Android/desktop,
+    // navigator.standalone covers iOS Safari home-screen apps).
     if (window.matchMedia("(display-mode: standalone)").matches) return
+    if ((navigator as Navigator & { standalone?: boolean }).standalone) return
     // User permanently dismissed
     if (localStorage.getItem("pwa-install-dismissed") === "1") return
+
+    // iOS: no beforeinstallprompt event exists. Only Safari can Add to Home Screen,
+    // so show the manual instructions there and stay hidden in other iOS browsers.
+    if (isIos()) {
+      if (isIosSafari()) setMode("manual")
+      return
+    }
 
     const handler = (e: Event) => {
       e.preventDefault()
@@ -97,7 +116,7 @@ export function InstallBanner() {
           : <MonitorSmartphone className="size-4 text-primary" />}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold leading-tight">Install E4G Grants</p>
+        <p className="text-xs font-semibold leading-tight">Install E4G Team</p>
         <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
           {mode === "native" ? "Add to home screen for quick access" : "Tap to see how to install"}
         </p>
