@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dan Faruq — Portfolio v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#fff;--bg2:#f8fafc;--bg3:#f1f5f9;--surface:#fff;--border:#e2e8f0;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#4f46e5;--accent2:#6366f1;--glow:rgba(79,70,229,.12);
+  --nav-bg:rgba(255,255,255,.82);--nav-border:rgba(226,232,240,.9);
+  --grid:rgba(148,163,184,.06);--card:#fff;
+  --tag-bg:#eef2ff;--tag:#4338ca;
+  --hero:linear-gradient(135deg,#f8fafc 0%,#eef2ff 50%,#f0f9ff 100%);
+  --contact:#0f172a;--mono:'JetBrains Mono',monospace;
+}
+[data-theme="dark"]{
+  --bg:#080c12;--bg2:#0d1117;--bg3:#161b22;--surface:#0d1117;--border:#21262d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --accent:#58a6ff;--accent2:#79c0ff;--glow:rgba(88,166,255,.1);
+  --nav-bg:rgba(8,12,18,.88);--nav-border:rgba(33,38,45,.95);
+  --grid:rgba(88,166,255,.025);--card:#0d1117;
+  --tag-bg:rgba(56,139,253,.08);--tag:#58a6ff;
+  --hero:radial-gradient(ellipse at 20% 40%,rgba(88,166,255,.05) 0%,transparent 55%),
+         radial-gradient(ellipse at 80% 70%,rgba(63,185,80,.03) 0%,transparent 50%),#080c12;
+  --contact:#080c12;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .4s,color .4s}
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:999}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);border-bottom:1px solid var(--nav-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:background .4s,border-color .4s}
+.nav-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;padding:0 24px;height:60px;gap:8px}
+.logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text);display:flex;align-items:center;gap:5px;margin-right:auto;letter-spacing:-.5px}
+.logo .br{color:var(--accent);font-size:17px}
+.logo .cb{display:inline-block;width:2px;height:14px;background:var(--accent);border-radius:1px;animation:blink 1.1s infinite;vertical-align:middle;margin-left:1px}
+.nav-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:#22c55e;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:20px;font-family:var(--mono);margin-right:6px}
+.nav-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+.nl{display:flex;gap:2px}
+.na{font-size:12px;font-weight:500;color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .2s;font-family:var(--mono);position:relative}
+.na::before,.na::after{position:absolute;font-family:var(--mono);font-size:12px;color:var(--accent);opacity:0;transition:all .2s;font-weight:700}
+.na::before{content:'[';left:2px}
+.na::after{content:']';right:2px}
+.na:hover{color:var(--text)}.na:hover::before,.na:hover::after{opacity:1}
+.ncta{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer;transition:all .2s;margin-left:4px;font-family:var(--mono);box-shadow:0 0 20px var(--glow);white-space:nowrap}
+.ncta:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--glow)}
+.tbtn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;margin-left:6px}
+.tbtn:hover{transform:rotate(15deg) scale(1.1)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;margin-left:6px}
+.hbg span{display:block;width:20px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.mob-menu{display:none;position:fixed;inset:0;top:60px;background:var(--nav-bg);backdrop-filter:blur(20px);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px;border-top:1px solid var(--border)}
+.mob-menu.open{display:flex}
+.mob-menu .na{font-size:20px;padding:12px 24px}
+.mob-menu .ncta{font-size:16px;padding:14px 32px;border-radius:12px}
+@media(max-width:768px){.nl,.nav-pill,.ncta{display:none}.hbg{display:flex}.logo{font-size:12px}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;background:var(--hero);overflow:hidden;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:600;padding:6px 16px;border-radius:20px;font-family:var(--mono);margin-bottom:28px;background:var(--bg2);animation:fadeUp .6s ease both}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+[data-theme="dark"] .hterm{font-family:var(--mono);font-size:13px;color:#3fb950;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:4px;animation:fadeUp .6s .05s ease both}
+[data-theme="light"] .hterm{display:none}
+.hterm .pr{color:var(--accent)}
+.cur{display:inline-block;width:8px;height:15px;background:#3fb950;border-radius:1px;animation:blink 1.1s infinite;vertical-align:middle}
+h1{font-size:clamp(34px,7vw,82px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:var(--text);max-width:820px;margin:0 auto;animation:fadeUp .7s .1s ease both}
+@media(max-width:480px){h1{letter-spacing:-1.5px}}
+.gr{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hsub{font-size:clamp(13px,2vw,16px);color:var(--text2);max-width:520px;margin:20px auto 32px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+.bp{background:var(--accent);color:#fff;font-weight:700;font-size:13px;padding:13px 26px;border-radius:10px;cursor:pointer;transition:all .25s;box-shadow:0 0 24px var(--glow);font-family:var(--mono)}
+.bp:hover{transform:translateY(-3px);box-shadow:0 8px 32px var(--glow)}
+.bs{background:transparent;border:1px solid var(--border);color:var(--text2);font-weight:600;font-size:13px;padding:13px 26px;border-radius:10px;cursor:pointer;transition:all .25s;font-family:var(--mono)}
+.bs:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-3px)}
+.stats{display:flex;border:1px solid var(--border);border-radius:12px;margin-top:40px;overflow:hidden;background:var(--bg2);animation:fadeUp .7s .4s ease both;flex-wrap:wrap}
+.st{flex:1;min-width:110px;padding:16px 20px;text-align:center;border-right:1px solid var(--border)}
+.st:last-child{border-right:none}
+.stn{font-size:22px;font-weight:900;color:var(--text);font-family:var(--mono);letter-spacing:-1px}
+.stl{font-size:9px;color:var(--text3);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.sc-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;color:var(--text3);font-family:var(--mono);animation:fadeIn 1s 1s ease both}
+.sc-rail{width:4px;height:28px;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.sc-rail::after{content:'';display:block;width:100%;height:10px;background:var(--accent);border-radius:4px;animation:scrollD 1.6s ease-in-out infinite}
+
+/* SECTION */
+.sec{padding:80px 24px;max-width:960px;margin:0 auto;position:relative;z-index:1}
+.sl{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;font-family:var(--mono)}
+.st2{font-size:clamp(22px,4vw,34px);font-weight:900;letter-spacing:-1px;color:var(--text);margin-bottom:40px}
+.div{height:1px;max-width:960px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--border),transparent);position:relative;z-index:1}
+
+/* ── E4G APP MOCKUP ── */
+.app-mockup{background:var(--bg3);border-bottom:1px solid var(--border);padding:20px 20px 0;position:relative;overflow:hidden}
+[data-theme="dark"] .app-mockup{background:#0d1117}
+.app-mockup::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow),transparent 60%)}
+.app-frame{background:#fff;border:1px solid #e2e8f0;border-bottom:none;border-radius:10px 10px 0 0;overflow:hidden;box-shadow:0 -8px 32px rgba(0,0,0,.08)}
+[data-theme="dark"] .app-frame{background:#0f172a;border-color:#21262d}
+.app-titlebar{background:#f1f5f9;border-bottom:1px solid #e2e8f0;height:32px;display:flex;align-items:center;gap:6px;padding:0 12px}
+[data-theme="dark"] .app-titlebar{background:#161b22;border-color:#21262d}
+.app-dot{width:10px;height:10px;border-radius:50%}
+.app-url{flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:4px;height:18px;margin:0 8px;display:flex;align-items:center;padding:0 8px;font-family:var(--mono);font-size:8px;color:#64748b}
+[data-theme="dark"] .app-url{background:#0d1117;border-color:#21262d;color:#484f58}
+.app-body{display:flex;height:200px}
+@media(max-width:600px){.app-sidebar{display:none!important}.kpis{grid-template-columns:1fr 1fr!important}.task-row{flex-wrap:wrap}.app-body{height:auto}}
+.app-sidebar{width:52px;background:#1e293b;border-right:1px solid #334155;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:8px}
+.app-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.app-icon.active{background:#4f46e5}
+.app-content{flex:1;background:#f8fafc;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+[data-theme="dark"] .app-content{background:#0d1117}
+.app-header{display:flex;justify-content:space-between;align-items:center}
+.app-h1{font-size:13px;font-weight:800;color:#0f172a;font-family:'Inter',sans-serif}
+[data-theme="dark"] .app-h1{color:#e6edf3}
+.app-sub{font-size:9px;color:#64748b}
+.app-add{background:#4f46e5;color:#fff;font-size:8px;font-weight:700;padding:4px 8px;border-radius:5px;font-family:'Inter',sans-serif}
+.kpis{display:flex;gap:6px}
+.kpi{flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:7px;padding:7px 8px}
+[data-theme="dark"] .kpi{background:#161b22;border-color:#21262d}
+.kpi-label{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.kpi-n{font-size:16px;font-weight:900;font-family:var(--mono)}
+.task-row{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;display:flex;align-items:center;gap:6px}
+[data-theme="dark"] .task-row{background:#161b22;border-color:#21262d}
+.task-circle{width:10px;height:10px;border-radius:50%;border:1.5px solid #94a3b8;flex-shrink:0}
+.task-title{font-size:9px;font-weight:600;color:#0f172a;flex:1;font-family:'Inter',sans-serif}
+[data-theme="dark"] .task-title{color:#e6edf3}
+.task-chip{font-size:7px;font-weight:700;padding:2px 5px;border-radius:10px}
+.chip-todo{background:#f1f5f9;color:#64748b}
+.chip-prog{background:rgba(245,158,11,.12);color:#d97706}
+.chip-urg{background:rgba(239,68,68,.1);color:#dc2626}
+.chip-grant{background:rgba(79,70,229,.08);color:#4f46e5;display:flex;align-items:center;gap:2px}
+.perm-badge{position:absolute;top:12px;right:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:9px;font-weight:600;padding:4px 10px;border-radius:20px;font-family:var(--mono)}
+
+/* CASE CARD */
+.cc{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .3s}
+.cc:hover{border-color:var(--accent);box-shadow:0 20px 60px rgba(0,0,0,.1),0 0 0 1px var(--accent);transform:translateY(-4px)}
+.cb2{padding:24px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tg{background:var(--tag-bg);color:var(--tag);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:var(--mono)}
+.live-b{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.ct{font-size:clamp(15px,2.5vw,20px);font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:6px}
+.cd{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:20px}
+
+/* TERM BLOCK */
+[data-theme="dark"] .tb{background:#080c12;border:1px solid #21262d;border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.9;margin-bottom:18px}
+[data-theme="light"] .tb{display:none}
+.tc{color:#484f58}.tk{color:#79c0ff}.ts{color:#a5d6ff}.tg2{color:#3fb950}.ty{color:#f2cc60}
+
+/* TABS */
+.tabs{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.tbar{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{padding:9px 13px;font-size:11px;font-weight:600;color:var(--text3);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:var(--mono)}
+.tab.on{color:var(--accent);background:var(--surface);border-bottom-color:var(--accent)}
+.tab:hover:not(.on){color:var(--text2);background:var(--bg3)}
+.tbody{padding:16px;background:var(--surface);font-size:12px;color:var(--text2);line-height:1.75;min-height:70px}
+
+/* WALKTHROUGH */
+.walk{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.walk-scr{background:var(--bg3);border-radius:8px;height:100px;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:10px;overflow:hidden;font-size:11px;color:var(--text3)}
+[data-theme="dark"] .walk-scr{background:#161b22}
+.walk-ann{position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:9px;padding:3px 8px;border-radius:6px;font-family:var(--mono)}
+.walk-ft{display:flex;justify-content:space-between;align-items:center}
+.walk-dots{display:flex;gap:5px}
+.wd{width:7px;height:7px;border-radius:50%;background:var(--border)}
+.wd.on{background:var(--accent)}
+.walk-txt{font-size:11px;color:var(--text2)}
+.walk-btns{display:flex;gap:6px}
+.wb{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:var(--mono)}
+.wb.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.cacts{display:flex;gap:8px;flex-wrap:wrap}
+.soon{background:var(--card);border:1px dashed var(--border);border-radius:14px;padding:24px;display:flex;align-items:center;gap:14px;opacity:.6;margin-top:12px}
+.soon-ic{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* PROCESS */
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:640px){.pgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:360px){.pgrid{grid-template-columns:1fr}}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .25s;position:relative;overflow:hidden}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.pc:hover::before{transform:scaleX(1)}
+.pc:hover{border-color:var(--accent);transform:translateY(-3px)}
+.pn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.pi{font-size:22px;margin-bottom:8px}
+.pt{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.pd{font-size:11px;color:var(--text2);line-height:1.6}
+
+/* SERVICES — expanded */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:700px){.sgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.sgrid{grid-template-columns:1fr}}
+.sv{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .25s;cursor:pointer}
+.sv:hover{border-color:var(--accent);background:var(--glow);transform:translateY(-3px)}
+.sv-icon{font-size:24px;margin-bottom:10px}
+.sv-t{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.sv-d{font-size:11px;color:var(--text2);line-height:1.6}
+.sv-note{font-size:10px;color:var(--accent);font-family:var(--mono);margin-top:6px;font-weight:600}
+
+/* AVAIL */
+.av-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.av-l{flex:1;min-width:180px}
+.av-t{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.av-m{font-size:12px;color:var(--text2);line-height:1.75}
+.av-m span{color:var(--accent);font-family:var(--mono);font-weight:600}
+.av-r{display:flex;flex-direction:column;gap:8px;min-width:150px}
+.av-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);font-family:var(--mono)}
+.av-row::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0}
+
+/* STACK */
+.stack-wrap{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 24px;position:relative;z-index:1}
+.stack-in{max-width:960px;margin:0 auto}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--text2);transition:all .2s;cursor:default;font-family:var(--mono)}
+.pill:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.pill.hi{border-color:var(--accent);color:var(--accent)}
+
+/* TESTIMONIAL */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;position:relative}
+.qm{font-size:72px;line-height:.8;color:var(--accent);opacity:.2;font-family:Georgia,serif;position:absolute;top:16px;left:22px}
+.tt{font-size:clamp(13px,2vw,16px);color:var(--text2);line-height:1.8;font-style:italic;padding-top:28px}
+.tw{margin-top:20px;display:flex;align-items:center;gap:12px}
+.tav{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* FAQ */
+.faq{display:flex;flex-direction:column;gap:8px}
+.fi{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fq{padding:16px 20px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s}
+.fq:hover{color:var(--accent)}
+.fq .ar{color:var(--text3);font-size:16px;transition:transform .3s;font-family:var(--mono)}
+.fi.open .ar{transform:rotate(45deg)}
+.fa{display:none;padding:0 20px 16px;font-size:12px;color:var(--text2);line-height:1.75}
+.fi.open .fa{display:block}
+
+/* CONTACT */
+.cs{background:var(--contact);padding:80px 48px;position:relative;overflow:hidden}
+@media(max-width:640px){.cs{padding:60px 24px}}
+[data-theme="dark"] .cs::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(88,166,255,.06),transparent 70%);pointer-events:none}
+.ci{max-width:520px;margin:0 auto;text-align:center;position:relative}
+.ctit{font-size:clamp(26px,5vw,46px);font-weight:900;letter-spacing:-2px;color:#fff;margin-bottom:10px}
+.csub{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:32px}
+.cform{display:flex;flex-direction:column;gap:10px;text-align:left}
+.fi2{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:13px 16px;font-size:13px;color:#e6edf3;font-family:'Inter',sans-serif;transition:border-color .2s}
+.fi2::placeholder{color:#334155}
+.fi2:focus{outline:none;border-color:var(--accent)}
+textarea.fi2{height:88px;resize:none}
+.fsub{background:var(--accent);color:#fff;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:var(--mono);margin-top:2px}
+.fsub:hover{opacity:.9;transform:translateY(-2px)}
+.clinks{display:flex;gap:16px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.cl{font-size:12px;color:#64748b;cursor:pointer;transition:color .2s;font-family:var(--mono);text-decoration:none}
+.cl:hover{color:var(--accent)}
+
+/* MOBILE CTA */
+.mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg);border-top:1px solid var(--border);backdrop-filter:blur(16px);padding:12px 16px;z-index:90}
+.mcta .bp{width:100%;text-align:center;padding:14px}
+@media(max-width:768px){.mcta{display:block}}
+
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:20px 24px;text-align:center;font-size:11px;color:var(--text3);font-family:var(--mono);position:relative;z-index:1}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+@keyframes scrollD{0%{transform:translateY(-100%);opacity:1}100%{transform:translateY(200%);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <div class="logo"><span class="br">{</span>danfaruq<span class="br">}</span><div class="cb"></div></div>
+    <div class="nav-pill">● available</div>
+    <div class="nl">
+      <div class="na">work</div>
+      <div class="na">services</div>
+      <div class="na">process</div>
+      <div class="na">contact</div>
+    </div>
+    <div class="ncta">$ hire_me →</div>
+    <div class="tbtn" onclick="toggleTheme()" id="tb">☀️</div>
+    <div class="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mob-menu" id="mm">
+  <div class="na" onclick="closeMenu()">work</div>
+  <div class="na" onclick="closeMenu()">services</div>
+  <div class="na" onclick="closeMenu()">process</div>
+  <div class="na" onclick="closeMenu()">contact</div>
+  <div class="ncta" onclick="closeMenu()">$ hire_me →</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge"><span class="dot"></span>available for new projects</div>
+  <div class="hterm"><span class="pr">❯</span><span>danfaruq.build(<span style="color:#a5d6ff">"your_idea"</span>)</span><span class="cur"></span></div>
+  <h1>I build things<br/><span class="gr">people actually use.</span></h1>
+  <p class="hsub">Full-stack developer specialising in React, Next.js & Supabase. From landing pages to complex web apps — I design, build, and ship products that reach production and stay there.</p>
+  <div class="hctas">
+    <div class="bp">Book a free call →</div>
+    <div class="bs">See my work ↓</div>
+  </div>
+  <div class="stats">
+    <div class="st"><div class="stn">1+</div><div class="stl">Live clients</div></div>
+    <div class="st"><div class="stn">4wk</div><div class="stl">Avg delivery</div></div>
+    <div class="st"><div class="stn">100%</div><div class="stl">Ships to prod</div></div>
+    <div class="st"><div class="stn">remote</div><div class="stl">Works globally</div></div>
+  </div>
+  <div class="sc-hint"><div class="sc-rail"></div>scroll</div>
+</div>
+
+<div class="div"></div>
+
+<!-- CASE STUDIES -->
+<div class="sec">
+  <div class="sl">// work</div>
+  <div class="st2">Selected Projects</div>
+  <div class="cc">
+
+    <!-- REAL APP MOCKUP -->
+    <div class="app-mockup">
+      <div class="app-frame">
+        <div class="app-titlebar">
+          <div class="app-dot" style="background:#ef4444"></div>
+          <div class="app-dot" style="background:#f59e0b"></div>
+          <div class="app-dot" style="background:#22c55e"></div>
+          <div class="app-url">e4g-grant-tracker.vercel.app/dashboard</div>
+        </div>
+        <div class="app-body">
+          <div class="app-sidebar">
+            <div class="app-icon active">📊</div>
+            <div class="app-icon" style="color:#64748b">📄</div>
+            <div class="app-icon" style="color:#64748b">✅</div>
+            <div class="app-icon" style="color:#64748b">👥</div>
+            <div class="app-icon" style="color:#64748b">🔔</div>
+          </div>
+          <div class="app-content">
+            <div class="app-header">
+              <div><div class="app-h1">Dashboard</div><div class="app-sub">E4G Team · 5 active grants</div></div>
+              <div class="app-add">+ New Grant</div>
+            </div>
+            <div class="kpis">
+              <div class="kpi"><div class="kpi-label" style="color:#ef4444">OVERDUE</div><div class="kpi-n" style="color:#ef4444">2</div></div>
+              <div class="kpi"><div class="kpi-label" style="color:#f59e0b">DUE TODAY</div><div class="kpi-n" style="color:#f59e0b">1</div></div>
+              <div class="kpi"><div class="kpi-label" style="color:#4f46e5">IN PROGRESS</div><div class="kpi-n" style="color:#4f46e5">3</div></div>
+              <div class="kpi"><div class="kpi-label" style="color:#22c55e">AWARDED</div><div class="kpi-n" style="color:#22c55e">4</div></div>
+            </div>
+            <div class="task-row">
+              <div class="task-circle" style="border-color:#f59e0b;background:rgba(245,158,11,.1)"></div>
+              <div class="task-title">Submit Adult Literacy proposal</div>
+              <div class="task-chip chip-prog">In progress</div>
+              <div class="task-chip chip-urg">Urgent</div>
+              <div class="task-chip chip-grant">📄 Adult Literacy</div>
+            </div>
+            <div class="task-row">
+              <div class="task-circle"></div>
+              <div class="task-title">Collect impact data from 2024 cohort</div>
+              <div class="task-chip chip-todo">To do</div>
+              <div class="task-chip" style="background:rgba(249,115,22,.1);color:#ea580c">High</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="perm-badge">✓ shared with client permission</div>
+    </div>
+
+    <div class="cb2">
+      <div class="tags">
+        <span class="tg">NGO</span><span class="tg">Grant Management</span>
+        <span class="tg">Full-Stack</span><span class="live-b">● Live</span>
+      </div>
+      <div class="ct">E4G Team — Grant Tracker</div>
+      <div class="cd">A full-stack grant management platform replacing spreadsheets for an NGO. Tracks grants end-to-end with team tasks, real-time updates, push notifications, and a personal dashboard for every team member.</div>
+      <div class="tb">
+        <div class="tc">// project.json</div>
+        <div><span class="tk">client</span>: <span class="ts">"E4G Team"</span>,</div>
+        <div><span class="tk">stack</span>: [<span class="ts">"Next.js 16"</span>, <span class="ts">"Supabase"</span>, <span class="ts">"React 19"</span>],</div>
+        <div><span class="tk">shipped_in</span>: <span class="ty">4</span>, <span class="tc">// weeks</span></div>
+        <div><span class="tk">status</span>: <span class="tg2">live</span>,</div>
+        <div><span class="tk">impact</span>: <span class="ts">"team fully off spreadsheets"</span></div>
+      </div>
+      <div class="tabs">
+        <div class="tbar">
+          <div class="tab on" onclick="tab(this,'ov')">overview</div>
+          <div class="tab" onclick="tab(this,'pb')">problem</div>
+          <div class="tab" onclick="tab(this,'bl')">build</div>
+          <div class="tab" onclick="tab(this,'ts')">tech_stack</div>
+          <div class="tab" onclick="tab(this,'rs')">results</div>
+          <div class="tab" onclick="tab(this,'dm')">live_demo ↗</div>
+        </div>
+        <div class="tbody" id="tb2">E4G Team needed a single platform to track grants, assign tasks, and manage stakeholder relationships. I built a purpose-built system in 4 weeks that now runs their entire grant operation.</div>
+      </div>
+      <div class="walk">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-family:var(--mono)">app_walkthrough · 1/4</div>
+        <div class="walk-scr">Dashboard — real-time KPIs &amp; team tasks<div class="walk-ann">← Grant overview</div></div>
+        <div class="walk-ft">
+          <div class="walk-dots"><div class="wd on"></div><div class="wd"></div><div class="wd"></div><div class="wd"></div></div>
+          <div class="walk-txt">Dashboard · My Work · Grants · Mobile</div>
+          <div class="walk-btns"><div class="wb">← prev</div><div class="wb p">next →</div></div>
+        </div>
+      </div>
+      <div class="cacts">
+        <div class="bp" style="font-size:12px;padding:10px 18px">Explore case study →</div>
+        <div class="bs" style="font-size:12px;padding:10px 18px">View live app ↗</div>
+      </div>
+    </div>
+  </div>
+  <div class="soon">
+    <div class="soon-ic">⚙️</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text)">Next Project</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono)">// in architecture phase · coming soon</div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SERVICES — expanded -->
+<div class="sec">
+  <div class="sl">// services</div>
+  <div class="st2">What I Build</div>
+  <div class="sgrid">
+    <div class="sv">
+      <div class="sv-icon">🚀</div>
+      <div class="sv-t">Landing Pages</div>
+      <div class="sv-d">High-converting marketing pages, product launches, and startup landing pages that look great on every screen.</div>
+      <div class="sv-note">→ from idea to live in days</div>
+    </div>
+    <div class="sv">
+      <div class="sv-icon">🌐</div>
+      <div class="sv-t">Business Websites</div>
+      <div class="sv-d">Portfolios, agency sites, NGO websites, and service pages — fast, SEO-friendly, and easy to update.</div>
+      <div class="sv-note">→ Next.js or custom HTML/CSS</div>
+    </div>
+    <div class="sv">
+      <div class="sv-icon">⚡</div>
+      <div class="sv-t">Web Applications</div>
+      <div class="sv-d">Full-stack apps with auth, database, real-time data, file uploads, and role-based access control.</div>
+      <div class="sv-note">→ React · Next.js · Supabase</div>
+    </div>
+    <div class="sv">
+      <div class="sv-icon">🛠</div>
+      <div class="sv-t">Internal Tools</div>
+      <div class="sv-d">Custom dashboards, admin panels, and workflow apps that replace spreadsheets and cut manual work.</div>
+      <div class="sv-note">→ your team's new favourite tool</div>
+    </div>
+    <div class="sv">
+      <div class="sv-icon">📊</div>
+      <div class="sv-t">Dashboards & Reports</div>
+      <div class="sv-d">Live data visualisation with filters, role-based views, and charts that update in real time.</div>
+      <div class="sv-note">→ connected to your data source</div>
+    </div>
+    <div class="sv">
+      <div class="sv-icon">🎨</div>
+      <div class="sv-t">UI/UX Design + Build</div>
+      <div class="sv-d">I design the interface and build it — no separate designer needed. Clean, usable, and on-brand from day one.</div>
+      <div class="sv-note">→ Figma → code, or design-as-I-build</div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- PROCESS -->
+<div class="sec">
+  <div class="sl">// how_i_work</div>
+  <div class="st2">My Process</div>
+  <div class="pgrid">
+    <div class="pc"><div class="pn">01</div><div class="pi">🔍</div><div class="pt">Discover</div><div class="pd">I ask the hard questions first — what problem are we solving, who uses it, what does success look like?</div></div>
+    <div class="pc"><div class="pn">02</div><div class="pi">📐</div><div class="pt">Design</div><div class="pd">Architecture before code. Data model, auth flow, and component structure agreed before a line is written.</div></div>
+    <div class="pc"><div class="pn">03</div><div class="pi">⚡</div><div class="pt">Build</div><div class="pd">Weekly check-ins and live preview links throughout. You see progress, not just a final reveal.</div></div>
+    <div class="pc"><div class="pn">04</div><div class="pi">🚀</div><div class="pt">Ship</div><div class="pd">Deployed, tested, and documented. I stay on for 2 weeks post-launch to catch anything unexpected.</div></div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- AVAILABILITY -->
+<div class="sec">
+  <div class="sl">// availability</div>
+  <div class="st2">Let's Work Together</div>
+  <div class="av-card">
+    <div class="av-l">
+      <div class="av-t">Open for projects.</div>
+      <div class="av-m">Works <span>fully remote</span> with clients worldwide.<br/>Reply time: <span>within 24 hours</span>.<br/>Projects typically start within <span>1–2 weeks</span> of agreement.</div>
+    </div>
+    <div class="av-r">
+      <div class="av-row">Async-first workflow</div>
+      <div class="av-row">Weekly progress updates</div>
+      <div class="av-row">Fixed-scope or retainer</div>
+      <div class="av-row">2-week post-launch support</div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- STACK -->
+<div class="stack-wrap">
+  <div class="stack-in">
+    <div class="sl">// tech_stack</div>
+    <div class="pills">
+      <div class="pill hi">React 19</div>
+      <div class="pill hi">Next.js 16</div>
+      <div class="pill hi">TypeScript</div>
+      <div class="pill">Supabase</div>
+      <div class="pill">PostgreSQL</div>
+      <div class="pill">Tailwind CSS v4</div>
+      <div class="pill">Framer Motion</div>
+      <div class="pill">shadcn/ui</div>
+      <div class="pill">Zod</div>
+      <div class="pill">Vercel</div>
+      <div class="pill">Web Push</div>
+      <div class="pill">Resend</div>
+      <div class="pill">HTML / CSS</div>
+      <div class="pill">Node.js</div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL -->
+<div class="sec">
+  <div class="sl">// client_words</div>
+  <div class="st2">What They Say</div>
+  <div class="tcard">
+    <div class="qm">"</div>
+    <div class="tt">[Testimonial from E4G Team — to be added after outreach. A real quote here closes deals before the first call.]</div>
+    <div class="tw">
+      <div class="tav">E4</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">E4G Team</div>
+        <div style="font-size:11px;color:var(--text3)">Evidence for Good · NGO</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- FAQ -->
+<div class="sec">
+  <div class="sl">// faq</div>
+  <div class="st2">Common Questions</div>
+  <div class="faq">
+    <div class="fi"><div class="fq" onclick="faq(this)">How long does a project take? <span class="ar">+</span></div><div class="fa">Landing pages and simple sites: 3–7 days. Internal tools and web apps: 3–6 weeks. Complex platforms: 8–12 weeks. I give you a fixed timeline after our first call.</div></div>
+    <div class="fi"><div class="fq" onclick="faq(this)">Do you do design too, or just development? <span class="ar">+</span></div><div class="fa">Both. I design the interface and build it. You don't need to hire a separate designer — I work from your brief, a rough sketch, or from scratch. For larger projects I use Figma to align before building.</div></div>
+    <div class="fi"><div class="fq" onclick="faq(this)">What do you need from me to get started? <span class="ar">+</span></div><div class="fa">A description of the problem you want solved, who uses it, and any existing tools or data to work with. I handle everything else — design, architecture, build, and deployment.</div></div>
+    <div class="fi"><div class="fq" onclick="faq(this)">Do you do ongoing maintenance? <span class="ar">+</span></div><div class="fa">Yes. After the 2-week post-launch support period I offer monthly retainers for ongoing development and maintenance. Rates depend on scope.</div></div>
+    <div class="fi"><div class="fq" onclick="faq(this)">I'm not technical — will I understand what's being built? <span class="ar">+</span></div><div class="fa">Absolutely. I write in plain English, send weekly Loom updates, and give you a live preview link from day one. You stay in the loop without needing to understand code.</div></div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="cs">
+  <div style="max-width:960px;margin:0 auto;position:relative;display:flex;gap:64px;align-items:flex-start;flex-wrap:wrap;">
+
+    <!-- LEFT: headline + trust signals -->
+    <div style="flex:1;min-width:260px;">
+      <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:14px;">// contact</div>
+      <div class="ctit" style="text-align:left;max-width:340px;">Have an idea?<br/>Let's talk.</div>
+      <div class="csub" style="text-align:left;max-width:320px;margin-top:12px;margin-bottom:32px;">Tell me what you're building — even a rough idea is enough to start. First call is free.</div>
+
+      <!-- What happens next -->
+      <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:36px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--glow);border:1px solid rgba(88,166,255,.3);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:var(--accent);font-family:var(--mono);font-weight:700;">1</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:2px;">You send a message</div>
+            <div style="font-size:11px;color:#64748b;line-height:1.6;">Describe what you need — no brief required, just the gist.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--glow);border:1px solid rgba(88,166,255,.3);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:var(--accent);font-family:var(--mono);font-weight:700;">2</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:2px;">I reply within 24 hours</div>
+            <div style="font-size:11px;color:#64748b;line-height:1.6;">With questions, a rough timeline, and whether I'm a good fit.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:8px;background:var(--glow);border:1px solid rgba(88,166,255,.3);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:var(--accent);font-family:var(--mono);font-weight:700;">3</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:2px;">Free 30-min call</div>
+            <div style="font-size:11px;color:#64748b;line-height:1.6;">No pitch. We talk through the problem and I tell you exactly what I'd build.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social links styled as chips -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <a class="cl" href="https://github.com/DanFaruq" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;color:#94a3b8;text-decoration:none;font-size:12px;transition:all .2s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a class="cl" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;color:#94a3b8;font-size:12px;transition:all .2s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+          LinkedIn
+        </a>
+        <a class="cl" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;color:#94a3b8;font-size:12px;transition:all .2s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 0H1C.45 0 0 .45 0 1v22c0 .55.45 1 1 1h12v-9.26H9.83v-3.62H13V8.41c0-3.1 1.89-4.79 4.66-4.79 1.32 0 2.46.1 2.79.14v3.23h-1.92c-1.5 0-1.79.71-1.79 1.76v2.31h3.59l-.47 3.62h-3.12V24H23c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1z"/></svg>
+          Fiverr
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: form -->
+    <div style="flex:1;min-width:280px;max-width:420px;">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:20px;display:flex;align-items:center;gap:6px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 2s infinite"></span>
+          available · replies within 24h
+        </div>
+        <div class="cform">
+          <input class="fi2" placeholder="Your name"/>
+          <input class="fi2" placeholder="Email or WhatsApp"/>
+          <textarea class="fi2" placeholder="What are you building? (the messier the idea, the better)"></textarea>
+          <button class="fsub">Send message →</button>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:10px;color:#334155;font-family:var(--mono)">no spam · no pressure · just a conversation</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="mcta"><div class="bp">Book a free call →</div></div>
+
+<footer>{danfaruq} · built with React & Next.js · © 2026</footer>
+
+<script>
+function toggleTheme(){
+  const h=document.documentElement,dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('tb').textContent=dark?'🌙':'☀️';
+}
+let mo=false;
+function toggleMenu(){mo=!mo;document.getElementById('mm').classList.toggle('open',mo)}
+function closeMenu(){mo=false;document.getElementById('mm').classList.remove('open')}
+const td={
+  ov:'E4G Team needed a single platform to track grants, assign tasks, and manage stakeholder relationships. I built a purpose-built system in 4 weeks that now runs their entire grant operation.',
+  pb:'The team was managing 20+ grants across spreadsheets and email threads. Deadlines were missed, ownership was unclear, and there was no single source of truth for the team.',
+  bl:'Built with Next.js 16 App Router + Server Actions, Supabase for auth, Postgres + RLS, and real-time subscriptions. Service Worker for Web Push notifications. Deployed on Vercel with cron jobs.',
+  ts:'React 19 · Next.js 16 · TypeScript · Supabase (Postgres + RLS + Realtime) · Tailwind CSS v4 · Framer Motion · shadcn/ui · Vercel · Web Push · Zod · React Hook Form · Resend',
+  rs:'The team went from spreadsheets to a fully live production platform. Every member has a personal My Work dashboard. Push notifications track deadlines. Admin can view any team member\'s workload in one click.',
+  dm:'↗ Opening live app — e4g-grant-tracker.vercel.app'
+};
+function tab(el,k){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tb2').textContent=td[k];
+}
+function faq(el){el.closest('.fi').classList.toggle('open')}
+window.addEventListener('scroll',()=>{
+  const s=document.documentElement;
+  document.getElementById('prog').style.width=(s.scrollTop/(s.scrollHeight-s.clientHeight)*100)+'%';
+});
+document.getElementById('tb').textContent='☀️';
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<h2>What's the overall feel of your portfolio?</h2>
+<p class="subtitle">Pick the direction that fits how you want to be perceived by clients</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="dark-technical" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:20px;min-height:160px;display:flex;flex-direction:column;gap:10px;border-radius:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></div>
+      </div>
+      <div style="font-family:monospace;color:#22c55e;font-size:12px;line-height:1.6;">
+        <div><span style="color:#6b7280;">$</span> <span style="color:#60a5fa;">dan</span>.build(<span style="color:#f59e0b;">"your idea"</span>)</div>
+        <div style="color:#4b5563;">// Full-stack · Next.js · Supabase</div>
+        <div style="color:#e2e8f0;margin-top:8px;font-size:14px;font-family:sans-serif;font-weight:700;">Dan Faruq</div>
+        <div style="color:#6b7280;font-size:11px;font-family:sans-serif;">Full-Stack Developer</div>
+      </div>
+      <div style="margin-top:auto;display:flex;gap:6px;">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:4px;padding:4px 8px;color:#94a3b8;font-size:10px;font-family:sans-serif;">Next.js</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:4px;padding:4px 8px;color:#94a3b8;font-size:10px;font-family:sans-serif;">Supabase</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:4px;padding:4px 8px;color:#94a3b8;font-size:10px;font-family:sans-serif;">TypeScript</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Dark &amp; Technical</h3>
+      <p>Developer-coded aesthetic. Terminal accents, dark background, code-flavored details. Signals: "I'm a serious engineer." Appeals most to technical founders and dev-savvy clients.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="clean-professional" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#ffffff;padding:20px;min-height:160px;display:flex;flex-direction:column;gap:10px;border-radius:8px;border:1px solid #e5e7eb;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-weight:800;color:#111827;font-size:15px;">Dan Faruq</div>
+        <div style="display:flex;gap:12px;">
+          <div style="color:#6b7280;font-size:11px;">Work</div>
+          <div style="color:#6b7280;font-size:11px;">About</div>
+          <div style="background:#111827;color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;">Hire me</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="font-size:18px;font-weight:800;color:#111827;line-height:1.2;">I build tools<br/>that teams<br/>actually use.</div>
+        <div style="color:#6b7280;font-size:11px;margin-top:6px;">Full-Stack · Next.js · Supabase</div>
+      </div>
+      <div style="margin-top:auto;display:flex;gap:8px;">
+        <div style="background:#f3f4f6;border-radius:6px;padding:8px 12px;flex:1;">
+          <div style="font-size:10px;font-weight:700;color:#111827;">E4G Grant Tracker</div>
+          <div style="font-size:9px;color:#6b7280;">NGO platform · Live</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Clean &amp; Professional</h3>
+      <p>White space, crisp typography, structured case studies. Signals: "I deliver business results." Broadest appeal — works for NGOs, startups, and corporates alike.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="bold-creative" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:20px;min-height:160px;display:flex;flex-direction:column;gap:10px;border-radius:8px;overflow:hidden;position:relative;">
+      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+      <div style="position:absolute;bottom:-30px;left:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+      <div style="color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Portfolio</div>
+      <div style="font-size:22px;font-weight:900;color:#fff;line-height:1.1;position:relative;">Dan<br/>Faruq.</div>
+      <div style="color:rgba(255,255,255,0.8);font-size:11px;">Ships real products.<br/>Not mockups.</div>
+      <div style="margin-top:auto;display:flex;gap:6px;">
+        <div style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 10px;color:#fff;font-size:10px;backdrop-filter:blur(4px);">View Work ↗</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Bold &amp; Memorable</h3>
+      <p>Strong color, big personality, asymmetric layout. Signals: "I have taste and I ship." Stands out in a sea of plain portfolios. Best if you want to be remembered.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click a card to select, then tell me in the terminal — or mix ideas from multiple.</p>

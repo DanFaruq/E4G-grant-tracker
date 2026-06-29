@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dan Faruq — Portfolio Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f8fafc;
+    --bg3: #f1f5f9;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --accent: #4f46e5;
+    --accent2: #6366f1;
+    --accent-glow: rgba(79,70,229,0.15);
+    --nav-bg: rgba(255,255,255,0.75);
+    --nav-border: rgba(226,232,240,0.8);
+    --card-bg: #ffffff;
+    --code-bg: #f8fafc;
+    --code-text: #4f46e5;
+    --tag-bg: #eef2ff;
+    --tag-text: #4338ca;
+    --hero-gradient: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0f9ff 100%);
+    --noise: none;
+    --grid-color: rgba(148,163,184,0.08);
+    --contact-bg: #0f172a;
+    --contact-text: #f8fafc;
+    --glow: none;
+  }
+
+  [data-theme="dark"] {
+    --bg: #080c12;
+    --bg2: #0d1117;
+    --bg3: #161b22;
+    --surface: #0d1117;
+    --border: #21262d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --accent: #58a6ff;
+    --accent2: #79c0ff;
+    --accent-glow: rgba(88,166,255,0.12);
+    --nav-bg: rgba(13,17,23,0.85);
+    --nav-border: rgba(33,38,45,0.9);
+    --card-bg: #0d1117;
+    --code-bg: #0d1117;
+    --code-text: #3fb950;
+    --tag-bg: rgba(56,139,253,0.1);
+    --tag-text: #58a6ff;
+    --hero-gradient: radial-gradient(ellipse at 20% 50%, rgba(88,166,255,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(63,185,80,0.04) 0%, transparent 50%), #080c12;
+    --grid-color: rgba(88,166,255,0.04);
+    --contact-bg: #0d1117;
+    --contact-text: #e6edf3;
+    --glow: 0 0 40px rgba(88,166,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.4s, color 0.4s;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    background: var(--nav-bg);
+    border: 1px solid var(--nav-border);
+    border-radius: 50px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: all 0.4s;
+  }
+
+  nav .logo {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--text);
+    padding: 6px 14px;
+    letter-spacing: -0.3px;
+    margin-right: 4px;
+  }
+
+  nav a {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    padding: 7px 14px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  nav a:hover {
+    color: var(--text);
+    background: var(--accent-glow);
+  }
+
+  nav .cta {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    margin-left: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  nav .cta:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    margin-left: 4px;
+    color: var(--text);
+  }
+
+  .theme-toggle:hover {
+    transform: rotate(20deg) scale(1.1);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    background: var(--hero-gradient);
+    overflow: hidden;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-glow);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -3px;
+    color: var(--text);
+    max-width: 800px;
+    animation: fadeInUp 0.7s 0.1s ease both;
+  }
+
+  [data-theme="dark"] .hero h1 .highlight {
+    background: linear-gradient(135deg, #58a6ff, #3fb950);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  [data-theme="light"] .hero h1 .highlight {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 480px;
+    line-height: 1.7;
+    margin: 20px auto 36px;
+    animation: fadeInUp 0.7s 0.2s ease both;
+  }
+
+  [data-theme="dark"] .hero-terminal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #3fb950;
+    animation: fadeInUp 0.7s 0.15s ease both;
+  }
+
+  [data-theme="light"] .hero-terminal {
+    display: none;
+  }
+
+  .hero-terminal::before {
+    content: '❯';
+    color: #58a6ff;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: #3fb950;
+    animation: blink 1s infinite;
+    vertical-align: middle;
+    border-radius: 1px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    animation: fadeInUp 0.7s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px var(--accent-glow);
+    letter-spacing: -0.2px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text3);
+    animation: fadeIn 1s 1s ease both;
+  }
+
+  .scroll-dot {
+    width: 4px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-dot::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 4px;
+    animation: scrollDown 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scrollDown {
+    0% { top: 0; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 80px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text);
+    margin-bottom: 40px;
+  }
+
+  /* CASE STUDY CARD */
+  .case-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: var(--glow);
+  }
+
+  .case-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 48px rgba(0,0,0,0.15), 0 0 0 1px var(--accent);
+  }
+
+  .case-screenshot {
+    background: var(--bg3);
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-theme="dark"] .case-screenshot {
+    background: #0d1117;
+  }
+
+  .case-screenshot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .mock-screen {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  [data-theme="dark"] .mock-screen {
+    background: #161b22;
+  }
+
+  .mock-topbar {
+    height: 24px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+  }
+
+  .mock-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .mock-body { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .mock-row { height: 7px; background: var(--border); border-radius: 3px; }
+
+  .permission-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.25);
+    color: #22c55e;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .case-body { padding: 24px; }
+
+  .case-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .case-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .case-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .live-badge {
+    background: rgba(34,197,94,0.12);
+    color: #22c55e;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(34,197,94,0.2);
+  }
+
+  /* TABS */
+  .tabs {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .tab-bar {
+    display: flex;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 9px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    background: var(--surface);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab:hover:not(.active) { color: var(--text2); background: var(--bg3); }
+
+  .tab-content {
+    padding: 16px;
+    background: var(--surface);
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* SERVICES */
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .service-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+
+  .service-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    transform: translateY(-3px);
+  }
+
+  .service-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .service-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .service-desc {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* STACK */
+  .stack-section {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px;
+  }
+
+  .stack-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .stack-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .stack-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* TERMINAL BLOCK (dark only) */
+  [data-theme="dark"] .terminal-block {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  [data-theme="light"] .terminal-block { display: none; }
+
+  .t-comment { color: #484f58; }
+  .t-key { color: #79c0ff; }
+  .t-str { color: #a5d6ff; }
+  .t-num { color: #f2cc60; }
+  .t-bool { color: #ff7b72; }
+  .t-green { color: #3fb950; }
+
+  /* TESTIMONIAL */
+  .testimonial-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    position: relative;
+  }
+
+  .quote-mark {
+    font-size: 60px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.3;
+    font-family: Georgia, serif;
+    position: absolute;
+    top: 16px;
+    left: 24px;
+  }
+
+  .testimonial-text {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.8;
+    font-style: italic;
+    padding-top: 20px;
+  }
+
+  .testimonial-author {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--contact-bg);
+    padding: 80px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-theme="dark"] .contact-section::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(88,166,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .contact-inner { max-width: 520px; margin: 0 auto; position: relative; }
+
+  .contact-title {
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  [data-theme="light"] .contact-section .contact-title { color: #f8fafc; }
+
+  .contact-sub {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .form-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 13px;
+    color: #e6edf3;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+  }
+
+  .form-input::placeholder { color: #484f58; }
+  .form-input:focus { outline: none; border-color: var(--accent); }
+
+  .form-submit {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .form-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+
+  .contact-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .contact-link {
+    font-size: 12px;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+
+  .contact-link:hover { color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 20px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .coming-soon {
+    background: var(--card-bg);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0.6;
+    margin-top: 12px;
+  }
+
+  .coming-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Dan Faruq</div>
+  <a>Work</a>
+  <a>Services</a>
+  <a>About</a>
+  <div class="cta">Book a call →</div>
+  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+    <span id="theme-icon">☀️</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Available for new projects</div>
+
+  <div class="hero-terminal" id="terminal-line">
+    danfaruq.build(<span style="color:#a5d6ff">"your idea"</span>)<span class="cursor"></span>
+  </div>
+
+  <h1>I build tools<br/><span class="highlight">teams actually use.</span></h1>
+
+  <p class="hero-sub">
+    Full-stack developer specialising in Next.js & Supabase.<br/>
+    I turn complex workflows into clean, fast web applications —<br/>and ship things that actually reach production.
+  </p>
+
+  <div class="hero-ctas">
+    <div class="btn-primary">Book a free call →</div>
+    <div class="btn-secondary">See my work ↓</div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-dot"></div>
+    scroll
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- CASE STUDIES -->
+<section>
+  <div class="section-label">Work</div>
+  <div class="section-title">Selected Projects</div>
+
+  <!-- E4G Card -->
+  <div class="case-card">
+    <div class="case-screenshot">
+      <div class="mock-screen">
+        <div class="mock-topbar">
+          <div class="mock-dot" style="background:#ef4444;"></div>
+          <div class="mock-dot" style="background:#f59e0b;"></div>
+          <div class="mock-dot" style="background:#22c55e;"></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-row" style="width:70%;"></div>
+          <div class="mock-row" style="width:50%;background:var(--accent);opacity:0.4;"></div>
+          <div class="mock-row" style="width:85%;"></div>
+          <div class="mock-row" style="width:60%;"></div>
+        </div>
+      </div>
+      <div class="mock-screen">
+        <div class="mock-topbar">
+          <div class="mock-dot" style="background:#ef4444;"></div>
+          <div class="mock-dot" style="background:#f59e0b;"></div>
+          <div class="mock-dot" style="background:#22c55e;"></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-row" style="width:90%;"></div>
+          <div style="display:flex;gap:4px;margin:4px 0;">
+            <div style="background:#22c55e;border-radius:10px;padding:2px 6px;font-size:8px;color:#fff;">Awarded</div>
+            <div style="background:#f59e0b;border-radius:10px;padding:2px 6px;font-size:8px;color:#fff;">Active</div>
+          </div>
+          <div class="mock-row" style="width:75%;"></div>
+          <div class="mock-row" style="width:65%;"></div>
+        </div>
+      </div>
+      <div class="mock-screen">
+        <div class="mock-topbar">
+          <div class="mock-dot" style="background:#ef4444;"></div>
+          <div class="mock-dot" style="background:#f59e0b;"></div>
+          <div class="mock-dot" style="background:#22c55e;"></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-row" style="width:80%;"></div>
+          <div class="mock-row" style="height:24px;background:var(--accent);opacity:0.3;border-radius:6px;margin:4px 0;"></div>
+          <div class="mock-row" style="width:70%;"></div>
+        </div>
+      </div>
+      <div class="permission-badge">✓ Shared with client permission</div>
+    </div>
+
+    <div class="case-body">
+      <div class="case-meta">
+        <span class="tag">NGO</span>
+        <span class="tag">Grant Management</span>
+        <span class="tag">Full-Stack</span>
+        <span class="live-badge">● Live</span>
+      </div>
+      <div class="case-title">E4G Team — Grant Tracker</div>
+      <div class="case-desc">A full-stack grant management platform replacing spreadsheets for an NGO team. Tracks grants end-to-end with team tasks, real-time updates, push notifications, and a personal dashboard for every team member.</div>
+
+      <!-- Terminal block (dark mode only) -->
+      <div class="terminal-block">
+        <div class="t-comment">// project snapshot</div>
+        <div><span class="t-key">client</span>: <span class="t-str">"E4G Team"</span>,</div>
+        <div><span class="t-key">stack</span>: [<span class="t-str">"Next.js 16"</span>, <span class="t-str">"Supabase"</span>, <span class="t-str">"TypeScript"</span>],</div>
+        <div><span class="t-key">status</span>: <span class="t-green">live</span>,</div>
+        <div><span class="t-key">impact</span>: <span class="t-str">"team fully off spreadsheets"</span></div>
+      </div>
+
+      <!-- Tabs (B) -->
+      <div class="tabs">
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTab(this, 'overview')">Overview</div>
+          <div class="tab" onclick="switchTab(this, 'problem')">Problem</div>
+          <div class="tab" onclick="switchTab(this, 'build')">Build</div>
+          <div class="tab" onclick="switchTab(this, 'tech')">Tech Stack</div>
+          <div class="tab" onclick="switchTab(this, 'results')">Results</div>
+          <div class="tab" onclick="switchTab(this, 'demo')">Live Demo ↗</div>
+        </div>
+        <div class="tab-content" id="tab-overview">
+          E4G Team needed a way to track grants, team tasks, and stakeholder relationships — all in one place. I built a purpose-built platform in 4 weeks that now runs their entire grant operation.
+        </div>
+      </div>
+
+      <!-- App walkthrough (C) -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">App Walkthrough · 1 / 4</div>
+        <div style="background:var(--bg3);border-radius:8px;height:120px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+          <div style="font-size:11px;color:var(--text3);">[ Screenshot: Dashboard with grant KPIs ]</div>
+          <div style="position:absolute;top:10px;right:10px;background:var(--accent);color:#fff;font-size:9px;padding:4px 8px;border-radius:6px;">← Grant overview</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <div style="font-size:11px;color:var(--text2);">Dashboard — real-time grant status at a glance</div>
+          <div style="display:flex;gap:6px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2);cursor:pointer;">← Prev</div>
+            <div style="background:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;color:#fff;cursor:pointer;">Next →</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <div class="btn-primary" style="font-size:12px;padding:10px 18px;">Explore case study →</div>
+        <div class="btn-secondary" style="font-size:12px;padding:10px 18px;">View live app ↗</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coming soon -->
+  <div class="coming-soon">
+    <div class="coming-icon">⚙️</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);">Next Project</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Currently in architecture phase · Coming soon</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SERVICES -->
+<section>
+  <div class="section-label">What I build</div>
+  <div class="section-title">Services</div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">🛠</div>
+      <div class="service-title">Internal Tools</div>
+      <div class="service-desc">Custom dashboards, admin panels, and workflow apps that replace spreadsheets.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">⚡</div>
+      <div class="service-title">Web Applications</div>
+      <div class="service-desc">Full-stack Next.js apps with auth, real-time data, and production deployment.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">📊</div>
+      <div class="service-title">Data Dashboards</div>
+      <div class="service-desc">Visual reporting tools with live data, filters, and role-based access.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔗</div>
+      <div class="service-title">Integrations & APIs</div>
+      <div class="service-desc">Connect your tools — Supabase, REST APIs, webhooks, cron jobs, notifications.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- STACK -->
+<div class="stack-section">
+  <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;text-align:center;">Tech Stack</div>
+  <div class="stack-grid" style="justify-content:center;">
+    <div class="stack-pill">Next.js 16</div>
+    <div class="stack-pill">TypeScript</div>
+    <div class="stack-pill">Supabase</div>
+    <div class="stack-pill">PostgreSQL</div>
+    <div class="stack-pill">Tailwind CSS v4</div>
+    <div class="stack-pill">Framer Motion</div>
+    <div class="stack-pill">React 19</div>
+    <div class="stack-pill">Vercel</div>
+    <div class="stack-pill">Zod</div>
+    <div class="stack-pill">shadcn/ui</div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL -->
+<section>
+  <div class="section-label">Client Words</div>
+  <div class="section-title">What they say</div>
+  <div class="testimonial-card">
+    <div class="quote-mark">"</div>
+    <div class="testimonial-text">
+      [Testimonial from E4G Team — to be added after outreach. A real quote here will close deals before the first call.]
+    </div>
+    <div class="testimonial-author">
+      <div class="author-avatar">E4</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">E4G Team</div>
+        <div style="font-size:11px;color:var(--text3);">Evidence for Good · NGO</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-section">
+  <div class="contact-inner">
+    <div class="contact-title">Let's build something.</div>
+    <div class="contact-sub">Tell me what you're working on. First call is free — no pitch, just a conversation about what you need.</div>
+    <div class="contact-form">
+      <input class="form-input" placeholder="Your name" />
+      <input class="form-input" placeholder="Email or WhatsApp" />
+      <textarea class="form-input" style="height:90px;resize:none;" placeholder="What are you building?"></textarea>
+      <button class="form-submit">Send message →</button>
+    </div>
+    <div class="contact-links">
+      <span class="contact-link">GitHub</span>
+      <span class="contact-link">LinkedIn</span>
+      <span class="contact-link">faruqdaniyan@gmail.com</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span style="color:var(--text2);font-weight:600;">Dan Faruq</span> · Built with Next.js & Tailwind · &copy; 2026
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+  }
+
+  function switchTab(el, tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const msgs = {
+      overview: 'E4G Team needed a way to track grants, team tasks, and stakeholder relationships — all in one place. I built a purpose-built platform in 4 weeks that now runs their entire grant operation.',
+      problem: 'The team was managing 20+ grants across spreadsheets and email threads. Deadlines were missed, ownership was unclear, and there was no single source of truth for the team.',
+      build: 'Built with Next.js 16 App Router, Supabase for auth + database + realtime, Tailwind v4, and shadcn/ui. Server Actions handle all mutations. RLS enforces data security at the database level.',
+      tech: 'Next.js 16 · TypeScript · Supabase (Postgres + RLS + Realtime) · Tailwind CSS v4 · Framer Motion · shadcn/ui · Vercel · Web Push (VAPID) · Zod · React Hook Form',
+      results: 'The team went from spreadsheets to a fully live production platform. Every team member has a personal dashboard of their tasks, events, and grants. Push notifications keep the team on top of deadlines.',
+      demo: 'Opening live demo...'
+    };
+    document.getElementById('tab-overview').textContent = msgs[tab] || msgs.overview;
+  }
+
+  // Start in dark mode, icon = sun (means "switch to light")
+  document.getElementById('theme-icon').textContent = '☀️';
+</script>
+</body>
+</html>

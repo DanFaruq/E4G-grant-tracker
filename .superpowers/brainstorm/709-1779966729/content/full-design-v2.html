@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Work — v2</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #e2e8f0; color: #0f172a; min-height: 100vh; padding: 28px 16px; }
+
+h1.page-title { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 20px; text-align: center; }
+
+/* ── Layout: desktop + mobile side by side ── */
+.previews { display: flex; gap: 32px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+
+/* ── Desktop shell ── */
+.shell-desktop { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,.14); width: 640px; flex-shrink: 0; }
+.shell-mobile  { background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,.14); width: 320px; flex-shrink: 0; border: 6px solid #1e293b; position: relative; }
+.shell-mobile::before { content: ''; display: block; width: 80px; height: 5px; background: #1e293b; border-radius: 3px; margin: 10px auto 0; }
+
+.label-tag { text-align: center; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+
+/* ── Top nav (desktop only) ── */
+.topnav { background: #0f172a; height: 44px; display: flex; align-items: center; padding: 0 16px; gap: 2px; }
+.tnlogo { font-size: 11px; font-weight: 800; color: #fff; padding: 0 10px 0 0; margin-right: 4px; border-right: 1px solid rgba(255,255,255,.1); }
+.tnlink { font-size: 11px; font-weight: 500; color: rgba(255,255,255,.4); padding: 5px 9px; border-radius: 7px; }
+.tnlink.active { background: rgba(255,255,255,.13); color: #fff; font-weight: 600; }
+.tnsp { flex: 1; }
+.tnavatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#f59e0b,#d97706); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; }
+
+/* ── Mobile top bar ── */
+.mobile-top { background: #0f172a; height: 48px; display: flex; align-items: center; padding: 0 14px; gap: 8px; }
+.mobile-top .tnlogo { font-size: 12px; }
+.mobile-top .tnsp { flex: 1; }
+.mobile-top .tnavatar { width: 30px; height: 30px; font-size: 11px; }
+
+/* ── Page body ── */
+.page { padding: 18px 18px 24px; }
+.page-sm { padding: 14px 14px 80px; }
+
+/* ── Page header ── */
+.pheader { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#10b981,#059669); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.avatar-sm { width: 34px; height: 34px; font-size: 12px; }
+.htext { flex: 1; min-width: 0; }
+.htext h2 { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+.htext-sm h2 { font-size: 16px; }
+.htext p  { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.htext-sm p  { font-size: 10px; }
+.newbtn { background: #0f172a; color: #fff; border: none; border-radius: 8px; padding: 7px 13px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.newbtn-sm { padding: 6px 10px; font-size: 10px; }
+.viewas { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 5px 10px; font-size: 10px; color: #0369a1; cursor: pointer; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+/* ── KPI strip ── */
+.kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+.kpi-sm { grid-template-columns: repeat(2,1fr); gap: 6px; margin-bottom: 14px; }
+.kc { border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.kc:hover { filter: brightness(.97); }
+.kc.o { background:#fef2f2; border:1.5px solid #fecaca; }
+.kc.t { background:#fff7ed; border:1.5px solid #fed7aa; }
+.kc.p { background:#eff6ff; border:1.5px solid #bfdbfe; }
+.kc.d { background:#f0fdf4; border:1.5px solid #bbf7d0; }
+.kl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.kc.o .kl { color:#ef4444; } .kc.t .kl { color:#f97316; }
+.kc.p .kl { color:#3b82f6; } .kc.d .kl { color:#16a34a; }
+.kn { font-size: 26px; font-weight: 800; line-height: 1.1; margin-top: 2px; }
+.kc.o .kn { color:#ef4444; } .kc.t .kn { color:#f97316; }
+.kc.p .kn { color:#3b82f6; } .kc.d .kn { color:#16a34a; }
+.kn-sm { font-size: 20px; }
+.khint { font-size: 8px; color: #cbd5e1; margin-top: 2px; }
+
+/* ── TABS — pill style matching inspo ── */
+.tabs-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.tab-pill { display: flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; color: #64748b; background: #fff; }
+.tab-pill.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+.tab-pill .tc { font-size: 10px; padding: 1px 5px; border-radius: 5px; font-weight: 700; }
+.tab-pill.active .tc { background: rgba(255,255,255,.18); color: #fff; }
+.tab-pill:not(.active) .tc { background: #f1f5f9; color: #64748b; }
+.tab-pill-sm { padding: 5px 11px; font-size: 11px; }
+
+/* ── TYPE FILTER CHIPS — icon + label, matching inspo ── */
+.filters-row { display: flex; align-items: center; gap: 5px; margin-bottom: 14px; flex-wrap: nowrap; }
+.fchip { display: flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #475569; white-space: nowrap; }
+.fchip svg { width: 13px; height: 13px; flex-shrink: 0; }
+.fchip.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+.fchip.active svg { stroke: #fff; }
+.fchip:not(.active) svg { stroke: #64748b; }
+.fsp { flex: 1; min-width: 4px; }
+.groupby { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 10px; color: #64748b; cursor: pointer; background: #fff; white-space: nowrap; font-weight: 500; flex-shrink: 0; }
+.groupby svg { width: 11px; height: 11px; }
+.filters-sm { gap: 4px; }
+.fchip-sm { padding: 4px 9px; font-size: 10px; }
+.fchip-sm svg { width: 11px; height: 11px; }
+
+/* ── Section heads ── */
+.sh { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; margin-top: 14px; }
+.sh:first-of-type { margin-top: 0; }
+.slabel { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .6px; display: flex; align-items: center; gap: 5px; }
+.slabel svg { width: 12px; height: 12px; stroke: #94a3b8; }
+.scount { font-size: 10px; color: #cbd5e1; }
+
+/* ── Item rows ── */
+.item { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 9px 12px; margin-bottom: 5px; display: flex; align-items: center; gap: 9px; transition: box-shadow .12s; }
+.item:hover { box-shadow: 0 2px 10px rgba(0,0,0,.07); border-color: #cbd5e1; }
+.item.ri { border-left-width: 3px; }
+.item.ri-red { border-left-color: #ef4444; }
+.item.ri-orange { border-left-color: #f97316; }
+.item.ri-blue { border-left-color: #3b82f6; }
+
+.icheck { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0; cursor: pointer; }
+.icheck.c-blue { border-color: #3b82f6; background: #eff6ff; }
+.icheck.c-done { border-color: #16a34a; background: #16a34a; }
+
+.ibody { flex: 1; min-width: 0; }
+.ititle { font-size: 12px; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.ititle:hover { color: #3b82f6; }
+.imeta { display: flex; align-items: center; gap: 5px; margin-top: 3px; flex-wrap: wrap; }
+.mt  { font-size: 9.5px; color: #94a3b8; }
+.mt.red    { color: #ef4444; font-weight: 600; }
+.mt.orange { color: #f97316; font-weight: 600; }
+.msep { color: #e2e8f0; font-size: 9px; }
+
+.gpill { font-size: 8.5px; background: #f8fafc; color: #475569; border-radius: 4px; padding: 1.5px 5px; font-weight: 600; border: 1px solid #e2e8f0; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; }
+.gpill:hover { background: #e2e8f0; }
+
+.wavs { display: flex; }
+.wav { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 6.5px; font-weight: 800; color: #fff; margin-left: -3px; flex-shrink: 0; }
+.wav:first-child { margin-left: 0; }
+
+.pbadge { font-size: 8.5px; font-weight: 700; padding: 2px 6px; border-radius: 5px; flex-shrink: 0; }
+.pb-urgent { background:#fef2f2; color:#ef4444; }
+.pb-high   { background:#fff7ed; color:#f97316; }
+.pb-med    { background:#eff6ff; color:#3b82f6; }
+
+/* ── Status badge (clickable dropdown) ── */
+.sbadge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent; flex-shrink: 0; }
+.sbadge:hover { filter: brightness(.94); }
+.sb-todo { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+.sb-ip   { background: #eff6ff; color: #3b82f6; border-color: #bfdbfe; }
+
+/* ── Complete / Reopen button ── */
+.actbtn { font-size: 9.5px; font-weight: 700; padding: 4px 10px; border-radius: 6px; cursor: pointer; border: none; white-space: nowrap; flex-shrink: 0; }
+.ab-done   { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.ab-reopen { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+/* ── Date badge (events) ── */
+.dbadge { background: #0f172a; color: #fff; border-radius: 7px; padding: 3px 7px; text-align: center; min-width: 32px; flex-shrink: 0; }
+.dbadge .dm { font-size: 6.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+.dbadge .dd { font-size: 14px; font-weight: 800; line-height: 1.15; }
+
+/* ── Recurrence pill ── */
+.recur { font-size: 8px; background: #eff6ff; color: #3b82f6; border-radius: 4px; padding: 1.5px 5px; font-weight: 700; }
+
+/* ── Grant cards ── */
+.gcards { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-top: 6px; }
+.gcards-sm { grid-template-columns: 1fr; }
+.gc { border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 10px 11px; background: #fff; cursor: pointer; }
+.gc:hover { border-color: #94a3b8; }
+.gcn { font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 3px; line-height: 1.3; }
+.gcf { font-size: 9px; color: #94a3b8; margin-bottom: 7px; }
+.gcfoot { display: flex; align-items: center; justify-content: space-between; }
+.stpill { font-size: 8.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.st-ap { background:#fff7ed; color:#f97316; }
+.st-su { background:#eff6ff; color:#3b82f6; }
+.dl { font-size: 9px; font-weight: 600; }
+.dl-red { color: #ef4444; }
+.dl-gray { color: #94a3b8; }
+
+/* ── Mobile bottom tab bar ── */
+.mtab { background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 12px; position: sticky; bottom: 0; }
+.mtab-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0 8px; }
+.mtab-item svg { width: 20px; height: 20px; }
+.mtab-item span { font-size: 9px; font-weight: 600; }
+.mtab-item.active { color: #0f172a; }
+.mtab-item:not(.active) { color: #94a3b8; }
+
+/* SVGs */
+svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">My Work — Final Design (Desktop + Mobile)</h1>
+
+<div class="previews">
+
+  <!-- ══════════════ DESKTOP ══════════════ -->
+  <div>
+    <div class="label-tag">🖥 Desktop</div>
+    <div class="shell-desktop">
+      <!-- Top nav -->
+      <div class="topnav">
+        <span class="tnlogo">E4G</span>
+        <span class="tnlink">Dashboard</span>
+        <span class="tnlink">Grants</span>
+        <span class="tnlink">Stakeholders</span>
+        <span class="tnlink active">My Work</span>
+        <span class="tnlink">Team Tasks</span>
+        <span class="tnlink">Opportunities</span>
+        <span class="tnsp"></span>
+        <div class="tnavatar">EM</div>
+      </div>
+
+      <div class="page">
+        <!-- Header -->
+        <div class="pheader">
+          <div class="avatar">RP</div>
+          <div class="htext">
+            <h2>My Work</h2>
+            <p>Everything assigned to Reema · RP</p>
+          </div>
+          <div class="viewas">👁 View as: Reema ▾</div>
+          <button class="newbtn">＋ New task</button>
+        </div>
+
+        <!-- KPI -->
+        <div class="kpi">
+          <div class="kc o"><div class="kl">Overdue</div><div class="kn">1</div><div class="khint">↑ tap to filter</div></div>
+          <div class="kc t"><div class="kl">Due today</div><div class="kn">0</div><div class="khint">↑ tap to filter</div></div>
+          <div class="kc p"><div class="kl">In progress</div><div class="kn">1</div><div class="khint">↑ tap to filter</div></div>
+          <div class="kc d"><div class="kl">Completed</div><div class="kn">1</div><div class="khint">↑ tap to filter</div></div>
+        </div>
+
+        <!-- TABS — pill style -->
+        <div class="tabs-row">
+          <div class="tab-pill active">Active <span class="tc">6</span></div>
+          <div class="tab-pill">Completed <span class="tc">1</span></div>
+        </div>
+
+        <!-- TYPE FILTERS — icon chips + group by -->
+        <div class="filters-row">
+          <!-- All -->
+          <div class="fchip active">
+            <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            All
+          </div>
+          <!-- Tasks -->
+          <div class="fchip">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="M3 15h6M3 19h6M13 7h8M13 12h8M13 17h8"/></svg>
+            Tasks
+          </div>
+          <!-- Events -->
+          <div class="fchip">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Events
+          </div>
+          <!-- Grants -->
+          <div class="fchip">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Grants
+          </div>
+          <div class="fsp"></div>
+          <div class="groupby">
+            <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/></svg>
+            Group by: Status ▾
+          </div>
+        </div>
+
+        <!-- ── TO DO ── -->
+        <div class="sh">
+          <div class="slabel">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            To do
+          </div>
+          <span class="scount">· 2</span>
+        </div>
+
+        <div class="item ri ri-orange">
+          <div class="icheck"></div>
+          <div class="ibody">
+            <div class="ititle">Collect impact data from 2024 cohort</div>
+            <div class="imeta">
+              <span class="pbadge pb-high">High</span>
+              <span class="msep">·</span>
+              <span class="mt orange">Due Jun 2 · 5d</span>
+              <span class="msep">·</span>
+              <span class="gpill">📁 Pathways to Employment</span>
+              <span class="msep">·</span>
+              <span class="mt">#141 · by David T.</span>
+            </div>
+          </div>
+          <div class="sbadge sb-todo">☐ To do ▾</div>
+          <button class="actbtn ab-done">✓ Complete</button>
+        </div>
+
+        <div class="item ri ri-red">
+          <div class="icheck"></div>
+          <div class="ibody">
+            <div class="ititle">Submit Adult Literacy proposal</div>
+            <div class="imeta">
+              <span class="pbadge pb-urgent">Urgent</span>
+              <span class="msep">·</span>
+              <span class="mt red">12d overdue</span>
+              <span class="msep">·</span>
+              <span class="gpill">📁 Adult Literacy Coalition Bid</span>
+              <span class="msep">·</span>
+              <span class="mt">#135 · by James L.</span>
+              <div class="wavs" style="margin-left:2px;">
+                <div class="wav" style="background:#6366f1;">J</div>
+                <div class="wav" style="background:#ec4899;">R</div>
+              </div>
+            </div>
+          </div>
+          <div class="sbadge sb-todo">☐ To do ▾</div>
+          <button class="actbtn ab-done">✓ Complete</button>
+        </div>
+
+        <!-- ── IN PROGRESS ── -->
+        <div class="sh">
+          <div class="slabel">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            In progress
+          </div>
+          <span class="scount">· 1</span>
+        </div>
+
+        <div class="item ri ri-blue">
+          <div class="icheck c-blue"></div>
+          <div class="ibody">
+            <div class="ititle">Compile letters of support for Esmée bid</div>
+            <div class="imeta">
+              <span class="pbadge pb-urgent">Urgent</span>
+              <span class="msep">·</span>
+              <span class="mt orange">Due May 29 · 1d</span>
+              <span class="msep">·</span>
+              <span class="gpill">📁 Evidence-Driven Programs</span>
+              <span class="msep">·</span>
+              <span class="mt">#137 · by Aisha M.</span>
+              <div class="wavs" style="margin-left:2px;">
+                <div class="wav" style="background:#10b981;">E</div>
+                <div class="wav" style="background:#6366f1;">C</div>
+                <div class="wav" style="background:#f59e0b;">G</div>
+              </div>
+            </div>
+          </div>
+          <div class="sbadge sb-ip">◌ In progress ▾</div>
+          <button class="actbtn ab-done">✓ Complete</button>
+        </div>
+
+        <!-- ── UPCOMING EVENTS ── -->
+        <div class="sh" style="margin-top:18px;">
+          <div class="slabel">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Upcoming events
+          </div>
+          <span class="scount">· 3</span>
+        </div>
+
+        <div class="item" style="gap:10px;">
+          <div class="dbadge"><div class="dm">MAY</div><div class="dd">30</div></div>
+          <div class="ibody">
+            <div class="ititle">Internal proposal review</div>
+            <div class="imeta">
+              <span class="mt">Meeting · Sat 10:00</span>
+              <span class="msep">·</span>
+              <div class="wavs">
+                <div class="wav" style="background:#10b981;">E</div>
+                <div class="wav" style="background:#6366f1;">J</div>
+                <div class="wav" style="background:#f59e0b;">D</div>
+                <div class="wav" style="background:#ec4899;">R</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" style="gap:10px;">
+          <div class="dbadge"><div class="dm">MAY</div><div class="dd">31</div></div>
+          <div class="ibody">
+            <div class="ititle">Weekly grants standup</div>
+            <div class="imeta">
+              <span class="mt">Meeting · Sun 09:30</span>
+              <span class="msep">·</span>
+              <span class="recur">↻ Weekly</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── GRANTS CONTRIBUTING TO ── -->
+        <div class="sh" style="margin-top:18px;">
+          <div class="slabel">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Grants you're contributing to
+          </div>
+          <span class="scount">· 3</span>
+        </div>
+        <div class="gcards">
+          <div class="gc"><div class="gcn">Pathways to Employment Initiative</div><div class="gcf">Joseph Rowntree Foundation</div><div class="gcfoot"><span class="stpill st-ap">Applying</span><span class="dl dl-red">⏱ 4d</span></div></div>
+          <div class="gc"><div class="gcn">Evidence-Driven Programs Grant</div><div class="gcf">Esmée Fairbairn Foundation</div><div class="gcfoot"><span class="stpill st-su">Submitted</span><span class="dl dl-gray">Past</span></div></div>
+          <div class="gc"><div class="gcn">Adult Literacy Coalition Bid</div><div class="gcf">Department for Education</div><div class="gcfoot"><span class="stpill st-su">Submitted</span><span class="dl dl-gray">Past</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MOBILE ══════════════ -->
+  <div>
+    <div class="label-tag">📱 Mobile</div>
+    <div class="shell-mobile">
+      <div class="mobile-top">
+        <span class="tnlogo" style="color:#fff;">E4G</span>
+        <span class="tnsp"></span>
+        <div class="tnavatar">EM</div>
+      </div>
+
+      <div class="page-sm">
+        <!-- Header -->
+        <div class="pheader" style="margin-bottom:14px;">
+          <div class="avatar avatar-sm">RP</div>
+          <div class="htext htext-sm">
+            <h2>My Work</h2>
+            <p>Everything assigned to Reema</p>
+          </div>
+          <button class="newbtn newbtn-sm">＋ Task</button>
+        </div>
+
+        <!-- KPI — 2×2 on mobile -->
+        <div class="kpi kpi-sm">
+          <div class="kc o"><div class="kl">Overdue</div><div class="kn kn-sm">1</div></div>
+          <div class="kc t"><div class="kl">Due today</div><div class="kn kn-sm">0</div></div>
+          <div class="kc p"><div class="kl">In progress</div><div class="kn kn-sm">1</div></div>
+          <div class="kc d"><div class="kl">Completed</div><div class="kn kn-sm">1</div></div>
+        </div>
+
+        <!-- TABS — same pill style, smaller -->
+        <div class="tabs-row" style="margin-bottom:10px;">
+          <div class="tab-pill tab-pill-sm active">Active <span class="tc">6</span></div>
+          <div class="tab-pill tab-pill-sm">Completed <span class="tc">1</span></div>
+        </div>
+
+        <!-- FILTERS — scrollable row on mobile -->
+        <div class="filters-row filters-sm" style="overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:12px;-webkit-overflow-scrolling:touch;">
+          <div class="fchip fchip-sm active">
+            <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>All
+          </div>
+          <div class="fchip fchip-sm">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="M13 7h8M13 12h8"/></svg>Tasks
+          </div>
+          <div class="fchip fchip-sm">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Events
+          </div>
+          <div class="fchip fchip-sm">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Grants
+          </div>
+          <div class="groupby" style="font-size:9px;padding:4px 8px;flex-shrink:0;">Status ▾</div>
+        </div>
+
+        <!-- TO DO -->
+        <div class="sh" style="margin-top:0;"><div class="slabel" style="font-size:9px;">☐ To do</div><span class="scount">· 2</span></div>
+
+        <div class="item ri ri-red" style="padding:8px 9px;gap:7px;">
+          <div class="icheck" style="width:14px;height:14px;"></div>
+          <div class="ibody">
+            <div class="ititle" style="font-size:11px;">Submit Adult Literacy proposal</div>
+            <div class="imeta" style="gap:4px;">
+              <span class="pbadge pb-urgent" style="font-size:8px;">Urgent</span>
+              <span class="mt red" style="font-size:8.5px;">12d overdue</span>
+            </div>
+          </div>
+          <button class="actbtn ab-done" style="font-size:8.5px;padding:3px 8px;">✓ Done</button>
+        </div>
+
+        <div class="item ri ri-orange" style="padding:8px 9px;gap:7px;">
+          <div class="icheck" style="width:14px;height:14px;"></div>
+          <div class="ibody">
+            <div class="ititle" style="font-size:11px;">Collect impact data from 2024 cohort</div>
+            <div class="imeta" style="gap:4px;">
+              <span class="pbadge pb-high" style="font-size:8px;">High</span>
+              <span class="mt orange" style="font-size:8.5px;">Due Jun 2 · 5d</span>
+            </div>
+          </div>
+          <button class="actbtn ab-done" style="font-size:8.5px;padding:3px 8px;">✓ Done</button>
+        </div>
+
+        <!-- IN PROGRESS -->
+        <div class="sh"><div class="slabel" style="font-size:9px;">◌ In progress</div><span class="scount">· 1</span></div>
+
+        <div class="item ri ri-blue" style="padding:8px 9px;gap:7px;">
+          <div class="icheck c-blue" style="width:14px;height:14px;"></div>
+          <div class="ibody">
+            <div class="ititle" style="font-size:11px;">Compile letters of support for Esmée bid</div>
+            <div class="imeta" style="gap:4px;">
+              <span class="pbadge pb-urgent" style="font-size:8px;">Urgent</span>
+              <span class="mt orange" style="font-size:8.5px;">Due May 29 · 1d</span>
+              <div class="wavs">
+                <div class="wav" style="background:#10b981;width:14px;height:14px;font-size:6px;">E</div>
+                <div class="wav" style="background:#6366f1;width:14px;height:14px;font-size:6px;">C</div>
+                <div class="wav" style="background:#f59e0b;width:14px;height:14px;font-size:6px;">G</div>
+              </div>
+            </div>
+          </div>
+          <button class="actbtn ab-done" style="font-size:8.5px;padding:3px 8px;">✓ Done</button>
+        </div>
+
+        <!-- UPCOMING EVENTS -->
+        <div class="sh" style="margin-top:14px;"><div class="slabel" style="font-size:9px;">📅 Upcoming events</div><span class="scount">· 3</span></div>
+
+        <div class="item" style="padding:8px 9px;gap:8px;">
+          <div class="dbadge" style="min-width:28px;padding:2px 5px;border-radius:5px;"><div class="dm">MAY</div><div class="dd" style="font-size:12px;">30</div></div>
+          <div class="ibody">
+            <div class="ititle" style="font-size:11px;">Internal proposal review</div>
+            <div class="imeta"><span class="mt" style="font-size:8.5px;">Meeting · Sat 10:00</span></div>
+          </div>
+        </div>
+
+        <div class="item" style="padding:8px 9px;gap:8px;">
+          <div class="dbadge" style="min-width:28px;padding:2px 5px;border-radius:5px;"><div class="dm">MAY</div><div class="dd" style="font-size:12px;">31</div></div>
+          <div class="ibody">
+            <div class="ititle" style="font-size:11px;">Weekly grants standup</div>
+            <div class="imeta"><span class="mt" style="font-size:8.5px;">Sun 09:30</span><span class="recur" style="font-size:7.5px;">↻ Weekly</span></div>
+          </div>
+        </div>
+
+        <!-- GRANTS (single column on mobile) -->
+        <div class="sh" style="margin-top:14px;"><div class="slabel" style="font-size:9px;">📁 Grants contributing to</div><span class="scount">· 3</span></div>
+        <div class="gcards gcards-sm" style="gap:6px;">
+          <div class="gc" style="padding:8px 10px;display:flex;align-items:center;gap:10px;">
+            <div style="flex:1;min-width:0;"><div class="gcn" style="font-size:10px;">Pathways to Employment Initiative</div><div class="gcf">Joseph Rowntree Foundation</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><span class="stpill st-ap" style="font-size:8px;">Applying</span><span class="dl dl-red" style="font-size:8px;">⏱ 4d</span></div>
+          </div>
+          <div class="gc" style="padding:8px 10px;display:flex;align-items:center;gap:10px;">
+            <div style="flex:1;min-width:0;"><div class="gcn" style="font-size:10px;">Evidence-Driven Programs Grant</div><div class="gcf">Esmée Fairbairn Foundation</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><span class="stpill st-su" style="font-size:8px;">Submitted</span><span class="dl dl-gray" style="font-size:8px;">Past</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile bottom tab bar -->
+      <div class="mtab">
+        <div class="mtab-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Home</span>
+        </div>
+        <div class="mtab-item">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          <span>Grants</span>
+        </div>
+        <div class="mtab-item active">
+          <svg viewBox="0 0 24 24" stroke-width="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>My Work</span>
+        </div>
+        <div class="mtab-item">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Contacts</span>
+        </div>
+        <div class="mtab-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          <span>More</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Notes -->
+<div style="max-width:900px;margin:28px auto 0;background:#fff;border-radius:12px;padding:18px 22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+  <p style="font-size:11px;font-weight:800;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px;">What changed in v2</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Tabs</strong> — filled dark pill for Active, outlined pill for Completed. Exactly as in your inspo.</span></div>
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Filter chips</strong> — icon + label pill buttons with dark fill when active. Match the inspo precisely.</span></div>
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Mobile KPI</strong> — 2×2 grid so numbers stay legible on small screens.</span></div>
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Mobile filters</strong> — horizontally scrollable chip row so all filters are reachable on narrow screens.</span></div>
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Mobile grants</strong> — single-column list instead of 3-column grid.</span></div>
+    <div style="font-size:11px;color:#475569;display:flex;gap:6px;"><span>✅</span><span><strong>Bottom tab bar</strong> — My Work added as a primary tab on mobile, with active state.</span></div>
+  </div>
+</div>
+
+</body>
+</html>

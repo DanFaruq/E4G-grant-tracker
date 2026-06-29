@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Work — Full Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f1f5f9; color: #0f172a; }
+
+  .frame { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+  h1.page-title { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+
+  /* --- PAGE MOCKUP --- */
+  .app-shell { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 32px rgba(0,0,0,.10); }
+
+  /* Top nav strip */
+  .topnav { background: #0f172a; height: 44px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .topnav-logo { font-size: 12px; font-weight: 800; color: #fff; margin-right: 8px; }
+  .topnav-link { font-size: 11px; font-weight: 500; color: rgba(255,255,255,.45); padding: 4px 8px; border-radius: 6px; }
+  .topnav-link.active { background: rgba(255,255,255,.12); color: #fff; }
+  .topnav-spacer { flex: 1; }
+  .topnav-bell { font-size: 14px; color: rgba(255,255,255,.5); }
+
+  /* Page content */
+  .page { padding: 20px; }
+
+  /* Header */
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .header-text { flex: 1; }
+  .header-text h2 { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+  .header-text p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .new-task-btn { background: #0f172a; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+  /* ✨ Feature callout badge */
+  .feat { display: inline-flex; align-items: center; gap: 4px; background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; border-radius: 20px; font-size: 9px; font-weight: 700; padding: 2px 7px; vertical-align: middle; margin-left: 6px; }
+
+  /* KPI strip */
+  .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+  .kpi-card { border-radius: 10px; padding: 12px; cursor: pointer; transition: transform .1s; position: relative; }
+  .kpi-card:hover { transform: translateY(-1px); }
+  .kpi-card.overdue { background: #fef2f2; border: 1px solid #fecaca; }
+  .kpi-card.today { background: #fff7ed; border: 1px solid #fed7aa; }
+  .kpi-card.inprogress { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .kpi-card.done { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .kpi-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .kpi-card.overdue .kpi-label { color: #ef4444; }
+  .kpi-card.today .kpi-label { color: #f97316; }
+  .kpi-card.inprogress .kpi-label { color: #3b82f6; }
+  .kpi-card.done .kpi-label { color: #16a34a; }
+  .kpi-number { font-size: 28px; font-weight: 800; line-height: 1; }
+  .kpi-card.overdue .kpi-number { color: #ef4444; }
+  .kpi-card.today .kpi-number { color: #f97316; }
+  .kpi-card.inprogress .kpi-number { color: #3b82f6; }
+  .kpi-card.done .kpi-number { color: #16a34a; }
+  .kpi-hint { font-size: 8px; color: #94a3b8; margin-top: 3px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 14px; }
+  .tab { padding: 8px 16px; font-size: 12px; font-weight: 600; color: #94a3b8; border-bottom: 2px solid transparent; cursor: pointer; }
+  .tab.active { color: #0f172a; border-bottom-color: #0f172a; }
+  .tab-count { background: #0f172a; color: #fff; border-radius: 10px; padding: 1px 6px; font-size: 9px; margin-left: 5px; }
+  .tab:not(.active) .tab-count { background: #e2e8f0; color: #64748b; }
+
+  /* Filter row */
+  .filter-row { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .chip { background: #e2e8f0; color: #475569; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .chip.active { background: #0f172a; color: #fff; }
+  .filter-spacer { flex: 1; }
+  .group-by { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px 10px; font-size: 11px; color: #475569; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+  /* ✨ View-as dropdown (admin) */
+  .view-as { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 4px 10px; font-size: 11px; color: #0369a1; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+
+  /* Section headings */
+  .section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; margin-top: 16px; }
+  .section-head:first-child { margin-top: 0; }
+  .section-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .6px; }
+  .section-count { font-size: 10px; color: #cbd5e1; }
+
+  /* Item cards */
+  .item { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; transition: box-shadow .15s; }
+  .item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.07); }
+  .item.overdue-item { border-left: 3px solid #ef4444; }
+  .item.today-item { border-left: 3px solid #f97316; }
+  .item.inprogress-item { border-left: 3px solid #3b82f6; }
+
+  .item-check { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0; cursor: pointer; }
+  .item-check.blue { border-color: #3b82f6; background: #eff6ff; }
+  .item-check.done-check { border-color: #16a34a; background: #16a34a; display: flex; align-items: center; justify-content: center; }
+
+  .item-body { flex: 1; min-width: 0; }
+  .item-title { font-size: 13px; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .item-title:hover { color: #3b82f6; }
+  .item-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+  .meta-text { font-size: 10px; color: #94a3b8; }
+  .meta-text.red { color: #ef4444; font-weight: 600; }
+  .meta-text.orange { color: #f97316; font-weight: 600; }
+  .meta-sep { color: #e2e8f0; font-size: 10px; }
+
+  /* Grant pill - clickable */
+  .grant-pill { font-size: 9px; background: #f1f5f9; color: #475569; border-radius: 4px; padding: 1px 6px; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; text-decoration: none; }
+  .grant-pill:hover { background: #e2e8f0; }
+
+  /* Type icon */
+  .type-icon { font-size: 12px; flex-shrink: 0; }
+
+  /* With-avatars */
+  .with-avatars { display: flex; align-items: center; gap: -2px; }
+  .mini-avatar { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; color: #fff; margin-left: -4px; flex-shrink: 0; }
+  .mini-avatar:first-child { margin-left: 0; }
+
+  /* Priority badge */
+  .priority { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .priority.urgent { background: #fef2f2; color: #ef4444; }
+  .priority.high { background: #fff7ed; color: #f97316; }
+  .priority.medium { background: #eff6ff; color: #3b82f6; }
+
+  /* Status badge — clickable for inline change */
+  .status-badge { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
+  .status-badge:hover { filter: brightness(.95); }
+  .status-badge.todo { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+  .status-badge.inprog { background: #eff6ff; color: #3b82f6; border-color: #bfdbfe; }
+
+  /* Action buttons */
+  .action-btn { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px; cursor: pointer; border: none; white-space: nowrap; }
+  .action-btn.complete { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .action-btn.complete:hover { background: #dcfce7; }
+  .action-btn.reopen { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+  /* Event item specifics */
+  .date-badge { background: #0f172a; color: #fff; border-radius: 6px; padding: 3px 7px; text-align: center; min-width: 32px; flex-shrink: 0; }
+  .date-badge .month { font-size: 7px; font-weight: 700; text-transform: uppercase; }
+  .date-badge .day { font-size: 14px; font-weight: 800; line-height: 1.1; }
+
+  /* Grant contributing section */
+  .grant-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .grant-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; background: #fff; cursor: pointer; }
+  .grant-card:hover { border-color: #94a3b8; }
+  .grant-card-name { font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .grant-card-funder { font-size: 9px; color: #94a3b8; margin-bottom: 6px; }
+  .grant-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .stage-pill { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .stage-applying { background: #fff7ed; color: #f97316; }
+  .stage-submitted { background: #eff6ff; color: #3b82f6; }
+  .deadline-warn { font-size: 9px; color: #ef4444; font-weight: 600; display: flex; align-items: center; gap: 2px; }
+
+  /* Feature callout box */
+  .feat-box { background: linear-gradient(135deg, #fefce8, #fef9c3); border: 1px solid #fde68a; border-radius: 12px; padding: 16px 20px; margin: 20px 0; }
+  .feat-box h3 { font-size: 13px; font-weight: 800; color: #78350f; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .feat-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .feat-item { font-size: 11px; color: #92400e; display: flex; align-items: flex-start; gap: 6px; }
+  .feat-item .icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <h1 class="page-title">✦ My Work — Proposed Design with Enhancements</h1>
+
+  <div class="app-shell">
+    <!-- Top nav -->
+    <div class="topnav">
+      <span class="topnav-logo">E4G</span>
+      <span class="topnav-link">Dashboard</span>
+      <span class="topnav-link">Grants</span>
+      <span class="topnav-link">Stakeholders</span>
+      <span class="topnav-link active">My Work</span>
+      <span class="topnav-link">Team Tasks</span>
+      <span class="topnav-link">Opportunities</span>
+      <span class="topnav-spacer"></span>
+      <span class="topnav-bell">🔔</span>
+    </div>
+
+    <div class="page">
+
+      <!-- Page header -->
+      <div class="page-header">
+        <div class="avatar">RP</div>
+        <div class="header-text">
+          <h2>My Work</h2>
+          <p>Everything assigned to Reema · RP</p>
+        </div>
+        <!-- ✨ Admin "View as" -->
+        <div class="view-as">👁 View as: Reema ▾</div>
+        <button class="new-task-btn">＋ New task</button>
+      </div>
+
+      <!-- KPI strip — each card is a clickable filter -->
+      <div class="kpi-strip">
+        <div class="kpi-card overdue" title="Click to filter overdue items">
+          <div class="kpi-label">Overdue</div>
+          <div class="kpi-number">1</div>
+          <div class="kpi-hint">↑ Click to filter</div>
+        </div>
+        <div class="kpi-card today">
+          <div class="kpi-label">Due today</div>
+          <div class="kpi-number">0</div>
+          <div class="kpi-hint">↑ Click to filter</div>
+        </div>
+        <div class="kpi-card inprogress">
+          <div class="kpi-label">In progress</div>
+          <div class="kpi-number">1</div>
+          <div class="kpi-hint">↑ Click to filter</div>
+        </div>
+        <div class="kpi-card done">
+          <div class="kpi-label">Completed</div>
+          <div class="kpi-number">1</div>
+          <div class="kpi-hint">↑ Click to filter</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active">Active <span class="tab-count">5</span></div>
+        <div class="tab">Completed <span class="tab-count">1</span></div>
+      </div>
+
+      <!-- Filter row -->
+      <div class="filter-row">
+        <span class="chip active">All</span>
+        <span class="chip">Tasks</span>
+        <span class="chip">Events</span>
+        <span class="chip">Grants</span>
+        <div class="filter-spacer"></div>
+        <div class="group-by">Group by: Status ▾</div>
+      </div>
+
+      <!-- ── Section: To do ── -->
+      <div class="section-head">
+        <span class="section-label">☐ To do</span>
+        <span class="section-count">· 1</span>
+      </div>
+
+      <!-- Task item — overdue, with left border, clickable grant pill -->
+      <div class="item overdue-item">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-title">Collect impact data from 2024 cohort</div>
+          <div class="item-meta">
+            <span class="priority high">High</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-text red">Due Jun 2 · 5d</span>
+            <span class="meta-sep">·</span>
+            <a class="grant-pill" href="#">📁 Pathways to Employment Initiative</a>
+            <span class="meta-sep">·</span>
+            <span class="meta-text">by David T.</span>
+            <div class="with-avatars" style="margin-left:2px;">
+              <div class="mini-avatar" style="background:#6366f1;">C</div>
+              <div class="mini-avatar" style="background:#f59e0b;">G</div>
+            </div>
+          </div>
+        </div>
+        <div class="status-badge todo">☐ To do ▾</div>
+        <button class="action-btn complete">✓ Complete</button>
+      </div>
+
+      <!-- ── Section: In progress ── -->
+      <div class="section-head">
+        <span class="section-label">◌ In progress</span>
+        <span class="section-count">· 1</span>
+      </div>
+
+      <!-- Task with In progress status badge + spinning loader icon -->
+      <div class="item inprogress-item">
+        <div class="item-check blue"></div>
+        <div class="item-body">
+          <div class="item-title">Compile letters of support for Esmée bid</div>
+          <div class="item-meta">
+            <span class="priority urgent">Urgent</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-text orange">Due May 29 · 1d</span>
+            <span class="meta-sep">·</span>
+            <a class="grant-pill" href="#">📁 Evidence-Driven Programs Grant</a>
+            <span class="meta-sep">·</span>
+            <span class="meta-text">by Aisha M.</span>
+            <div class="with-avatars" style="margin-left:2px;">
+              <div class="mini-avatar" style="background:#10b981;">E</div>
+              <div class="mini-avatar" style="background:#6366f1;">C</div>
+              <div class="mini-avatar" style="background:#f59e0b;">G</div>
+            </div>
+          </div>
+        </div>
+        <div class="status-badge inprog">◌ In progress ▾</div>
+        <button class="action-btn complete">✓ Complete</button>
+      </div>
+
+      <!-- ── Section: Upcoming events ── -->
+      <div class="section-head" style="margin-top:20px;">
+        <span class="section-label">📅 Upcoming events</span>
+        <span class="section-count">· 3</span>
+      </div>
+
+      <!-- Event items -->
+      <div class="item" style="gap:12px;">
+        <div class="date-badge"><div class="month">MAY</div><div class="day">30</div></div>
+        <div class="item-body">
+          <div class="item-title">Internal proposal review</div>
+          <div class="item-meta">
+            <span class="meta-text">Meeting · Sat 10:00</span>
+            <span class="meta-sep">·</span>
+            <div class="with-avatars">
+              <div class="mini-avatar" style="background:#10b981;">E</div>
+              <div class="mini-avatar" style="background:#6366f1;">J</div>
+              <div class="mini-avatar" style="background:#f59e0b;">D</div>
+              <div class="mini-avatar" style="background:#ec4899;">R</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" style="gap:12px;">
+        <div class="date-badge"><div class="month">MAY</div><div class="day">31</div></div>
+        <div class="item-body">
+          <div class="item-title">Weekly grants standup</div>
+          <div class="item-meta">
+            <span class="meta-text">Meeting · Sun 09:30</span>
+            <span class="meta-sep">·</span>
+            <span style="font-size:9px;background:#eff6ff;color:#3b82f6;padding:2px 6px;border-radius:4px;font-weight:600;">↻ Weekly</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" style="gap:12px;">
+        <div class="date-badge"><div class="month">JUN</div><div class="day">5</div></div>
+        <div class="item-body">
+          <div class="item-title">Climate Action site visit</div>
+          <div class="item-meta">
+            <span class="meta-text">Workshop · Fri 11:00</span>
+            <span class="meta-sep">·</span>
+            <a class="grant-pill" href="#">📁 Climate Action Network Grant</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section: Grants contributing to ── -->
+      <div class="section-head" style="margin-top:20px;">
+        <span class="section-label">📁 Grants you're contributing to</span>
+        <span class="section-count">· 3</span>
+      </div>
+
+      <div class="grant-cards">
+        <div class="grant-card">
+          <div class="grant-card-name">Pathways to Employment Initiative</div>
+          <div class="grant-card-funder">Joseph Rowntree Foundation</div>
+          <div class="grant-card-footer">
+            <span class="stage-pill stage-applying">Applying</span>
+            <span class="deadline-warn">⏱ 4d</span>
+          </div>
+        </div>
+        <div class="grant-card">
+          <div class="grant-card-name">Evidence-Driven Programs Grant</div>
+          <div class="grant-card-funder">Esmée Fairbairn Foundation</div>
+          <div class="grant-card-footer">
+            <span class="stage-pill stage-submitted">Submitted</span>
+            <span class="deadline-warn" style="color:#94a3b8;">Past</span>
+          </div>
+        </div>
+        <div class="grant-card">
+          <div class="grant-card-name">Adult Literacy Coalition Bid</div>
+          <div class="grant-card-funder">Department for Education</div>
+          <div class="grant-card-footer">
+            <span class="stage-pill stage-submitted">Submitted</span>
+            <span class="deadline-warn" style="color:#94a3b8;">Past</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page -->
+  </div><!-- /app-shell -->
+
+  <!-- Feature callout -->
+  <div class="feat-box" style="margin-top:24px;">
+    <h3>✨ Enhancements added on top of the base design</h3>
+    <div class="feat-list">
+      <div class="feat-item"><span class="icon">🎯</span><div><strong>KPI cards are clickable filters</strong> — tap Overdue to instantly filter the list below. Tap again to clear.</div></div>
+      <div class="feat-item"><span class="icon">↕️</span><div><strong>Inline status toggle</strong> — click the status badge on any task to change it (To do → In progress → Done) without opening the task.</div></div>
+      <div class="feat-item"><span class="icon">🎨</span><div><strong>Urgency left-border coloring</strong> — overdue = red, due today = orange, in progress = blue. Visible at a glance.</div></div>
+      <div class="feat-item"><span class="icon">👥</span><div><strong>"With" avatars</strong> — shows other people on multi-assignee tasks so you know who else is working on it.</div></div>
+      <div class="feat-item"><span class="icon">📁</span><div><strong>Clickable grant pills</strong> — each task/event shows its linked grant as a pill that navigates directly to the grant page.</div></div>
+      <div class="feat-item"><span class="icon">👁</span><div><strong>Admin "View as" dropdown</strong> — admins can switch to any team member's My Work page for a manager view.</div></div>
+      <div class="feat-item"><span class="icon">📅</span><div><strong>Date badges on events</strong> — calendar-style day/month boxes. Recurrence shown with a ↻ Weekly tag.</div></div>
+      <div class="feat-item"><span class="icon">🗂</span><div><strong>Grant cards at the bottom</strong> — compact cards for every grant you're assigned to, with stage pill and deadline indicator.</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

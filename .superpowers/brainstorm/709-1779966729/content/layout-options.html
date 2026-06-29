@@ -1,0 +1,182 @@
+<h2>My Work — Layout Approach</h2>
+<p class="subtitle">Three ways to structure the personal work view. Pick the one that feels right.</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:16px;border-radius:8px;font-family:system-ui,sans-serif;">
+      <!-- KPI strip -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#ef4444;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Overdue</div>
+          <div style="font-size:22px;font-weight:800;color:#ef4444;line-height:1.2;">2</div>
+        </div>
+        <div style="flex:1;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#f97316;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Due today</div>
+          <div style="font-size:22px;font-weight:800;color:#f97316;line-height:1.2;">1</div>
+        </div>
+        <div style="flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#3b82f6;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">In progress</div>
+          <div style="font-size:22px;font-weight:800;color:#3b82f6;line-height:1.2;">3</div>
+        </div>
+        <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:#16a34a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Done</div>
+          <div style="font-size:22px;font-weight:800;color:#16a34a;line-height:1.2;">5</div>
+        </div>
+      </div>
+      <!-- filter bar -->
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <span style="background:#1e293b;color:#fff;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">All</span>
+        <span style="background:#e2e8f0;color:#475569;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">Tasks</span>
+        <span style="background:#e2e8f0;color:#475569;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">Events</span>
+        <span style="background:#e2e8f0;color:#475569;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">Grants</span>
+        <span style="margin-left:auto;background:#e2e8f0;color:#475569;border-radius:6px;padding:3px 8px;font-size:10px;">Group by: Status ▾</span>
+      </div>
+      <!-- grouped list -->
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">In progress · 2</div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;">
+        <div style="width:14px;height:14px;border:2px solid #3b82f6;border-radius:50%;flex-shrink:0;"></div>
+        <div style="flex:1;"><div style="font-size:11px;font-weight:600;color:#0f172a;">Compile letters of support for Esmée bid</div><div style="font-size:9px;color:#94a3b8;">Urgent · Evidence-Driven Programs · with 3 others</div></div>
+        <span style="font-size:9px;background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-weight:600;">✓ Done</span>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;">
+        <div style="width:14px;height:14px;border:2px solid #3b82f6;border-radius:50%;flex-shrink:0;background:#eff6ff;"></div>
+        <div style="flex:1;"><div style="font-size:11px;font-weight:600;color:#0f172a;">Review grant budget narrative</div><div style="font-size:9px;color:#94a3b8;">High · Due Jun 2</div></div>
+        <span style="font-size:9px;background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-weight:600;">✓ Done</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Grouped List</h3>
+      <p>KPI strip → filter chips → items grouped by Status / Priority / Grant. Same structure as the screenshots you shared. Familiar, scannable, works well on mobile.</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:16px;border-radius:8px;font-family:system-ui,sans-serif;">
+      <!-- header strip -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:800;color:#0f172a;">My Work</div>
+          <div style="font-size:10px;color:#94a3b8;">6 active · 2 overdue</div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <span style="background:#fef2f2;color:#ef4444;border-radius:6px;padding:3px 7px;font-size:9px;font-weight:700;">2 overdue</span>
+          <span style="background:#fff7ed;color:#f97316;border-radius:6px;padding:3px 7px;font-size:9px;font-weight:700;">1 today</span>
+        </div>
+      </div>
+      <!-- two-pane: active / upcoming -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Active tasks</div>
+          <div style="background:#fff;border-left:3px solid #ef4444;border-radius:0 6px 6px 0;padding:6px 8px;margin-bottom:5px;">
+            <div style="font-size:10px;font-weight:700;color:#0f172a;">Submit Adult Literacy proposal</div>
+            <div style="font-size:9px;color:#ef4444;">12d overdue</div>
+          </div>
+          <div style="background:#fff;border-left:3px solid #f97316;border-radius:0 6px 6px 0;padding:6px 8px;margin-bottom:5px;">
+            <div style="font-size:10px;font-weight:700;color:#0f172a;">Collect impact data</div>
+            <div style="font-size:9px;color:#f97316;">Due Jun 2</div>
+          </div>
+          <div style="background:#fff;border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;padding:6px 8px;">
+            <div style="font-size:10px;font-weight:700;color:#0f172a;">Compile letters of support</div>
+            <div style="font-size:9px;color:#94a3b8;">In progress · Urgent</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Upcoming events</div>
+          <div style="background:#fff;border-radius:6px;padding:6px 8px;margin-bottom:5px;display:flex;gap:6px;align-items:flex-start;">
+            <div style="background:#1e293b;color:#fff;border-radius:4px;padding:2px 5px;text-align:center;min-width:28px;">
+              <div style="font-size:7px;font-weight:600;text-transform:uppercase;">MAY</div>
+              <div style="font-size:13px;font-weight:800;line-height:1;">30</div>
+            </div>
+            <div><div style="font-size:10px;font-weight:600;color:#0f172a;">Internal proposal review</div><div style="font-size:9px;color:#94a3b8;">Sat 10:00</div></div>
+          </div>
+          <div style="background:#fff;border-radius:6px;padding:6px 8px;margin-bottom:5px;display:flex;gap:6px;align-items:flex-start;">
+            <div style="background:#1e293b;color:#fff;border-radius:4px;padding:2px 5px;text-align:center;min-width:28px;">
+              <div style="font-size:7px;font-weight:600;text-transform:uppercase;">MAY</div>
+              <div style="font-size:13px;font-weight:800;line-height:1;">31</div>
+            </div>
+            <div><div style="font-size:10px;font-weight:600;color:#0f172a;">Weekly grants standup</div><div style="font-size:9px;color:#94a3b8;">Weekly · Sun 09:30</div></div>
+          </div>
+          <div style="background:#fff;border-radius:6px;padding:6px 8px;display:flex;gap:6px;align-items:flex-start;">
+            <div style="background:#1e293b;color:#fff;border-radius:4px;padding:2px 5px;text-align:center;min-width:28px;">
+              <div style="font-size:7px;font-weight:600;text-transform:uppercase;">JUN</div>
+              <div style="font-size:13px;font-weight:800;line-height:1;">5</div>
+            </div>
+            <div><div style="font-size:10px;font-weight:600;color:#0f172a;">Climate Action site visit</div><div style="font-size:9px;color:#94a3b8;">Workshop · Fri 11:00</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Split Pane</h3>
+      <p>Tasks on the left with urgency-coloured left borders. Events on the right as mini calendar cards. No filter chips — type separation is structural. Great at a glance, but less flexible for power users.</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:16px;border-radius:8px;font-family:system-ui,sans-serif;">
+      <!-- tabs -->
+      <div style="display:flex;border-bottom:1px solid #e2e8f0;margin-bottom:10px;gap:0;">
+        <div style="padding:5px 12px;font-size:10px;font-weight:700;color:#0f172a;border-bottom:2px solid #0f172a;">Active <span style="background:#0f172a;color:#fff;border-radius:10px;padding:1px 5px;font-size:8px;">6</span></div>
+        <div style="padding:5px 12px;font-size:10px;font-weight:600;color:#94a3b8;">Completed <span style="background:#e2e8f0;color:#64748b;border-radius:10px;padding:1px 5px;font-size:8px;">5</span></div>
+      </div>
+      <!-- search + filter row -->
+      <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center;">
+        <div style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:10px;color:#94a3b8;">🔍 Search my work…</div>
+        <select style="border:1px solid #e2e8f0;border-radius:6px;padding:4px 6px;font-size:9px;color:#475569;background:#fff;">
+          <option>All types</option>
+        </select>
+        <select style="border:1px solid #e2e8f0;border-radius:6px;padding:4px 6px;font-size:9px;color:#475569;background:#fff;">
+          <option>Group: Status</option>
+        </select>
+      </div>
+      <!-- items -->
+      <div style="background:#fff;border:1px solid #fecaca;border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;">📋</span>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:600;color:#0f172a;">Submit Adult Literacy proposal</div>
+          <div style="display:flex;gap:6px;margin-top:2px;">
+            <span style="font-size:9px;color:#ef4444;font-weight:600;">12d overdue</span>
+            <span style="font-size:9px;color:#94a3b8;">Adult Literacy Coalition Bid</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <span style="font-size:9px;background:#fef2f2;color:#ef4444;border-radius:4px;padding:2px 6px;font-weight:600;">Urgent</span>
+          <button style="font-size:9px;background:#dcfce7;color:#16a34a;border:none;border-radius:4px;padding:2px 7px;font-weight:700;cursor:pointer;">Mark done</button>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;">📅</span>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:600;color:#0f172a;">Internal proposal review</div>
+          <div style="display:flex;gap:6px;margin-top:2px;">
+            <span style="font-size:9px;color:#3b82f6;font-weight:600;">Sat May 30 · 10:00</span>
+            <span style="font-size:9px;color:#94a3b8;">Meeting</span>
+          </div>
+        </div>
+        <span style="font-size:9px;background:#eff6ff;color:#3b82f6;border-radius:4px;padding:2px 6px;font-weight:600;">Event</span>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;">📁</span>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:600;color:#0f172a;">Pathways to Employment Initiative</div>
+          <div style="display:flex;gap:6px;margin-top:2px;">
+            <span style="font-size:9px;color:#f97316;font-weight:600;">Deadline Jun 2</span>
+            <span style="font-size:9px;color:#94a3b8;">Applying · Joseph Rowntree</span>
+          </div>
+        </div>
+        <span style="font-size:9px;background:#fff7ed;color:#f97316;border-radius:4px;padding:2px 6px;font-weight:600;">Grant</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Unified Feed + Search</h3>
+      <p>Tasks, events, and grants in one chronological stream. Search box + compact filter dropdowns. Type icons distinguish items. Active/Completed tabs. Most flexible — works whether you have 3 items or 30.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">All three include the KPI strip, inline status changes, and completed tab. The difference is how items are structured and navigated.</p>
