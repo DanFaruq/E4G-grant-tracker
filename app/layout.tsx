@@ -32,6 +32,12 @@ export const metadata: Metadata = {
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
   },
+  // Next.js 16 emits the standardized `mobile-web-app-capable` for appleWebApp.capable,
+  // but iOS Safari only launches standalone when it sees `apple-mobile-web-app-capable`.
+  // Emit it explicitly so "Add to Home Screen" opens as a real app, not a Safari tab.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
 }
 
 export const viewport: Viewport = {

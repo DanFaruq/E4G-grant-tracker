@@ -61,6 +61,10 @@ export { proxy as default }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Exclude PWA assets (manifest.json, sw.js) and other static files so they are
+    // never redirected to /login. A redirected manifest/service worker is invalid
+    // and breaks installability — on iOS especially, where the manifest is read at
+    // "Add to Home Screen" time, often from the public login page.
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest)$).*)",
   ],
 }
