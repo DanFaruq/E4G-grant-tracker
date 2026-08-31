@@ -9,7 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
 
-type Mode = "hidden" | "native" | "manual" | "instructions" | "installed"
+type Mode = "hidden" | "native" | "manual" | "instructions" | "installed" | "ios-other-browser"
 
 function isIos() {
   const ua = navigator.userAgent
@@ -28,6 +28,7 @@ function isIosSafari() {
 export function InstallBanner() {
   const [mode, setMode] = useState<Mode>("hidden")
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     // Already running as installed PWA (matchMedia covers Android/desktop,
@@ -37,10 +38,12 @@ export function InstallBanner() {
     // User permanently dismissed
     if (localStorage.getItem("pwa-install-dismissed") === "1") return
 
-    // iOS: no beforeinstallprompt event exists. Only Safari can Add to Home Screen,
-    // so show the manual instructions there and stay hidden in other iOS browsers.
+    // iOS: no beforeinstallprompt event exists. Only Safari can Add to Home Screen —
+    // show the manual instructions there, and a "use Safari" nudge in other iOS browsers
+    // (Chrome/Firefox/Edge on iOS are all WebKit under the hood but Apple denies them
+    // the install API, so there's nothing to prompt other than "open this in Safari").
     if (isIos()) {
-      if (isIosSafari()) setMode("manual")
+      setMode(isIosSafari() ? "manual" : "ios-other-browser")
       return
     }
 
@@ -71,6 +74,16 @@ export function InstallBanner() {
       setDeferredPrompt(null)
     } else {
       setMode("instructions")
+    }
+  }
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard API unavailable (e.g. no permission) — link stays visible in the address bar.
     }
   }
 
@@ -118,12 +131,22 @@ export function InstallBanner() {
       <div className="flex-1 min-w-0">
         <p className="text-xs font-semibold leading-tight">Install E4G Team</p>
         <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-          {mode === "native" ? "Add to home screen for quick access" : "Tap to see how to install"}
+          {mode === "native"
+            ? "Add to home screen for quick access"
+            : mode === "ios-other-browser"
+              ? "Only Safari can install on iOS — copy this link and open it there"
+              : "Tap to see how to install"}
         </p>
       </div>
-      <Button size="sm" className="h-7 px-3 text-xs shrink-0" onClick={handleInstall}>
-        Install
-      </Button>
+      {mode === "ios-other-browser" ? (
+        <Button size="sm" variant="outline" className="h-7 px-3 text-xs shrink-0" onClick={handleCopyLink}>
+          {copied ? "Copied!" : "Copy Link"}
+        </Button>
+      ) : (
+        <Button size="sm" className="h-7 px-3 text-xs shrink-0" onClick={handleInstall}>
+          Install
+        </Button>
+      )}
       <button
         onClick={handleDismiss}
         className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
