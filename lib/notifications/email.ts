@@ -1,4 +1,5 @@
 import { Resend } from "resend"
+import { renderTagEmail } from "@/lib/notifications/templates"
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? "grants@yourdomain.com"
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
@@ -81,4 +82,29 @@ export async function sendUrgentEmail(
       </div>
     `,
   })
+}
+
+/** Instant email for a single "you were tagged" notification. Returns true if Resend accepted it. */
+export async function sendTagEmail(
+  toEmail: string,
+  toName: string,
+  notification: DigestNotification
+): Promise<boolean> {
+  const resend = getResend()
+  if (!resend) return false
+
+  const { subject, html } = renderTagEmail({
+    toName,
+    title: notification.title,
+    body: notification.body,
+    url: notification.link ? `${APP_URL}${notification.link}` : null,
+    settingsUrl: `${APP_URL}/settings`,
+  })
+
+  const { error } = await resend.emails.send({ from: FROM, to: toEmail, subject, html })
+  if (error) {
+    console.error("[sendTagEmail] Resend rejected:", error.message)
+    return false
+  }
+  return true
 }

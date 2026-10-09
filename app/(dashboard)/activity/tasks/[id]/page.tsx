@@ -10,7 +10,8 @@ import {
 } from "lucide-react"
 import { TaskActions } from "@/components/activity/task-actions"
 import { CommentSection } from "@/components/activity/comment-section"
-import type { TaskStatus, TaskPriority } from "@/types/database"
+import { visibilityLabel } from "@/lib/job-levels"
+import type { JobLevel, TaskStatus, TaskPriority, TaskVisibility } from "@/types/database"
 
 const STATUS_PILL: Record<TaskStatus, string> = {
   open:        "bg-primary/10 text-primary border border-primary/20",
@@ -49,6 +50,7 @@ export default async function TaskDetailPage({
       .from("team_tasks")
       .select(`
         id, number, title, body, status, priority, due_date, created_at, updated_at, created_by,
+        visibility, min_level, allowed_levels, allowed_profile_ids,
         creator:profiles!created_by(id, full_name),
         assignees:task_assignments(profile:profiles(id, full_name)),
         grant:grants(id, name),
@@ -77,6 +79,10 @@ export default async function TaskDetailPage({
     created_at: string
     updated_at: string
     created_by: string
+    visibility: TaskVisibility
+    min_level: JobLevel | null
+    allowed_levels: JobLevel[]
+    allowed_profile_ids: string[]
     creator: { id: string; full_name: string } | null
     assignees: { profile: { id: string; full_name: string } | null }[]
     grant: { id: string; name: string } | null
@@ -176,6 +182,19 @@ export default async function TaskDetailPage({
           {/* ── Sidebar ── */}
           <div className="space-y-4 lg:shrink-0">
             <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+
+              {/* Visibility */}
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  Visible to
+                </p>
+                <p className="text-xs font-medium">{visibilityLabel(task)}</p>
+                {task.visibility !== "team" && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Plus directors, admins, the creator and assignees.
+                  </p>
+                )}
+              </div>
 
               {/* Assignees */}
               <div>

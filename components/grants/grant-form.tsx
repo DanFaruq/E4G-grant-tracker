@@ -46,9 +46,11 @@ interface GrantFormProps {
     assignee_ids?: string[]
   }
   submitLabel?: string
+  /** Existing categories offered as suggestions so spelling stays consistent. */
+  categorySuggestions?: string[]
 }
 
-export function GrantForm({ profiles, action, defaultValues, submitLabel = "Create grant" }: GrantFormProps) {
+export function GrantForm({ profiles, action, defaultValues, submitLabel = "Create grant", categorySuggestions = [] }: GrantFormProps) {
   return (
     <form action={action} className="space-y-6">
       <div className="space-y-4">
@@ -109,7 +111,13 @@ export function GrantForm({ profiles, action, defaultValues, submitLabel = "Crea
 
         <div className="space-y-2">
           <Label htmlFor="category">Category</Label>
-          <Input id="category" name="category" defaultValue={defaultValues?.category ?? ""} placeholder="e.g. Health, Education, Environment" />
+          <Input id="category" name="category" list="category-suggestions" autoComplete="off" defaultValue={defaultValues?.category ?? ""} placeholder="e.g. Health, Education, Environment" />
+          <datalist id="category-suggestions">
+            {categorySuggestions.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+          <p className="text-xs text-muted-foreground">Grants are grouped by this on the Grants page. Pick an existing category to keep them together.</p>
         </div>
 
         <div className="space-y-2">

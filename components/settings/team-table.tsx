@@ -4,15 +4,17 @@ import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash2 } from "lucide-react"
-import { inviteUser, updateUserRole, removeTeamMember } from "@/lib/actions/settings"
+import { inviteUser, updateUserRole, updateJobLevel, removeTeamMember } from "@/lib/actions/settings"
+import { JOB_LEVELS } from "@/lib/job-levels"
 import { toast } from "sonner"
-import type { UserRole } from "@/types/database"
+import type { JobLevel, UserRole } from "@/types/database"
 
 interface TeamMember {
   id: string
   full_name: string | null
   email: string | null
   role: UserRole
+  job_level: JobLevel | null
   created_at: string
 }
 
@@ -75,6 +77,17 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
     })
   }
 
+  function handleLevelChange(userId: string, level: string) {
+    startTransition(async () => {
+      try {
+        await updateJobLevel(userId, level || null)
+        toast.success("Job level updated")
+      } catch {
+        toast.error("Failed to update job level")
+      }
+    })
+  }
+
   function handleRemove(userId: string, label: string) {
     if (!confirm(`Remove "${label}" from the team? This cannot be undone.`)) return
     startTransition(async () => {
@@ -114,6 +127,11 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
         </div>
       </div>
 
+      <p className="text-xs text-muted-foreground">
+        <strong>Job level</strong> decides who can see restricted tasks. Directors (and admins) see every task.
+        Anyone with no level set only sees tasks open to the whole team, plus their own.
+      </p>
+
       {/* Team list */}
       <div className="rounded-lg border bg-card divide-y">
         {team.length === 0 && (
@@ -152,6 +170,17 @@ export function TeamTable({ team }: { team: TeamMember[] }) {
                   {ROLE_LABELS[member.role]}
                 </span>
                 <select
+                  aria-label="Job level"
+                  value={member.job_level ?? ""}
+                  onChange={(e) => handleLevelChange(member.id, e.target.value)}
+                  disabled={isPending}
+                  className="rounded-md border border-input bg-background px-2 py-1 text-xs max-w-[9.5rem]"
+                >
+                  <option value="">Level not set</option>
+                  {[...JOB_LEVELS].reverse().map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+                </select>
+                <select
+                  aria-label="Permission role"
                   value={member.role}
                   onChange={(e) => handleRoleChange(member.id, e.target.value)}
                   disabled={isPending}

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { isJobLevel } from "@/lib/job-levels"
 import type { UserRole } from "@/types/database"
 import { runDiscovery } from "@/lib/discovery/runner"
 import { scoreNewOpportunities } from "@/lib/ai/scorer"
@@ -147,6 +148,24 @@ export async function updateUserRole(userId: string, role: string) {
     metadata: { user_id: userId, new_role: role },
   })
   revalidatePath("/settings")
+}
+
+/** Set (or clear, with null) a member's place on the job ladder. Admin only. */
+export async function updateJobLevel(userId: string, level: string | null) {
+  const { user } = await requireAdmin()
+  if (level !== null && !isJobLevel(level)) throw new Error("Unknown job level")
+  const service = await createServiceClient()
+
+  const { error } = await (service.from("profiles") as AnyTable).update({ job_level: level }).eq("id", userId)
+  if (error) throw new Error(error.message)
+
+  await (service.from("activity_history") as AnyTable).insert({
+    actor_id: user.id,
+    action: "user.job_level_changed",
+    metadata: { user_id: userId, new_job_level: level },
+  })
+  revalidatePath("/settings")
+  revalidatePath("/activity")
 }
 
 export async function removeTeamMember(userId: string) {

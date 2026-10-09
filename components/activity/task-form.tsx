@@ -10,6 +10,7 @@ import { Loader2, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { createTask, updateTask } from "@/lib/actions/tasks"
 import Link from "next/link"
+import { TaskVisibilityPicker, type VisibilityValue } from "@/components/activity/task-visibility-picker"
 import type { TaskStatus, TaskPriority } from "@/types/database"
 
 type Profile = { id: string; full_name: string }
@@ -20,6 +21,8 @@ type TaskFormProps = {
   profiles: Profile[]
   grants: Grant[]
   stakeholders: Stakeholder[]
+  /** Admins and directors only: show the "who can see this task" control. */
+  canRestrict?: boolean
   defaultValues?: {
     id: string
     title: string
@@ -30,10 +33,11 @@ type TaskFormProps = {
     grant_id: string | null
     stakeholder_id: string | null
     assignee_ids: string[]
+    visibility?: VisibilityValue
   }
 }
 
-export function TaskForm({ profiles, grants, stakeholders, defaultValues }: TaskFormProps) {
+export function TaskForm({ profiles, grants, stakeholders, canRestrict = false, defaultValues }: TaskFormProps) {
   const isEdit = !!defaultValues
   const [loading, setLoading] = useState(false)
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>(
@@ -167,6 +171,10 @@ export function TaskForm({ profiles, grants, stakeholders, defaultValues }: Task
               ))}
             </div>
           </div>
+        )}
+
+        {canRestrict && (
+          <TaskVisibilityPicker profiles={profiles} defaultValue={defaultValues?.visibility} />
         )}
 
         <div className="grid grid-cols-2 gap-4">

@@ -2,12 +2,17 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Plus, Circle, CheckCircle2, XCircle, Clock, Calendar, Users2, FileText, CalendarPlus } from "lucide-react"
+import { Lock, Plus, Circle, CheckCircle2, XCircle, Clock, Calendar, Users2, FileText, CalendarPlus } from "lucide-react"
 import { formatDate } from "@/lib/utils"
-import type { TaskStatus, TaskPriority, EventType, RecurrenceType } from "@/types/database"
+import { visibilityLabel } from "@/lib/job-levels"
+import type { JobLevel, TaskStatus, TaskPriority, TaskVisibility, EventType, RecurrenceType } from "@/types/database"
 import { TaskFilterBar } from "@/components/activity/task-filter-bar"
 
 type TaskRow = {
+  visibility: TaskVisibility
+  min_level: JobLevel | null
+  allowed_levels: JobLevel[]
+  allowed_profile_ids: string[]
   id: string
   number: number
   title: string
@@ -123,6 +128,7 @@ export default async function ActivityPage({
 
   const taskSelect = `
     id, number, title, status, priority, due_date, created_at, grant_id, stakeholder_id, created_by,
+    visibility, min_level, allowed_levels, allowed_profile_ids,
     creator:profiles!created_by(full_name),
     assignees:task_assignments(profile:profiles(id, full_name)),
     grant:grants(name),
@@ -299,6 +305,15 @@ export default async function ActivityPage({
                           <span className="text-sm font-semibold group-hover:text-primary transition-colors">
                             {task.title}
                           </span>
+                          {task.visibility !== "team" && (
+                            <span
+                              title={`Visible to: ${visibilityLabel(task)}`}
+                              className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+                            >
+                              <Lock className="size-3" />
+                              {visibilityLabel(task)}
+                            </span>
+                          )}
                           <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded-full ${STATUS_PILL[task.status]}`}>
                             {task.status.replace("_", " ")}
                           </span>
