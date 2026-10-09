@@ -1,13 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { List, Columns3, CalendarDays } from "lucide-react"
+import { LayoutGrid, List, Columns3, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type View = "list" | "kanban" | "calendar"
+type View = "categories" | "list" | "kanban" | "calendar"
 
 const views: { value: View; href: string; label: string; icon: React.ElementType }[] = [
-  { value: "list",     href: "/grants",          label: "List",     icon: List },
+  { value: "categories", href: "/grants",         label: "Categories", icon: LayoutGrid },
+  { value: "list",     href: "/grants?view=list", label: "List",     icon: List },
   { value: "kanban",   href: "/grants/kanban",   label: "Kanban",   icon: Columns3 },
   { value: "calendar", href: "/grants/calendar", label: "Calendar", icon: CalendarDays },
 ]

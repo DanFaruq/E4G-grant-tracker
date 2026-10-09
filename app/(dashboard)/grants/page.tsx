@@ -8,6 +8,9 @@ import Link from "next/link"
 import { Plus, AlertCircle } from "lucide-react"
 import type { GrantStage } from "@/types/database"
 import { GrantViewSwitcher } from "@/components/grants/view-switcher"
+import { GrantKpiStrip } from "@/components/grants/grant-kpi-strip"
+import { GrantsByCategory } from "@/components/grants/grants-by-category"
+import { computeGrantKpis, groupGrantsByCategory } from "@/lib/grant-categories"
 
 type GrantListRow = {
   id: string; name: string; funder: string; deadline: string | null; stage: GrantStage
@@ -20,9 +23,10 @@ const STAGES: GrantStage[] = ["discovered","researching","applying","submitted",
 export default async function GrantsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; stage?: string }>
+  searchParams: Promise<{ q?: string; stage?: string; view?: string }>
 }) {
-  const { q, stage } = await searchParams
+  const { q, stage, view } = await searchParams
+  const flat = view === "list"
   const supabase = await createClient()
 
   let query = supabase
@@ -48,7 +52,7 @@ export default async function GrantsPage({
     <div className="flex flex-col min-h-full">
       <Header title="Grants" />
       <div className="flex-1 p-4 md:p-6 space-y-4 max-w-7xl mx-auto w-full">
-        <GrantViewSwitcher active="list" />
+        <GrantViewSwitcher active={flat ? "list" : "categories"} />
 
         {/* Toolbar */}
         <div className="space-y-2">
@@ -62,6 +66,7 @@ export default async function GrantsPage({
                 className="flex-1 min-w-0"
               />
               {stage && <input type="hidden" name="stage" value={stage} />}
+              {flat && <input type="hidden" name="view" value="list" />}
             </form>
             <Button asChild size="sm" className="shrink-0 gap-1.5">
               <Link href="/grants/new">
@@ -74,6 +79,7 @@ export default async function GrantsPage({
           {/* Row 2: stage filter (collapsible feel on mobile) */}
           <form method="GET" className="flex flex-wrap items-center gap-2">
             {q && <input type="hidden" name="q" value={q} />}
+            {flat && <input type="hidden" name="view" value="list" />}
             <select
               name="stage"
               defaultValue={stage ?? ""}
@@ -87,14 +93,20 @@ export default async function GrantsPage({
             <Button type="submit" variant="secondary" size="sm">Filter</Button>
             {(q || stage) && (
               <Button asChild variant="ghost" size="sm">
-                <Link href="/grants">Clear</Link>
+                <Link href={flat ? "/grants?view=list" : "/grants"}>Clear</Link>
               </Button>
             )}
           </form>
         </div>
 
-        {/* Table */}
-        {grants && grants.length > 0 ? (
+        {grants && grants.length > 0 && !flat && <GrantKpiStrip kpis={computeGrantKpis(grants)} />}
+
+        {grants && grants.length > 0 && !flat ? (
+          <GrantsByCategory
+            groups={groupGrantsByCategory(grants)}
+            openAll={!!(q || stage)}
+          />
+        ) : grants && grants.length > 0 ? (
           <div className="rounded-lg border bg-card overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { GrantForm } from "@/components/grants/grant-form"
 import { updateGrant } from "@/lib/actions/grants"
+import { distinctCategories } from "@/lib/grant-categories"
 import type { GrantStage, UserRole } from "@/types/database"
 
 type GrantRow = {
@@ -34,17 +35,19 @@ export default async function EditGrantPage({
     redirect(`/grants/${id}`)
   }
 
-  const [grantResult, profilesResult, assigneesResult] = await Promise.all([
+  const [grantResult, profilesResult, assigneesResult, categoriesResult] = await Promise.all([
     supabase.from("grants")
       .select("id, name, funder, stage, deadline, amount_min, amount_max, amount_exact, category, description, funder_website, application_url")
       .eq("id", id).single(),
     supabase.from("profiles").select("id, full_name").order("full_name"),
     supabase.from("grant_assignees").select("user_id").eq("grant_id", id),
+    supabase.from("grants").select("category").eq("archived", false),
   ])
 
   const grant = grantResult.data as GrantRow | null
   const profiles = profilesResult.data as ProfileRow[] | null
   const assignees = assigneesResult.data as AssigneeRow[] | null
+  const categories = distinctCategories((categoriesResult.data as { category: string | null }[] | null) ?? [])
 
   if (!grant) notFound()
 
@@ -72,6 +75,7 @@ export default async function EditGrantPage({
             assignee_ids: assignees?.map((a) => a.user_id) ?? [],
           }}
           submitLabel="Save changes"
+          categorySuggestions={categories}
         />
       </div>
     </div>
