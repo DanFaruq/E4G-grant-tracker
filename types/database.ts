@@ -6,6 +6,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type JobLevel = "intern" | "junior_analyst_1" | "junior_analyst_2" | "senior_analyst_1" | "senior_analyst_2" | "associate" | "senior_associate_1" | "senior_associate_2" | "director"
+export type TaskVisibility = "team" | "directors" | "min_level" | "custom"
 export type UserRole = "admin" | "team_member" | "viewer"
 export type GrantStage = "discovered" | "researching" | "applying" | "submitted" | "awarded" | "rejected"
 export type OpportunityStatus = "pending_review" | "promoted" | "dismissed"
@@ -28,6 +30,7 @@ export interface Database {
           full_name: string
           avatar_url: string | null
           role: UserRole
+          job_level: JobLevel | null
           created_at: string
           updated_at: string
         }
@@ -36,6 +39,7 @@ export interface Database {
           full_name?: string
           avatar_url?: string | null
           role?: UserRole
+          job_level?: JobLevel | null
           created_at?: string
           updated_at?: string
         }
@@ -43,6 +47,7 @@ export interface Database {
           full_name?: string
           avatar_url?: string | null
           role?: UserRole
+          job_level?: JobLevel | null
           updated_at?: string
         }
       }
@@ -448,6 +453,10 @@ export interface Database {
           created_by: string
           grant_id: string | null
           stakeholder_id: string | null
+          visibility: TaskVisibility
+          min_level: JobLevel | null
+          allowed_levels: JobLevel[]
+          allowed_profile_ids: string[]
           created_at: string
           updated_at: string
         }
@@ -461,6 +470,10 @@ export interface Database {
           created_by: string
           grant_id?: string | null
           stakeholder_id?: string | null
+          visibility?: TaskVisibility
+          min_level?: JobLevel | null
+          allowed_levels?: JobLevel[]
+          allowed_profile_ids?: string[]
         }
         Update: {
           title?: string
@@ -470,6 +483,10 @@ export interface Database {
           due_date?: string | null
           grant_id?: string | null
           stakeholder_id?: string | null
+          visibility?: TaskVisibility
+          min_level?: JobLevel | null
+          allowed_levels?: JobLevel[]
+          allowed_profile_ids?: string[]
           updated_at?: string
         }
       }
@@ -601,6 +618,8 @@ export interface Database {
       grant_stage: GrantStage
       opportunity_status: OpportunityStatus
       notification_type: NotificationType
+      job_level: JobLevel
+      task_visibility: TaskVisibility
       email_mode: EmailMode
       stakeholder_archetype: StakeholderArchetype
       organization_type: OrganizationType

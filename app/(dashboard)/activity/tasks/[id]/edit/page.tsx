@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { notFound } from "next/navigation"
 import { TaskForm } from "@/components/activity/task-form"
-import type { TaskStatus, TaskPriority } from "@/types/database"
+import { getViewer } from "@/lib/viewer"
+import { isTaskPrivileged } from "@/lib/job-levels"
+import type { JobLevel, TaskStatus, TaskPriority, TaskVisibility } from "@/types/database"
 
 export default async function EditTaskPage({
   params,
@@ -11,6 +13,7 @@ export default async function EditTaskPage({
 }) {
   const { id } = await params
   const supabase = await createClient()
+  const viewer = await getViewer(supabase)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = supabase as any
 
@@ -19,6 +22,7 @@ export default async function EditTaskPage({
       .from("team_tasks")
       .select(`
         id, title, body, status, priority, due_date, grant_id, stakeholder_id,
+        visibility, min_level, allowed_levels, allowed_profile_ids,
         assignees:task_assignments(profile_id)
       `)
       .eq("id", id)
@@ -39,6 +43,10 @@ export default async function EditTaskPage({
     due_date: string | null
     grant_id: string | null
     stakeholder_id: string | null
+    visibility: TaskVisibility
+    min_level: JobLevel | null
+    allowed_levels: JobLevel[]
+    allowed_profile_ids: string[]
     assignees: { profile_id: string }[]
   }
 
@@ -50,6 +58,7 @@ export default async function EditTaskPage({
           profiles={profilesResult.data ?? []}
           grants={grantsResult.data ?? []}
           stakeholders={stakeholdersResult.data ?? []}
+          canRestrict={!!viewer && isTaskPrivileged(viewer)}
           defaultValues={{
             id: task.id,
             title: task.title,
@@ -60,6 +69,12 @@ export default async function EditTaskPage({
             grant_id: task.grant_id,
             stakeholder_id: task.stakeholder_id,
             assignee_ids: task.assignees.map((a) => a.profile_id),
+            visibility: {
+              visibility: task.visibility,
+              min_level: task.min_level,
+              allowed_levels: task.allowed_levels,
+              allowed_profile_ids: task.allowed_profile_ids,
+            },
           }}
         />
       </div>

@@ -7,7 +7,7 @@ import { ProfileForm } from "@/components/settings/profile-form"
 import { PushSubscribeButton } from "@/components/push-subscribe-button"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import type { UserRole } from "@/types/database"
+import type { JobLevel, UserRole } from "@/types/database"
 
 type SourceRow = {
   id: string; name: string; type: string; url: string | null
@@ -46,7 +46,7 @@ export default async function SettingsPage({
 
   // Fetch data only for the active tab
   let orgSettings = null
-  let team: { id: string; full_name: string | null; role: UserRole; email: string | null; created_at: string }[] = []
+  let team: { id: string; full_name: string | null; role: UserRole; job_level: JobLevel | null; email: string | null; created_at: string }[] = []
   let sources: SourceRow[] = []
 
   if (tab === "org" && isAdmin) {
@@ -57,7 +57,7 @@ export default async function SettingsPage({
   if (tab === "team" && isAdmin) {
     const service = await createServiceClient()
     const [profilesRes, authRes] = await Promise.allSettled([
-      supabase.from("profiles").select("id, full_name, role, created_at").order("full_name"),
+      supabase.from("profiles").select("id, full_name, role, job_level, created_at").order("full_name"),
       service.auth.admin.listUsers({ perPage: 200 }),
     ])
     const profiles = profilesRes.status === "fulfilled" ? profilesRes.value.data : []

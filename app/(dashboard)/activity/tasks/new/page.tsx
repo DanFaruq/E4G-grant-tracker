@@ -1,9 +1,12 @@
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { TaskForm } from "@/components/activity/task-form"
+import { getViewer } from "@/lib/viewer"
+import { isTaskPrivileged } from "@/lib/job-levels"
 
 export default async function NewTaskPage() {
   const supabase = await createClient()
+  const viewer = await getViewer(supabase)
 
   const [profilesResult, grantsResult, stakeholdersResult] = await Promise.all([
     supabase.from("profiles").select("id, full_name").order("full_name"),
@@ -19,6 +22,7 @@ export default async function NewTaskPage() {
           profiles={profilesResult.data ?? []}
           grants={grantsResult.data ?? []}
           stakeholders={stakeholdersResult.data ?? []}
+          canRestrict={!!viewer && isTaskPrivileged(viewer)}
         />
       </div>
     </div>
