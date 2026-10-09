@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { taskSchema, commentSchema } from "@/lib/validators/tasks"
-import { notifyUser } from "@/lib/actions/notifications"
+import { notifyUser } from "@/lib/notifications/notify"
 import type { TaskStatus } from "@/types/database"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +28,50 @@ async function requireTeamRole() {
     throw new Error("Insufficient permissions")
   }
   return { user, supabase, role: profile.role }
+}
+
+
+const STATUS_LABELS: Record<TaskStatus, string> = {
+  open: "reopened",
+  in_progress: "marked in progress",
+  done: "marked done",
+  cancelled: "cancelled",
+}
+
+/** Tell everyone tagged on a task (creator + assignees, except the actor) that its status changed. */
+async function notifyStatusChange(
+  service: Awaited<ReturnType<typeof createServiceClient>>,
+  taskId: string,
+  actorId: string,
+  status: TaskStatus
+) {
+  try {
+    const [taskResult, assigneesResult, actorResult] = await Promise.all([
+      (service.from("team_tasks") as AnyTable).select("title, created_by").eq("id", taskId).single(),
+      (service.from("task_assignments") as AnyTable).select("profile_id").eq("task_id", taskId),
+      service.from("profiles").select("full_name").eq("id", actorId).single(),
+    ])
+    const task = taskResult.data as { title: string; created_by: string } | null
+    if (!task) return
+    const assigneeIds = ((assigneesResult.data ?? []) as { profile_id: string }[]).map((a) => a.profile_id)
+    const actorName = (actorResult.data as { full_name?: string } | null)?.full_name || "Someone"
+
+    const recipients = [...new Set([task.created_by, ...assigneeIds])].filter((id) => id !== actorId)
+    await Promise.allSettled(
+      recipients.map((userId) =>
+        notifyUser({
+          userId,
+          type:   "task_updated",
+          title:  `Task ${STATUS_LABELS[status]}`,
+          body:   `${actorName} ${STATUS_LABELS[status]} "${task.title}"`,
+          link:   `/activity/tasks/${taskId}`,
+          taskId,
+        })
+      )
+    )
+  } catch (err) {
+    console.error("[notifyStatusChange] failed:", err)
+  }
 }
 
 function parseAssignees(formData: FormData): string[] {
@@ -149,12 +193,13 @@ export async function updateTask(id: string, formData: FormData) {
 }
 
 export async function closeTask(id: string) {
-  await requireTeamRole()
+  const { user } = await requireTeamRole()
   const service = await createServiceClient()
   const { error } = await (service.from("team_tasks") as AnyTable)
     .update({ status: "done", updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
+  await notifyStatusChange(service, id, user.id, "done")
   revalidatePath("/activity")
   revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)
@@ -162,12 +207,13 @@ export async function closeTask(id: string) {
 }
 
 export async function reopenTask(id: string) {
-  await requireTeamRole()
+  const { user } = await requireTeamRole()
   const service = await createServiceClient()
   const { error } = await (service.from("team_tasks") as AnyTable)
     .update({ status: "open", updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
+  await notifyStatusChange(service, id, user.id, "open")
   revalidatePath("/activity")
   revalidatePath("/activity/recent")
   revalidatePath(`/activity/tasks/${id}`)
@@ -175,12 +221,13 @@ export async function reopenTask(id: string) {
 }
 
 export async function updateTaskStatus(id: string, status: TaskStatus) {
-  await requireTeamRole()
+  const { user } = await requireTeamRole()
   const service = await createServiceClient()
   const { error } = await (service.from("team_tasks") as AnyTable)
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", id)
   if (error) throw new Error(error.message)
+  await notifyStatusChange(service, id, user.id, status)
   revalidatePath("/my-work")
   revalidatePath("/activity")
   revalidatePath("/activity/recent")

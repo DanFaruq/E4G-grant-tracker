@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
 import { eventSchema } from "@/lib/validators/events"
-import { notifyUser } from "@/lib/actions/notifications"
+import { notifyUser } from "@/lib/notifications/notify"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTable = any

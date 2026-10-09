@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient, createServiceClient } from "@/lib/supabase/server"
+import { notifyUser } from "@/lib/notifications/notify"
 import type { GrantStage, UserRole } from "@/types/database"
 
 type ProfileRoleRow = { role: UserRole }
@@ -72,6 +73,22 @@ export async function createGrant(formData: FormData) {
   if (assignees.length > 0) {
     await (service.from("grant_assignees") as AnyTable).insert(
       assignees.map((uid) => ({ grant_id: (grant as GrantIdRow).id, user_id: uid }))
+    )
+
+    // Tell each assignee (except the creator) they were added, in-app and by email
+    await Promise.allSettled(
+      assignees
+        .filter((uid) => uid !== user.id)
+        .map((uid) =>
+          notifyUser({
+            userId:  uid,
+            type:    "grant_assigned",
+            title:   "You've been assigned a grant",
+            body:    String(payload.name),
+            link:    `/grants/${(grant as GrantIdRow).id}`,
+            grantId: (grant as GrantIdRow).id,
+          })
+        )
     )
   }
 

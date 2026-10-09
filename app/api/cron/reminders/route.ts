@@ -139,6 +139,7 @@ async function sendDigests(service: Awaited<ReturnType<typeof createServiceClien
       .select("title, body, link")
       .eq("user_id", user.id)
       .eq("read", false)
+      .is("emailed_at", null) // instant tag emails already went out
       .gte("created_at", since) as { data: NotificationRow[] | null }
 
     if (!notifs || notifs.length === 0) continue
